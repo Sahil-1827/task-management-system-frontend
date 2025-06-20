@@ -3,6 +3,7 @@ import { ThemeProviderWrapper } from "../context/ThemeContext";
 import { ActivityLogProvider } from "../context/ActivityLogContext";
 import ClientLayout from "@/components/ClientLayout";
 import { Manrope, Noto_Sans } from 'next/font/google';
+import "../app/globals.css"
 
 const manrope = Manrope({ subsets: ['latin'] });
 const notoSans = Noto_Sans({
