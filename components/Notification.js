@@ -102,12 +102,25 @@ export default function Notification({ userId, onTaskUpdate, onTeamUpdate }) {
       }
     };
 
+    // Add this new handler for teamUpdated event
+    const handleTeamUpdated = (data) => {
+      console.log("Received teamUpdated event:", data);
+      setMessage(data.message);
+      setOpen(true);
+      if (onTeamUpdate) {
+        console.log("Calling onTeamUpdate callback");
+        onTeamUpdate();
+      }
+    };
+
     socketInstance.on("taskUpdated", handleTaskUpdated);
     socketInstance.on("taskAssigned", handleTaskAssigned);
     socketInstance.on("taskUnassigned", handleTaskUnassigned);
     socketInstance.on("taskAssignedToTeam", handleTaskAssignedToTeam);
     socketInstance.on("teamAdded", handleTeamAdded);
     socketInstance.on("teamRemoved", handleTeamRemoved);
+    // Add the new listener here
+    socketInstance.on("teamUpdated", handleTeamUpdated);
 
     return () => {
       console.log("Cleaning up WebSocket listeners for user:", userId);
@@ -117,6 +130,8 @@ export default function Notification({ userId, onTaskUpdate, onTeamUpdate }) {
       socketInstance.off("taskAssignedToTeam", handleTaskAssignedToTeam);
       socketInstance.off("teamAdded", handleTeamAdded);
       socketInstance.off("teamRemoved", handleTeamRemoved);
+      // Remove the new listener here
+      socketInstance.off("teamUpdated", handleTeamUpdated);
     };
   }, [userId, onTaskUpdate, onTeamUpdate]);
 
