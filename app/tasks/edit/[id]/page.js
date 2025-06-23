@@ -20,12 +20,14 @@ import {
 } from "@mui/material";
 
 // Add this import at the top with other imports
+import { useActivityLog } from "../../../../context/ActivityLogContext";
 import Notification from "../../../../components/Notification";
 
 export default function EditTask({ params }) {
   const { user, token, loading } = useAuth();
   const router = useRouter();
   const [id, setId] = useState(null);
+  const { fetchLogs } = useActivityLog(); // Add this line
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -183,9 +185,10 @@ export default function EditTask({ params }) {
       await axios.put(`http://localhost:5000/api/tasks/${id}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccess("Task updated successfully!"); 
+      setSuccess("Task updated successfully!");
+      fetchLogs(); // Add this line to re-fetch logs after successful update
       // Optionally, redirect after a short delay:
-      setTimeout(() => router.push("/tasks"), 1000); 
+      setTimeout(() => router.push("/tasks"), 1000);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update task");
     } finally {
