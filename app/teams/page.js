@@ -33,7 +33,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import Notification from "../../components/Notification";
+// Remove this line:
+// import Notification from "../../components/Notification";
 import useDebounce from "../../hooks/useDebounce";
 
 export default function Teams() {
@@ -301,7 +302,8 @@ export default function Teams() {
 
   return (
     <Container sx={{ py: 4 }}>
-      <Notification userId={user?.id} onTeamUpdate={handleTeamUpdate} />
+      {/* // In the return statement, remove this line: */}
+      {/* // <Notification userId={user?.id} onTeamUpdate={handleTeamUpdate} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>
         Team Management
       </Typography>

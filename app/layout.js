@@ -1,6 +1,7 @@
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProviderWrapper } from "../context/ThemeContext";
 import { ActivityLogProvider } from "../context/ActivityLogContext";
+import { NotificationProvider } from "../context/NotificationContext";
 import ClientLayout from "@/components/ClientLayout";
 import { Manrope, Noto_Sans } from 'next/font/google';
 import "../app/globals.css"
@@ -23,7 +24,9 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <ThemeProviderWrapper>
             <ActivityLogProvider>
-              <ClientLayout>{children}</ClientLayout>
+              <NotificationProvider>
+                <ClientLayout>{children}</ClientLayout>
+              </NotificationProvider>
             </ActivityLogProvider>
           </ThemeProviderWrapper>
         </AuthProvider>

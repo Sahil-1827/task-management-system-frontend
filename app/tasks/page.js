@@ -33,7 +33,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import Notification from "../../components/Notification";
+// Remove this line:
+// import Notification from "../../components/Notification";
 import useDebounce from "../../hooks/useDebounce";
 
 export default function Tasks() {
@@ -411,7 +412,8 @@ export default function Tasks() {
 
   return (
     <Container sx={{ py: 4 }}>
-      <Notification userId={user?.id} onTaskUpdate={handleTaskUpdate} />
+      {/* // In the return statement, remove this line:
+      // <Notification userId={user?.id} onTaskUpdate={handleTaskUpdate} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>
         Task Management
       </Typography>

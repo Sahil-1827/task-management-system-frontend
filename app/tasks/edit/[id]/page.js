@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../context/AuthContext";
-import axios from "axios";
 import {
   Container,
   Typography,
@@ -16,12 +15,11 @@ import {
   Box,
   Alert,
   CircularProgress,
-  Chip,
+  Grid,
 } from "@mui/material";
-
-// Add this import at the top with other imports
-import { useActivityLog } from "../../../../context/ActivityLogContext";
-import Notification from "../../../../components/Notification";
+import axios from "axios";
+// Remove this line:
+// import Notification from "../../../../components/Notification";
 
 export default function EditTask({ params }) {
   const { user, token, loading } = useAuth();
@@ -198,7 +196,8 @@ export default function EditTask({ params }) {
 
   return (
     <Container sx={{ py: 4 }}>
-      <Notification userId={user?.id} />
+      {/* // In the return statement, remove this line:
+      // <Notification userId={user?.id} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>
         Edit Task
       </Typography>

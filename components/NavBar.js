@@ -19,6 +19,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Image from "next/image";
+import NotificationBell from './NotificationBell';
 
 const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: '84px',
@@ -208,7 +209,8 @@ export default function NavBar() {
             >
               {user?.name || "User"}
             </StyledButton>
-            <IconButton onClick={toggleTheme} sx={{ ml: 2, color: '#1b3430' }}>
+            <NotificationBell />
+            <IconButton onClick={toggleTheme} sx={{ ml: 1, color: '#1b3430' }}>
               {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
             <StyledButton
