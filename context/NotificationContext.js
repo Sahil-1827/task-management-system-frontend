@@ -95,7 +95,7 @@ export const NotificationProvider = ({ children }) => {
   
     // Handle different notification types
     const handleTaskUpdated = (data) => {
-      console.log('Received taskUpdated notification:', data);
+      // console.log('Received taskUpdated notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Updated',
@@ -105,7 +105,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTaskAssigned = (data) => {
-      console.log('Received taskAssigned notification:', data);
+      // console.log('Received taskAssigned notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Assigned',
@@ -115,7 +115,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTaskUnassigned = (data) => {
-      console.log('Received taskUnassigned notification:', data);
+      // console.log('Received taskUnassigned notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Unassigned',
@@ -125,7 +125,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTaskAssignedToTeam = (data) => {
-      console.log('Received taskAssignedToTeam notification:', data);
+      // console.log('Received taskAssignedToTeam notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Assigned to Team',
@@ -135,7 +135,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTeamAdded = (data) => {
-      console.log('Received teamAdded notification:', data);
+      // console.log('Received teamAdded notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Added',
@@ -145,7 +145,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTeamRemoved = (data) => {
-      console.log('Received teamRemoved notification:', data);
+      // console.log('Received teamRemoved notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Removed',
@@ -155,7 +155,7 @@ export const NotificationProvider = ({ children }) => {
     };
   
     const handleTeamUpdated = (data) => {
-      console.log('Received teamUpdated notification:', data);
+      // console.log('Received teamUpdated notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Updated',
