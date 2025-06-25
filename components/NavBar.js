@@ -42,11 +42,12 @@ export default function NavBar() {
   const navItems = [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Tasks", path: "/tasks" },
-    { label: "Teams", path: "/teams" }
+    { label: "Teams", path: "/teams" },
+    { label: "Activity Log", path: "/activity-log" }
   ];
 
   if (user?.role === "admin") {
-    navItems.push({ label: "Users", path: "/users" });
+    navItems.splice(3, 0, { label: "Users", path: "/users" });
   }
 
   const drawer = (
