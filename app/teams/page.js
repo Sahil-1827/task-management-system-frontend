@@ -33,8 +33,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-// Remove this line:
-// import Notification from "../../components/Notification";
 import useDebounce from "../../hooks/useDebounce";
 import { useActivityLog } from "../../context/ActivityLogContext";
 
@@ -43,7 +41,7 @@ export default function Teams() {
   const router = useRouter();
   const { fetchLogs } = useActivityLog();
   const [teams, setTeams] = useState([]);
-  const [displayTeams, setDisplayTeams] = useState([]); // For sorted display
+  const [displayTeams, setDisplayTeams] = useState([]);
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -55,17 +53,15 @@ export default function Teams() {
   const [editTeam, setEditTeam] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
-  // Pagination, search, and filter states
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTeams, setTotalTeams] = useState(0);
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500); // Debounce search input
+  const debouncedSearch = useDebounce(search, 500);
   const [filterMember, setFilterMember] = useState("");
 
-  // Sorting states
-  const [sortField, setSortField] = useState(""); // name, createdAt
-  const [sortDirection, setSortDirection] = useState("asc"); // asc, desc
+  const [sortField, setSortField] = useState("");
+  const [sortDirection, setSortDirection] = useState("asc");
 
   useEffect(() => {
     if (loading || !user) return;
@@ -75,7 +71,7 @@ export default function Teams() {
         const queryParams = new URLSearchParams({
           page,
           limit: 5,
-          search: debouncedSearch, // Use debounced search value
+          search: debouncedSearch,
           ...(filterMember && { member: filterMember }),
         });
 
@@ -84,7 +80,7 @@ export default function Teams() {
         });
 
         setTeams(response.data.teams);
-        setDisplayTeams(response.data.teams); // Initialize displayTeams
+        setDisplayTeams(response.data.teams);
         setTotalTeams(response.data.totalTeams);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -109,7 +105,6 @@ export default function Teams() {
     }
   }, [token, user, loading, page, debouncedSearch, filterMember]);
 
-  // Sorting logic
   useEffect(() => {
     if (!teams || teams.length === 0) return;
 
@@ -124,6 +119,8 @@ export default function Teams() {
         } else if (sortField === "createdAt") {
           valueA = new Date(a.createdAt).getTime();
           valueB = new Date(b.createdAt).getTime();
+        } else {
+            return 0;
         }
 
         if (sortDirection === "asc") {
@@ -154,8 +151,14 @@ export default function Teams() {
     setNewTeam({ ...newTeam, [e.target.name]: e.target.value });
   };
 
-  const handleMembersChange = (e) => {
-    setNewTeam({ ...newTeam, members: e.target.value });
+  const handleMembersChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setNewTeam({
+      ...newTeam,
+      members: typeof value === 'string' ? value.split(',') : value,
+    });
   };
 
   const handleCreateTeam = async (e) => {
@@ -178,17 +181,13 @@ export default function Teams() {
       );
       setTeams([...teams, response.data]);
       setSuccess("Team created successfully");
-      setNewTeam({
-        name: "",
-        description: "",
-        members: [],
-      });
-      fetchLogs(); // Refresh activity logs
+      setNewTeam({ name: "", description: "", members: [] });
+      fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create team");
     }
   };
-
+  
   const handleEditTeam = (team) => {
     setEditTeam(team);
     setNewTeam({
@@ -220,14 +219,8 @@ export default function Teams() {
         teams.map((team) => (team._id === editTeam._id ? response.data : team))
       );
       setSuccess("Team updated successfully");
-      setOpenDialog(false);
-      setNewTeam({
-        name: "",
-        description: "",
-        members: [],
-      });
-      setEditTeam(null);
-      fetchLogs(); // Refresh activity logs
+      handleCloseDialog();
+      fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update team");
     }
@@ -243,7 +236,7 @@ export default function Teams() {
       });
       setTeams(teams.filter((team) => team._id !== teamId));
       setSuccess("Team deleted successfully");
-      fetchLogs(); // Refresh activity logs
+      fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to delete team");
     }
@@ -254,55 +247,16 @@ export default function Teams() {
     setNewTeam({ name: "", description: "", members: [] });
     setEditTeam(null);
   };
-
-  const handleTeamUpdate = () => {
-    console.log("Team update notification received, fetching teams...", { userId: user?._id });
-    const fetchTeams = async () => {
-      try {
-        const queryParams = new URLSearchParams({
-          page,
-          limit: 5,
-          search: debouncedSearch,
-          ...(filterMember && { member: filterMember }),
-        });
-
-        const response = await axios.get(`http://localhost:5000/api/teams?${queryParams.toString()}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setTeams(response.data.teams);
-        setTotalTeams(response.data.totalTeams);
-        setTotalPages(response.data.totalPages);
-        console.log("Teams updated successfully");
-      } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch teams");
-      }
-    };
-    fetchTeams();
-  };
-
+  
   const handlePageChange = (event, value) => {
     setPage(value);
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const handleFilterChange = (setter) => (e) => {
+    setter(e.target.value);
     setPage(1);
   };
-
-  const handleFilterMemberChange = (e) => {
-    setFilterMember(e.target.value);
-    setPage(1);
-  };
-
-  const handleSortFieldChange = (e) => {
-    setSortField(e.target.value);
-  };
-
-  const handleSortDirectionChange = (e) => {
-    setSortDirection(e.target.value);
-  };
-
+  
   const handleClearFilters = () => {
     setSearch("");
     setFilterMember("");
@@ -313,149 +267,70 @@ export default function Teams() {
 
   return (
     <Container sx={{ py: 4 }}>
-      {/* // In the return statement, remove this line: */}
-      {/* // <Notification userId={user?.id} onTeamUpdate={handleTeamUpdate} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>
         Team Management
       </Typography>
 
       {(user.role === "admin" || user.role === "manager") && (
-        <Box component="form" onSubmit={handleCreateTeam} sx={{ mb: 4 }}>
-          <TextField
-            label="Team Name"
-            name="name"
-            value={newTeam.name}
-            onChange={handleInputChange}
-            fullWidth
-            required
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={newTeam.description}
-            onChange={handleInputChange}
-            fullWidth
-            multiline
-            rows={3}
-            sx={{ mb: 2 }}
-          />
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Members</InputLabel>
-            <Select
-              multiple
-              name="members"
-              value={newTeam.members}
-              onChange={handleMembersChange}
-              label="Members"
-            >
-              {users.map((user) => (
-                <MenuItem key={user._id} value={user._id}>
-                  {user.name} ({user.email})
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button type="submit" variant="contained" color="primary">
-            Create Team
-          </Button>
+        <Paper sx={{ p: {xs: 2, md: 3}, mb: 4 }}>
+        <Typography variant="h6" sx={{mb: 2}}>Create New Team</Typography>
+        <Box component="form" onSubmit={handleCreateTeam}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField label="Team Name" name="name" value={newTeam.name} onChange={handleInputChange} fullWidth required />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField label="Description" name="description" value={newTeam.description} onChange={handleInputChange} fullWidth multiline rows={3} />
+                </Grid>
+                <Grid item xs={12}>
+                    <FormControl fullWidth>
+                        <InputLabel>Members</InputLabel>
+                        <Select multiple name="members" value={newTeam.members} onChange={handleMembersChange} label="Members">
+                            {users.map((u) => (<MenuItem key={u._id} value={u._id}>{u.name} ({u.email})</MenuItem>))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button type="submit" variant="contained" color="primary">Create Team</Button>
+                </Grid>
+            </Grid>
         </Box>
+        </Paper>
       )}
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
-        </Alert>
-      )}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      {/* Search, Filters, and Sorting */}
-      <Box sx={{ mb: 4 }}>
+      <Paper sx={{ p: {xs: 2, md: 3}, mb: 4 }}>
+        <Typography variant="h6" sx={{mb: 2}}>Filters & Sorting</Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Search by Name or Description"
-              value={search}
-              onChange={handleSearchChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-          </Grid>
-          {(user.role === "admin" || user.role === "manager") && (
+            <Grid item xs={12} sm={6}><TextField label="Search by Name" value={search} onChange={handleFilterChange(setSearch)} fullWidth /></Grid>
+            {(user.role === "admin" || user.role === "manager") && (
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth sx={{ mb: 2 }}>
+              <FormControl fullWidth>
                 <InputLabel>Filter by Member</InputLabel>
-                <Select
-                  value={filterMember}
-                  onChange={handleFilterMemberChange}
-                  label="Filter by Member"
-                >
+                <Select value={filterMember} onChange={handleFilterChange(setFilterMember)} label="Filter by Member">
                   <MenuItem value="">All</MenuItem>
-                  {users.map((user) => (
-                    <MenuItem key={user._id} value={user._id}>
-                      {user.name} ({user.email})
-                    </MenuItem>
-                  ))}
+                  {users.map((u) => (<MenuItem key={u._id} value={u._id}>{u.name}</MenuItem>))}
                 </Select>
               </FormControl>
             </Grid>
-          )}
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortField}
-                onChange={handleSortFieldChange}
-                label="Sort By"
-              >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="name">Name</MenuItem>
-                <MenuItem value="createdAt">Creation Date</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Sort Direction</InputLabel>
-              <Select
-                value={sortDirection}
-                onChange={handleSortDirectionChange}
-                label="Sort Direction"
-                disabled={!sortField}
-              >
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleClearFilters}
-              sx={{ mt: 1 }}
-            >
-              Clear Filters
-            </Button>
-          </Grid>
+            )}
+            <Grid item xs={12} sm={6}><FormControl fullWidth><InputLabel>Sort By</InputLabel><Select value={sortField} onChange={(e) => setSortField(e.target.value)} label="Sort By"><MenuItem value="">None</MenuItem><MenuItem value="name">Name</MenuItem><MenuItem value="createdAt">Creation Date</MenuItem></Select></FormControl></Grid>
+            <Grid item xs={12} sm={6}><FormControl fullWidth disabled={!sortField}><InputLabel>Sort Direction</InputLabel><Select value={sortDirection} onChange={(e) => setSortDirection(e.target.value)} label="Sort Direction"><MenuItem value="asc">Ascending</MenuItem><MenuItem value="desc">Descending</MenuItem></Select></FormControl></Grid>
+            <Grid item xs={12}><Button variant="outlined" onClick={handleClearFilters}>Clear Filters</Button></Grid>
         </Grid>
-      </Box>
-
-      <TableContainer component={Paper}>
-        <Table>
+      </Paper>
+      
+      <TableContainer component={Paper} sx={{overflowX: 'auto'}}>
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Members</TableCell>
               <TableCell>Created By</TableCell>
-              {(user.role === "admin" || user.role === "manager") && (
-                <TableCell>Actions</TableCell>
-              )}
+              {(user.role === "admin" || user.role === "manager") && <TableCell>Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -463,20 +338,12 @@ export default function Teams() {
               <TableRow key={team._id}>
                 <TableCell>{team.name}</TableCell>
                 <TableCell>{team.description || "-"}</TableCell>
-                <TableCell>
-                  {team.members && team.members.length > 0
-                    ? team.members.map((member) => member.name).join(", ")
-                    : "-"}
-                </TableCell>
+                <TableCell>{team.members.map((member) => member.name).join(", ") || "-"}</TableCell>
                 <TableCell>{team.createdBy?.name || "-"}</TableCell>
                 {(user.role === "admin" || user.role === "manager") && (
                   <TableCell>
-                    <IconButton onClick={() => handleEditTeam(team)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteTeam(team._id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <IconButton onClick={() => handleEditTeam(team)}><EditIcon /></IconButton>
+                    <IconButton onClick={() => handleDeleteTeam(team._id)}><DeleteIcon /></IconButton>
                   </TableCell>
                 )}
               </TableRow>
@@ -485,66 +352,36 @@ export default function Teams() {
         </Table>
       </TableContainer>
 
-      {/* Pagination */}
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
-        />
+        <Pagination count={totalPages} page={page} onChange={handlePageChange} color="primary" />
       </Box>
       <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
         Total Teams: {totalTeams}
       </Typography>
 
-      {/* Edit Team Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>Edit Team</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Team Name"
-            name="name"
-            value={newTeam.name}
-            onChange={handleInputChange}
-            fullWidth
-            required
-            sx={{ mt: 2, mb: 2 }}
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={newTeam.description}
-            onChange={handleInputChange}
-            fullWidth
-            multiline
-            rows={3}
-            sx={{ mb: 2 }}
-          />
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Members</InputLabel>
-            <Select
-              multiple
-              name="members"
-              value={newTeam.members}
-              onChange={handleMembersChange}
-              label="Members"
-            >
-              {users.map((user) => (
-                <MenuItem key={user._id} value={user._id}>
-                  {user.name} ({user.email})
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <Grid container spacing={2} sx={{pt: 1}}>
+                 <Grid item xs={12}>
+                    <TextField label="Team Name" name="name" value={newTeam.name} onChange={handleInputChange} fullWidth required />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField label="Description" name="description" value={newTeam.description} onChange={handleInputChange} fullWidth multiline rows={3} />
+                </Grid>
+                <Grid item xs={12}>
+                    <FormControl fullWidth>
+                        <InputLabel>Members</InputLabel>
+                        <Select multiple name="members" value={newTeam.members} onChange={handleMembersChange} label="Members">
+                           {users.map((u) => (<MenuItem key={u._id} value={u._id}>{u.name}</MenuItem>))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdateTeam} color="primary">
-            Update
-          </Button>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleUpdateTeam} variant="contained">Update</Button>
         </DialogActions>
       </Dialog>
     </Container>

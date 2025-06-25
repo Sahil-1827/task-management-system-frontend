@@ -6,7 +6,8 @@ import {
   Typography,
   Grid,
   Card,
-  CardContent
+  CardContent,
+  useTheme
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ListChecks from "@mui/icons-material/FormatListBulleted";
@@ -19,86 +20,82 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/NavBar";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  minWidth: "84px",
-  maxWidth: "480px",
-  borderRadius: "12px",
-  height: "40px",
-  padding: "0 16px",
-  textTransform: "none",
+  borderRadius: '8px',
+  padding: '10px 20px',
+  textTransform: 'none',
   fontWeight: 700,
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor: theme.palette.primary.dark
-  },
-  "@media (min-width: 480px)": {
-    height: "48px",
-    padding: "0 20px",
-    fontSize: "16px"
-  }
+  fontSize: '1rem',
 }));
 
 const FeatureCard = styled(Card)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-  padding: "16px",
-  border: `1px solid ${theme.palette.mode === "light" ? "#dde1e3" : "#2d3748"}`,
-  borderRadius: "8px",
-  backgroundColor: theme.palette.background.paper
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  padding: theme.spacing(3),
+  height: '100%',
 }));
 
 export default function Home() {
   const router = useRouter();
+  const theme = useTheme();
+  const isLocalStorageAvailable = typeof window !== 'undefined' && window.localStorage;
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      {/* Only show Navbar and Footer if user is not logged in */}
-      {!localStorage.getItem('token') && <Navbar />}
+      {(!isLocalStorageAvailable || !localStorage.getItem('token')) && <Navbar />}
       
-      {/* Hero Section */}
-      <Container maxWidth="lg" sx={{ py: 5 }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
         <Box
           sx={{
-            backgroundImage:
-              'linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJLqKa41kgHD3BefMo8GqstNl0l7_KOS5IqR2Sduk4F_FSRJ6oo4cwVjzqSTFYcQ53PzGWw09qlcT2w-3dCifcuDoTnXUYMFyWiaf3BOFE6fV-kDBYeN5NheCAFVk5s_V-EkZCfWFPIvOGegaO5TK-H0id_Gr8UvYMSyy9_mBNWg28tTwrbPQF_7JFi-zLS2gQS-l_xq1fKzQjC1qeMlLh5MpPo6rfByOM92l7D7KRvyKqWP_oW5zKZ8S0whveHlS-Ns3w-WmIV30")',
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            position: 'relative',
             borderRadius: { xs: 0, sm: 4 },
-            p: { xs: 2, sm: 5 },
-            minHeight: "480px",
+            p: { xs: 3, sm: 6 },
+            minHeight: { xs: '360px', md: '480px' },
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
-            gap: 3
+            gap: 3,
+            color: 'common.white',
+            overflow: 'hidden'
           }}
         >
-          <Box sx={{ color: "white", maxWidth: "md" }}>
+          <Image
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJLqKa41kgHD3BefMo8GqstNl0l7_KOS5IqR2Sduk4F_FSRJ6oo4cwVjzqSTFYcQ53PzGWw09qlcT2w-3dCifcuDoTnXUYMFyWiaf3BOFE6fV-kDBYeN5NheCAFVk5s_V-EkZCfWFPIvOGegaO5TK-H0id_Gr8UvYMSyy9_mBNWg28tTwrbPQF_7JFi-zLS2gQS-l_xq1fKzQjC1qeMlLh5MpPo6rfByOM92l7D7KRvyKqWP_oW5zKZ8S0whveHlS-Ns3w-WmIV30"
+            alt="Workflow"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            style={{ zIndex: -2 }}
+          />
+          <Box sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: -1
+          }}/>
+          <Box sx={{ maxWidth: "md" }}>
             <Typography variant="h2" sx={{ fontWeight: 900, mb: 2 }}>
               Streamline Your Workflow with TaskMaster
             </Typography>
             <Typography variant="body1">
               Manage tasks, assign team members, track progress, and boost
-              productivity with our intuitive task management system. Get
-              real-time notifications, role-based access, and activity logs to
-              keep your team aligned and efficient.
+              productivity with our intuitive task management system.
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
             <StyledButton
               variant="contained"
+              color="primary"
               onClick={() => router.push("/signup")}
             >
               Get Started
             </StyledButton>
             <StyledButton
               variant="contained"
-              sx={{
-                bgcolor: "secondary.main",
-                "&:hover": {
-                  bgcolor: "secondary.dark"
-                }
-              }}
+              color="secondary"
               onClick={() => router.push("/learn-more")}
             >
               Learn More
@@ -106,95 +103,57 @@ export default function Home() {
           </Box>
         </Box>
 
-        {/* Features Section */}
         <Box sx={{ py: 8 }}>
-          <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
+          <Typography variant="h3" sx={{ mb: 2, fontWeight: 700, textAlign: 'center' }}>
             Key Features
           </Typography>
-          <Typography variant="body1" sx={{ mb: 5 }}>
+          <Typography variant="body1" sx={{ mb: 5, textAlign: 'center', maxWidth: 'md', mx: 'auto' }}>
             TaskMaster offers a comprehensive suite of tools designed to enhance
             team collaboration and productivity.
           </Typography>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={3}>
-              <FeatureCard>
-                <ListChecks sx={{ fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 700 }}>
-                    Task Management
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Easily create, assign, and organize tasks with detailed
-                    descriptions and deadlines.
-                  </Typography>
-                </Box>
-              </FeatureCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FeatureCard>
-                <Users sx={{ fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 700 }}>
-                    Team Collaboration
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Assign tasks to team members, set roles, and manage
-                    permissions for seamless teamwork.
-                  </Typography>
-                </Box>
-              </FeatureCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FeatureCard>
-                <Bell sx={{ fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 700 }}>
-                    Real-Time Notifications
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Stay updated with instant notifications on task assignments,
-                    updates, and deadlines.
-                  </Typography>
-                </Box>
-              </FeatureCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FeatureCard>
-                <Clock sx={{ fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 700 }}>
-                    Progress Tracking
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Monitor task completion, track progress, and identify
-                    bottlenecks to keep projects on schedule.
-                  </Typography>
-                </Box>
-              </FeatureCard>
-            </Grid>
+          <Grid container spacing={4}>
+            {[
+              { icon: <ListChecks sx={{ fontSize: 40 }} color="primary"/>, title: "Task Management", description: "Easily create, assign, and organize tasks with detailed descriptions and deadlines." },
+              { icon: <Users sx={{ fontSize: 40 }} color="primary"/>, title: "Team Collaboration", description: "Assign tasks to team members, set roles, and manage permissions for seamless teamwork." },
+              { icon: <Bell sx={{ fontSize: 40 }} color="primary"/>, title: "Real-Time Notifications", description: "Stay updated with instant notifications on task assignments, updates, and deadlines." },
+              { icon: <Clock sx={{ fontSize: 40 }} color="primary"/>, title: "Progress Tracking", description: "Monitor task completion, track progress, and identify bottlenecks to keep projects on schedule." }
+            ].map(feature => (
+              <Grid item xs={12} sm={6} md={3} key={feature.title}>
+                <FeatureCard>
+                  {feature.icon}
+                  <Box>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                      {feature.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {feature.description}
+                    </Typography>
+                  </Box>
+                </FeatureCard>
+              </Grid>
+            ))}
           </Grid>
         </Box>
 
-        {/* CTA Section */}
-        <Box sx={{ textAlign: "center", py: 8 }}>
-          <Typography variant="h3" sx={{ mb: 2, fontWeight: 700 }}>
-            Ready to Transform Your Team Productivity?
+        <Box sx={{ textAlign: "center", py: 8, bgcolor: 'background.paper', borderRadius: 4 }}>
+          <Typography variant="h3" sx={{ mb: 2 }}>
+            Ready to Transform Your Productivity?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 4 }}>
+          <Typography variant="body1" sx={{ mb: 4, maxWidth: 'md', mx: 'auto' }}>
             Join thousands of teams already using TaskMaster to achieve their
             goals more efficiently.
           </Typography>
           <StyledButton
             variant="contained"
-            sx={{ bgcolor: "#1b3430" }}
+            color="primary"
             onClick={() => router.push("/signup")}
           >
             Sign Up Now
           </StyledButton>
         </Box>
       </Container>
-      {!localStorage.getItem('token') && <Footer />}
+      {(!isLocalStorageAvailable || !localStorage.getItem('token')) && <Footer />}
     </Box>
   );
 }

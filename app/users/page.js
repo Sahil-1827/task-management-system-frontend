@@ -43,25 +43,25 @@ export default function Users() {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!token) return;
       try {
+        setIsLoading(true);
         const response = await axios.get("http://localhost:5000/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
-        setIsLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch users");
+      } finally {
         setIsLoading(false);
       }
     };
 
-    if (token) {
-      fetchUsers();
-    }
+    fetchUsers();
   }, [token]);
 
-  const handleViewProfile = (selectedUser) => {
-    setSelectedUser(selectedUser);
+  const handleViewProfile = (userToView) => {
+    setSelectedUser(userToView);
     setOpenDialog(true);
   };
 
@@ -70,7 +70,7 @@ export default function Users() {
     setSelectedUser(null);
   };
 
-  if (loading || !user) {
+  if (loading || isLoading) {
     return (
       <Container sx={{ py: 4, textAlign: "center" }}>
         <CircularProgress />
@@ -89,60 +89,50 @@ export default function Users() {
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
-        Users Management
+        User Management
       </Typography>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell>Actions</TableCell>
+      <TableContainer component={Paper} sx={{overflowX: 'auto'}}>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((u) => (
+              <TableRow key={u._id}>
+                <TableCell>{u.name}</TableCell>
+                <TableCell>{u.email}</TableCell>
+                <TableCell sx={{ textTransform: 'capitalize' }}>{u.role}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => handleViewProfile(u)}
+                  >
+                    View Profile
+                  </Button>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      onClick={() => handleViewProfile(user)}
-                    >
-                      View Profile
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>User Profile</DialogTitle>
         <DialogContent>
           {selectedUser && (
             <Box sx={{ pt: 2 }}>
-              <Typography><strong>Name:</strong> {selectedUser.name}</Typography>
-              <Typography><strong>Email:</strong> {selectedUser.email}</Typography>
-              <Typography><strong>Role:</strong> {selectedUser.role}</Typography>
+              <Typography gutterBottom><strong>Name:</strong> {selectedUser.name}</Typography>
+              <Typography gutterBottom><strong>Email:</strong> {selectedUser.email}</Typography>
+              <Typography gutterBottom sx={{ textTransform: 'capitalize' }}><strong>Role:</strong> {selectedUser.role}</Typography>
               <Typography>
                 <strong>Member Since:</strong>{" "}
                 {new Date(selectedUser.createdAt).toLocaleDateString()}

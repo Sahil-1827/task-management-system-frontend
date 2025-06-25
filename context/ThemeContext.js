@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { getTheme } from '../lib/theme';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const ThemeContext = createContext();
 
@@ -10,27 +11,13 @@ export function ThemeProviderWrapper({ children }) {
   const [mode, setMode] = useState('light');
 
   useEffect(() => {
-    // Check for saved theme preference
     const savedMode = localStorage.getItem('themeMode');
     if (savedMode) {
       setMode(savedMode);
     } else {
-      // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setMode(prefersDark ? 'dark' : 'light');
-      localStorage.setItem('themeMode', prefersDark ? 'dark' : 'light');
     }
-
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e) => {
-      if (!localStorage.getItem('themeMode')) {
-        setMode(e.matches ? 'dark' : 'light');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   const toggleTheme = () => {
@@ -43,7 +30,10 @@ export function ThemeProviderWrapper({ children }) {
 
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
     </ThemeContext.Provider>
   );
 }
