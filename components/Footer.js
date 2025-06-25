@@ -69,8 +69,8 @@ export default function Footer() {
 
   // Gradients for both light and dark modes
   const gradient = isDark
-    ? "linear-gradient(90deg, #1e293b 0%, #312e81 100%)" // Slate to Indigo for a rich, noticeable dark gradient
-    : "linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%)"; // A darker, professional gradient for light mode
+  ? "linear-gradient(90deg, rgba(30, 58, 138, 0.6), rgba(59, 130, 246, 0.6))"
+  : "linear-gradient(90deg, rgba(147, 197, 253, 0.6), rgba(59, 130, 246, 0.6))";
 
   const textColor = isDark ? "#cbd5e1" : "#1e293b";
   const headingColor = isDark ? "#94a3b8" : "#475569";
