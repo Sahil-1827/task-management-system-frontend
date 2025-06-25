@@ -28,7 +28,7 @@ export default function Footer() {
           <Instagram sx={{ color: 'text.secondary' }} />
         </Box>
         <Typography variant="body1" color="text.secondary" align="center">
-          © 2024 TaskMaster. All rights reserved.
+          © 2025 TaskMaster. All rights reserved. Created by SAHIL GADHIYA.
         </Typography>
       </Container>
     </Box>

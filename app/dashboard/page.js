@@ -5,6 +5,8 @@ import { Container, Grid, Typography, Box, CircularProgress } from '@mui/materia
 import TaskStatusChart from '../../components/charts/TaskStatusChart';
 import UserRoleChart from '../../components/charts/UserRoleChart';
 import TeamTasksChart from '../../components/charts/TeamTasksChart';
+import MyTasksStatusChart from '../../components/charts/MyTasksStatusChart';
+
 
 const DashboardPage = () => {
   const { user, loading } = useAuth();
@@ -19,9 +21,10 @@ const DashboardPage = () => {
 
   const isAdmin = user.role === 'admin';
   const isManager = user.role === 'manager';
+  const isRegularUser = user.role === 'user';
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container>
       <Typography variant="h4" sx={{ mb: 1 }}>
         Welcome back, {user.name}!
       </Typography>
@@ -30,33 +33,29 @@ const DashboardPage = () => {
       </Typography>
       
       <Grid container spacing={3}>
-        {/* Task Status Chart - Visible to Admins and Managers */}
+        {/* Admin and Manager View */}
         {(isAdmin || isManager) && (
-          <Grid item xs={12} md={isAdmin ? 4 : 6}>
-            <TaskStatusChart />
-          </Grid>
+          <>
+            <Grid item xs={12} md={isAdmin ? 4 : 6} sx={{ display: 'flex' }}>
+              <TaskStatusChart />
+            </Grid>
+            <Grid item xs={12} md={isAdmin ? 4 : 6} sx={{ display: 'flex' }}>
+              <TeamTasksChart />
+            </Grid>
+          </>
         )}
 
-        {/* Team Tasks Chart - Visible to Admins and Managers */}
-        {(isAdmin || isManager) && (
-          <Grid item xs={12} md={isAdmin ? 4 : 6}>
-            <TeamTasksChart />
-          </Grid>
-        )}
-
-        {/* User Roles Chart - Visible only to Admins */}
+        {/* Admin-Only View */}
         {isAdmin && (
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
             <UserRoleChart />
           </Grid>
         )}
         
-        {/* Placeholder for regular users */}
-        {!isAdmin && !isManager && (
-            <Grid item xs={12}>
-                <Typography variant="h6" color="text.secondary" align="center" sx={{p: 4}}>
-                    Your personal dashboard is coming soon.
-                </Typography>
+        {/* Regular User View */}
+        {isRegularUser && (
+            <Grid item xs={12} md={6} sx={{ display: 'flex' }}>
+                <MyTasksStatusChart />
             </Grid>
         )}
       </Grid>
