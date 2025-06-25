@@ -29,7 +29,7 @@ const DashboardPage = () => {
         Welcome back, {user.name}!
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Here's a snapshot of your workspace.
+        Here&apos;s a snapshot of your workspace.
       </Typography>
       
       <Grid container spacing={3}>
