@@ -36,10 +36,12 @@ import axios from "axios";
 // Remove this line:
 // import Notification from "../../components/Notification";
 import useDebounce from "../../hooks/useDebounce";
+import { useActivityLog } from "../../context/ActivityLogContext";
 
 export default function Tasks() {
   const { user, token, loading } = useAuth();
   const router = useRouter();
+  const { fetchLogs } = useActivityLog();
   const [tasks, setTasks] = useState([]);
   const [displayTasks, setDisplayTasks] = useState([]); // For sorted display
   const [users, setUsers] = useState([]);
@@ -203,28 +205,15 @@ export default function Tasks() {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    if (!newTask.title) {
-      setError("Task title is required");
-      return;
-    }
-
-    // Validate team members
-    if (newTask.team && !validateTeamMembers(newTask.team)) {
-      setError("Cannot assign task to a team with no members");
-      return;
-    }
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/tasks",
         newTask,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTasks([...tasks, response.data]);
-      setSuccess("Task created successfully");
+      setTasks((prevTasks) => [response.data, ...prevTasks]);
       setNewTask({
         title: "",
         description: "",
@@ -232,10 +221,54 @@ export default function Tasks() {
         priority: "Medium",
         dueDate: "",
         assignee: "",
-        team: ""
+        team: "",
       });
+      setSuccess("Task created successfully!");
+      fetchLogs(); // Call fetchLogs after task creation
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create task");
+    }
+  };
+
+  const handleUpdateTaskDialog = async () => {
+    setError("");
+    setSuccess("");
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/tasks/${editTask._id}`,
+        editTask,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task._id === response.data._id ? response.data : task
+        )
+      );
+      setOpenDialog(false);
+      setEditTask(null);
+      setSuccess("Task updated successfully!");
+      fetchLogs(); // Call fetchLogs after task update
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to update task");
+    }
+  };
+
+  const handleDeleteTaskConfirm = async (id) => {
+    setError("");
+    setSuccess("");
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/tasks/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+        setSuccess("Task deleted successfully!");
+        fetchLogs(); // Call fetchLogs after task deletion
+      } catch (error) {
+        setError(error.response?.data?.message || "Failed to delete task");
+      }
     }
   };
 
@@ -298,6 +331,7 @@ export default function Tasks() {
         team: ""
       });
       setEditTask(null);
+      fetchLogs(); // Refresh activity logs
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update task");
     }
@@ -313,6 +347,7 @@ export default function Tasks() {
       });
       setTasks(tasks.filter((task) => task._id !== taskId));
       setSuccess("Task deleted successfully");
+      fetchLogs(); // Refresh activity logs
     } catch (error) {
       setError(error.response?.data?.message || "Failed to delete task");
     }

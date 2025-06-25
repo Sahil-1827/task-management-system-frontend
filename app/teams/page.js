@@ -36,10 +36,12 @@ import axios from "axios";
 // Remove this line:
 // import Notification from "../../components/Notification";
 import useDebounce from "../../hooks/useDebounce";
+import { useActivityLog } from "../../context/ActivityLogContext";
 
 export default function Teams() {
   const { user, token, loading } = useAuth();
   const router = useRouter();
+  const { fetchLogs } = useActivityLog();
   const [teams, setTeams] = useState([]);
   const [displayTeams, setDisplayTeams] = useState([]); // For sorted display
   const [users, setUsers] = useState([]);
@@ -181,6 +183,7 @@ export default function Teams() {
         description: "",
         members: [],
       });
+      fetchLogs(); // Refresh activity logs
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create team");
     }
@@ -213,11 +216,18 @@ export default function Teams() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setTeams(teams.map((team) => (team._id === editTeam._id ? response.data : team)));
+      setTeams(
+        teams.map((team) => (team._id === editTeam._id ? response.data : team))
+      );
       setSuccess("Team updated successfully");
       setOpenDialog(false);
-      setNewTeam({ name: "", description: "", members: [] });
+      setNewTeam({
+        name: "",
+        description: "",
+        members: [],
+      });
       setEditTeam(null);
+      fetchLogs(); // Refresh activity logs
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update team");
     }
@@ -233,6 +243,7 @@ export default function Teams() {
       });
       setTeams(teams.filter((team) => team._id !== teamId));
       setSuccess("Team deleted successfully");
+      fetchLogs(); // Refresh activity logs
     } catch (error) {
       setError(error.response?.data?.message || "Failed to delete team");
     }
