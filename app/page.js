@@ -56,16 +56,18 @@ export default function Home() {
             justifyContent: "flex-end",
             gap: 3,
             color: 'common.white',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJLqKa41kgHD3BefMo8GqstNl0l7_KOS5IqR2Sduk4F_FSRJ6oo4cwVjzqSTFYcQ53PzGWw09qlcT2w-3dCifcuDoTnXUYMFyWiaf3BOFE6fV-kDBYeN5NheCAFVk5s_V-EkZCfWFPIvOGegaO5TK-H0id_Gr8UvYMSyy9_mBNWg28tTwrbPQF_7JFi-zLS2gQS-l_xq1fKzQjC1qeMlLh5MpPo6rfByOM92l7D7KRvyKqWP_oW5zKZ8S0whveHlS-Ns3w-WmIV30"
+            src="/task-manager-landing-1.png"
             alt="Workflow"
             layout="fill"
-            objectFit="cover"
+            objectFit="contain"
+            // width={500}
+            // height={500}
             quality={100}
-            style={{ zIndex: -2 }}
+            // style={{ zIndex: -1 }} 
           />
           <Box sx={{
             position: 'absolute',
@@ -74,13 +76,13 @@ export default function Home() {
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: -1
+            zIndex: -1 // Ensure the overlay is between the image and the text
           }}/>
-          <Box sx={{ maxWidth: "md" }}>
-            <Typography variant="h2" sx={{ fontWeight: 900, mb: 2 }}>
+          <Box sx={{ maxWidth: "md", zIndex: 0 }}>
+            <Typography variant="h2" sx={{ fontWeight: 900, mb: 2, color: '#6366f1' }}>
               Streamline Your Workflow with TaskMaster
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ color: '#24916c', fontSize: '1.2rem', fontWeight: 700 }}>
               Manage tasks, assign team members, track progress, and boost
               productivity with our intuitive task management system.
             </Typography>

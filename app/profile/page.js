@@ -39,6 +39,7 @@ export default function Profile() {
   }, [user, loading, router]);
 
   const getInitials = (name) => {
+    if (!name) return "";
     return name
       .split(" ")
       .map((word) => word[0])
@@ -61,14 +62,15 @@ export default function Profile() {
 
   const handleSubmit = async () => {
     try {
+      setError("");
+      setSuccess("");
       if (!formData.name || !formData.email) {
         setError("Name and email are required");
         return;
       }
 
-      // Update this line in handleSubmit function
       const response = await axios.put(
-        "http://localhost:5000/api/users/profile",  // Changed from /api/auth/profile to /api/users/profile
+        "http://localhost:5000/api/users/profile",
         formData,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -97,31 +99,27 @@ export default function Profile() {
       <Typography variant="h4" sx={{ mb: 4 }}>
         User Profile
       </Typography>
-      <Paper sx={{ p: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+      <Paper sx={{ p: { xs: 2, md: 4 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Avatar
             sx={{
               width: 80,
               height: 80,
               bgcolor: "primary.main",
               fontSize: "1.5rem",
-              mr: 2,
             }}
           >
             {getInitials(user.name)}
           </Avatar>
           <Box>
             <Typography variant="h6">{user.name}</Typography>
-            <Typography color="textSecondary">{user.role}</Typography>
+            <Typography color="textSecondary" sx={{textTransform: 'capitalize'}}>{user.role}</Typography>
           </Box>
         </Box>
 
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 3 }}>
           <Typography variant="body1" sx={{ mb: 1 }}>
             <strong>Email:</strong> {user.email}
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Role:</strong> {user.role}
           </Typography>
           <Typography variant="body1">
             <strong>Joined:</strong>{" "}
@@ -129,13 +127,13 @@ export default function Profile() {
           </Typography>
         </Box>
 
-        {/* <Button
+        <Button
           variant="contained"
           color="primary"
           onClick={handleEditProfile}
         >
           Edit Profile
-        </Button> */}
+        </Button>
       </Paper>
 
       <Dialog open={openDialog} onClose={handleClose}>
@@ -150,7 +148,6 @@ export default function Profile() {
             fullWidth
             value={formData.name}
             onChange={handleInputChange}
-            error={error.includes("Name")}
           />
           <TextField
             margin="dense"
@@ -160,17 +157,16 @@ export default function Profile() {
             fullWidth
             value={formData.email}
             onChange={handleInputChange}
-            error={error.includes("Email")}
           />
           {error && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {error}
-            </Typography>
+            <Alert severity="error" sx={{ mt: 2 }}>
+                {error}
+            </Alert>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Save</Button>
+          <Button onClick={handleSubmit} variant="contained">Save</Button>
         </DialogActions>
       </Dialog>
 
@@ -178,8 +174,9 @@ export default function Profile() {
         open={!!success}
         autoHideDuration={6000}
         onClose={() => setSuccess("")}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert severity="success" sx={{ width: "100%" }}>
+        <Alert onClose={() => setSuccess("")} severity="success" sx={{ width: "100%" }}>
           {success}
         </Alert>
       </Snackbar>
