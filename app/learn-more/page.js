@@ -35,7 +35,7 @@ export default function LearnMore() {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Remove the Navbar component */}
-      <Container maxWidth="lg" sx={{ py: 5, flex: 1 }}>
+      <Container maxWidth="xl" sx={{ py: 5, flex: 1 }}>
         <Button
           startIcon={<ArrowBack />}
           onClick={() => router.push('/')}

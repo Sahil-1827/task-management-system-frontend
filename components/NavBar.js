@@ -101,7 +101,7 @@ export default function NavBar() {
 
   return (
     <AppBar position="static" color="default" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', flexGrow: 1 }} onClick={() => router.push('/')}>
             <Image src="/logo.png" alt="Logo" width={32} height={32} />

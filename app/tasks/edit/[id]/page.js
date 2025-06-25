@@ -196,7 +196,7 @@ export default function EditTask({ params }) {
   };
 
   return (
-    <Container sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* // In the return statement, remove this line:
       // <Notification userId={user?.id} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>

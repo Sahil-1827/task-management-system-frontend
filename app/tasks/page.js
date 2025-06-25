@@ -352,7 +352,7 @@ export default function Tasks() {
   };
 
   return (
-    <Container sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
         Task Management
       </Typography>

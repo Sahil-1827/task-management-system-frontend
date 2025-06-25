@@ -24,7 +24,7 @@ const DashboardPage = () => {
   const isRegularUser = user.role === 'user';
 
   return (
-    <Container>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <Typography variant="h4" sx={{ mb: 1 }}>
         Welcome back, {user.name}!
       </Typography>

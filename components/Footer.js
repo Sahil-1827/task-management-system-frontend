@@ -7,7 +7,7 @@ import Instagram from '@mui/icons-material/Instagram';
 export default function Footer() {
   return (
     <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6 }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4, mb: 4 }}>
           <Typography variant="body1" color="text.secondary" sx={{ minWidth: '160px' }}>
             About Us

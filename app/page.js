@@ -44,7 +44,7 @@ export default function Home() {
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       {(!isLocalStorageAvailable || !localStorage.getItem('token')) && <Navbar />}
       
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 4, md: 8 } }}>
         <Box
           sx={{
             position: 'relative',
