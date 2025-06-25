@@ -9,7 +9,8 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Avatar
+  Avatar,
+  useTheme,
 } from "@mui/material";
 import { 
   AddCircle as CreateIcon,
@@ -18,29 +19,41 @@ import {
   AssignmentInd as AssignIcon,
   Login as LoginIcon,
   Logout as LogoutIcon,
-  HowToReg as RegisterIcon
+  HowToReg as RegisterIcon,
+  PersonRemove as UnassignIcon,
+  PersonRemove as PersonRemoveIcon,
+  GroupAdd as GroupIcon,
+  AccessTime as TimeIcon,
 } from "@mui/icons-material";
 
 const actionConfig = {
-    create: { icon: <CreateIcon />, color: 'success.main' },
-    update: { icon: <UpdateIcon />, color: 'info.main' },
-    delete: { icon: <DeleteIcon />, color: 'error.main' },
-    assign: { icon: <AssignIcon />, color: 'primary.main' },
-    unassign: { icon: <AssignIcon sx={{color: 'action.disabled'}}/>, color: 'action.disabledBackground' },
-    login: { icon: <LoginIcon />, color: 'secondary.main' },
-    logout: { icon: <LogoutIcon />, color: 'text.secondary' },
-    register: { icon: <RegisterIcon />, color: 'secondary.light' },
-    default: { icon: <UpdateIcon />, color: 'grey.500' }
+    create: { icon: <CreateIcon />, color: 'success' },
+    update: { icon: <UpdateIcon />, color: 'info' },
+    delete: { icon: <DeleteIcon />, color: 'error' },
+    assign: { icon: <AssignIcon />, color: 'primary' },
+    unassign: { icon: <UnassignIcon />, color: 'warning' },
+    login: { icon: <LoginIcon />, color: 'secondary' },
+    logout: { icon: <LogoutIcon />, color: 'grey' },
+    register: { icon: <RegisterIcon />, color: 'secondary' },
+    add: { icon: <GroupIcon/>, color: 'primary'},
+    remove: { icon: <PersonRemoveIcon />, color: 'error' },
+    default: { icon: <UpdateIcon />, color: 'grey' }
 };
 
-const getActivityConfig = (action) => {
+const getActivityConfig = (action, theme) => {
     const key = action.toLowerCase().split(' ')[0];
-    return actionConfig[key] || actionConfig.default;
+    const config = actionConfig[key] || actionConfig.default;
+    const paletteColor = config.color === 'grey' ? theme.palette.grey[500] : theme.palette[config.color]?.main;
+    return {
+        icon: config.icon,
+        color: paletteColor
+    };
 };
 
 const ActivityLogList = () => {
   const { logs, loading, fetchLogs } = useActivityLog();
   const { user } = useAuth();
+  const theme = useTheme();
 
   useEffect(() => {
     if (user) {
@@ -57,34 +70,55 @@ const ActivityLogList = () => {
   }
 
   return (
-    <Box>
-      {logs.map((log, index) => {
-        const config = getActivityConfig(log.action);
+    <Box sx={{ position: 'relative', pl: 3 }}>
+        <Box sx={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            height: 'calc(100% - 20px)',
+            borderLeft: '2px solid',
+            borderColor: 'divider'
+        }}/>
+      {logs.map((log) => {
+        const config = getActivityConfig(log.action, theme);
         const logDate = new Date(log.createdAt);
 
         return (
-          <Box key={log._id} sx={{ display: 'flex', position: 'relative', pb: 3 }}>
-            {/* Vertical Timeline */}
-            <Box sx={{ position: 'absolute', top: '20px', left: '18px', height: '100%', borderLeft: '2px solid', borderColor: 'divider' }} />
-            
-            {/* Icon */}
-            <Box sx={{ zIndex: 1, mr: 2 }}>
-                <Avatar sx={{ bgcolor: config.color, width: 40, height: 40 }}>
-                    {config.icon}
-                </Avatar>
-            </Box>
+          <Box key={log._id} sx={{ display: 'flex', mb: 3, position: 'relative', '&:last-of-type': { mb: 0 } }}>
+            <Avatar sx={{ 
+                bgcolor: config.color, 
+                color: 'white',
+                width: 44, 
+                height: 44, 
+                position: 'absolute', 
+                left: '-25px', 
+                top: '15px',
+                border: '4px solid',
+                borderColor: 'background.paper'
+            }}>
+                {config.icon}
+            </Avatar>
 
-            {/* Content */}
-            <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                    {log.performedBy?.name || 'System'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    {log.details}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                    {logDate.toLocaleDateString()} at {logDate.toLocaleTimeString()}
-                </Typography>
+            <Box sx={{ flex: 1, ml: 4, mt: 0.5 }}>
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                         <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            {`${log.action}d a ${log.entity}`}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'info.light', color: 'info.dark', p: '4px 8px', borderRadius: '12px' }}>
+                            <TimeIcon sx={{ fontSize: '1rem' }} />
+                            <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                                {logDate.toLocaleString()}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ my: 1 }}>
+                        {log.details}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                        By: {log.performedBy?.name || 'System'}
+                    </Typography>
+                </Paper>
             </Box>
           </Box>
         );
