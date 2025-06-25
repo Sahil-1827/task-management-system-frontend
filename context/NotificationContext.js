@@ -3,7 +3,14 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { io } from "socket.io-client";
-
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CancelIcon from '@mui/icons-material/Cancel';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CelebrationIcon from '@mui/icons-material/Celebration';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 // Move socket initialization outside component to prevent multiple instances
 let socket = null;
 const initializeSocket = () => {
@@ -67,7 +74,7 @@ export const NotificationProvider = ({ children }) => {
   // WebSocket setup
   // Add this at the beginning of the useEffect
   useEffect(() => {
-    console.log('Current user object:', user); // Add this line to see the user structure
+    console.log('Current user object:', user);
     
     const userId = user?.id || user?._id;
     if (!userId) {
@@ -95,72 +102,65 @@ export const NotificationProvider = ({ children }) => {
   
     // Handle different notification types
     const handleTaskUpdated = (data) => {
-      // console.log('Received taskUpdated notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Updated',
         message: data.message,
-        icon: '📝'
+        icon: <EditNoteIcon />
       });
     };
   
     const handleTaskAssigned = (data) => {
-      // console.log('Received taskAssigned notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Assigned',
         message: data.message,
-        icon: '✅'
+        icon: <TaskAltIcon />
       });
     };
   
     const handleTaskUnassigned = (data) => {
-      // console.log('Received taskUnassigned notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Unassigned',
         message: data.message,
-        icon: '❌'
+        icon: <CancelIcon />
       });
     };
   
     const handleTaskAssignedToTeam = (data) => {
-      // console.log('Received taskAssignedToTeam notification:', data);
       addNotification({
         type: 'task',
         title: 'Task Assigned to Team',
         message: data.message,
-        icon: '👥'
+        icon: <GroupsIcon />
       });
     };
   
     const handleTeamAdded = (data) => {
-      // console.log('Received teamAdded notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Added',
         message: data.message,
-        icon: '🎉'
+        icon: <CelebrationIcon />
       });
     };
   
     const handleTeamRemoved = (data) => {
-      // console.log('Received teamRemoved notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Removed',
         message: data.message,
-        icon: '🗑️'
+        icon: <DeleteIcon />
       });
     };
   
     const handleTeamUpdated = (data) => {
-      // console.log('Received teamUpdated notification:', data);
       addNotification({
         type: 'team',
         title: 'Team Updated',
         message: data.message,
-        icon: '🔄'
+        icon: <AutorenewIcon />
       });
     };
   
@@ -182,7 +182,7 @@ export const NotificationProvider = ({ children }) => {
       socketInstance.off("teamRemoved", handleTeamRemoved);
       socketInstance.off("teamUpdated", handleTeamUpdated);
     };
-  }, [user, addNotification]); // Changed dependency from user?._id to user
+  }, [user, addNotification]);
 
   // Add this function to the NotificationProvider
   const addTestNotification = useCallback(() => {
@@ -190,7 +190,7 @@ export const NotificationProvider = ({ children }) => {
       type: 'test',
       title: 'Test Notification',
       message: 'This is a test notification',
-      icon: '🔔'
+      icon: <NotificationsIcon />
     });
   }, [addNotification]);
   
@@ -199,7 +199,7 @@ export const NotificationProvider = ({ children }) => {
     notifications,
     unreadCount,
     addNotification,
-    addTestNotification, // Add this
+    addTestNotification,
     markAsRead,
     markAllAsRead,
     clearAllNotifications
