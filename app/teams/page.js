@@ -209,6 +209,7 @@ export default function Teams() {
       });
       setSuccess("Team created successfully");
       setNewTeam({ name: "", description: "", members: [] });
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create team");
@@ -244,6 +245,7 @@ export default function Teams() {
       );
       setSuccess("Team updated successfully");
       handleCloseDialog();
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update team");
@@ -259,6 +261,7 @@ export default function Teams() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSuccess("Team deleted successfully");
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to delete team");

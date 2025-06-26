@@ -236,6 +236,7 @@ export default function Tasks() {
         team: ""
       });
       setSuccess("Task created successfully!");
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create task");
@@ -282,6 +283,7 @@ export default function Tasks() {
         team: ""
       });
       setEditTask(null);
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update task");
@@ -297,6 +299,7 @@ export default function Tasks() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSuccess("Task deleted successfully");
+      setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
       setError(error.response?.data?.message || "Failed to delete task");
