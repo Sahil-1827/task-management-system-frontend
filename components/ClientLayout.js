@@ -22,7 +22,8 @@ export default function ClientLayout({ children }) {
       <main style={{ 
         flex: '1 0 auto',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        paddingTop: '64px'
       }}>
         {children}
       </main>
