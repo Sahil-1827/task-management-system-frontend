@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 let socket = null;
 const initializeSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:8080", {
+    socket = io("http://localhost:5000", {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
@@ -49,8 +49,8 @@ export const ActivityLogProvider = ({ children }) => {
     const fetchUserEntities = async () => {
         try {
             const [tasksRes, teamsRes] = await Promise.all([
-                axios.get('http://localhost:8080/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('http://localhost:8080/api/teams', { headers: { Authorization: `Bearer ${token}` } })
+                axios.get('http://localhost:5000/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get('http://localhost:5000/api/teams', { headers: { Authorization: `Bearer ${token}` } })
             ]);
             
             const allTasks = tasksRes.data.tasks || tasksRes.data;

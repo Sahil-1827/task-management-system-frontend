@@ -70,7 +70,7 @@ export default function Profile() {
       }
 
       const response = await axios.put(
-        "http://localhost:8080/api/users/profile",
+        "http://localhost:5000/api/users/profile",
         formData,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

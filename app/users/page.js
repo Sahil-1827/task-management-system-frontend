@@ -46,7 +46,7 @@ export default function Users() {
       if (!token) return;
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:8080/api/users", {
+        const response = await axios.get("http://localhost:5000/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);

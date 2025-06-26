@@ -60,7 +60,7 @@ export default function EditTask({ params }) {
     const fetchTask = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/tasks/${id}`,
+          `http://localhost:5000/api/tasks/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -84,7 +84,7 @@ export default function EditTask({ params }) {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/users", {
+        const response = await axios.get("http://localhost:5000/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -181,7 +181,7 @@ export default function EditTask({ params }) {
 
     try {
       setSubmitting(true);
-      await axios.put(`http://localhost:8080/api/tasks/${id}`, formData, {
+      await axios.put(`http://localhost:5000/api/tasks/${id}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccess("Task updated successfully!");

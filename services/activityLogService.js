@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/activity-logs";
+const BASE_URL = "http://localhost:5000/api/activity-logs";
 
 export const activityLogService = {
   async getLogs(filters = {}) {

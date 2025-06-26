@@ -14,8 +14,8 @@ const TeamTasksChart = () => {
             if (!token) return;
             try {
                 const [tasksRes, teamsRes] = await Promise.all([
-                    axios.get('http://localhost:8080/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:8080/api/teams', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get('http://localhost:5000/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('http://localhost:5000/api/teams', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
 
                 const tasks = tasksRes.data.tasks || tasksRes.data;

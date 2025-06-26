@@ -19,7 +19,7 @@ const UserRoleChart = () => {
                 return;
             }
             try {
-                const res = await axios.get('http://localhost:8080/api/users', {
+                const res = await axios.get('http://localhost:5000/api/users', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 
