@@ -75,7 +75,7 @@ export default function Teams() {
           ...(filterMember && { member: filterMember }),
         });
 
-        const response = await axios.get(`http://localhost:5000/api/teams?${queryParams.toString()}`, {
+        const response = await axios.get(`http://localhost:8080/api/teams?${queryParams.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -90,7 +90,7 @@ export default function Teams() {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users", {
+        const response = await axios.get("http://localhost:8080/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -173,7 +173,7 @@ export default function Teams() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/teams",
+        "http://localhost:8080/api/teams",
         newTeam,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -209,7 +209,7 @@ export default function Teams() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/teams/${editTeam._id}`,
+        `http://localhost:8080/api/teams/${editTeam._id}`,
         newTeam,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -231,7 +231,7 @@ export default function Teams() {
     setSuccess("");
 
     try {
-      await axios.delete(`http://localhost:5000/api/teams/${teamId}`, {
+      await axios.delete(`http://localhost:8080/api/teams/${teamId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeams(teams.filter((team) => team._id !== teamId));

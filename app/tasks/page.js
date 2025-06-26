@@ -87,7 +87,7 @@ export default function Tasks() {
         });
 
         const response = await axios.get(
-          `http://localhost:5000/api/tasks?${queryParams.toString()}`,
+          `http://localhost:8080/api/tasks?${queryParams.toString()}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
@@ -104,7 +104,7 @@ export default function Tasks() {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users", {
+        const response = await axios.get("http://localhost:8080/api/users", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(response.data);
@@ -115,7 +115,7 @@ export default function Tasks() {
 
     const fetchTeams = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/teams", {
+        const response = await axios.get("http://localhost:8080/api/teams", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTeams(response.data.teams || response.data);
@@ -202,7 +202,7 @@ export default function Tasks() {
     setSuccess("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/tasks",
+        "http://localhost:8080/api/tasks",
         newTask,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -247,7 +247,7 @@ export default function Tasks() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/tasks/${editTask._id}`,
+        `http://localhost:8080/api/tasks/${editTask._id}`,
         taskData,
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -279,7 +279,7 @@ export default function Tasks() {
     setSuccess("");
 
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+      await axios.delete(`http://localhost:8080/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(tasks.filter((task) => task._id !== taskId));

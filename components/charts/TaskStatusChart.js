@@ -19,7 +19,7 @@ const TaskStatusChart = () => {
                 return;
             };
             try {
-                const res = await axios.get('http://localhost:5000/api/tasks', {
+                const res = await axios.get('http://localhost:8080/api/tasks', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const tasks = res.data.tasks || res.data;

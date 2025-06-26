@@ -7,7 +7,7 @@ import { Alert, Snackbar } from "@mui/material";
 let socket = null;
 const initializeSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:5000", {
+    socket = io("http://localhost:8080", {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
