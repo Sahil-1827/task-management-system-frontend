@@ -9,7 +9,7 @@ export const activityLogService = {
       const queryFilters = {
         ...filters,
         sort: "-createdAt", // Sort by creation date, newest first
-        limit: 25 // Limit to 25 documents
+        limit: 20 // Limit to 20 documents
       };
 
       const queryParams = new URLSearchParams(queryFilters).toString();
