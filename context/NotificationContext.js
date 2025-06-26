@@ -149,6 +149,11 @@ export const NotificationProvider = ({ children }) => {
     socketInstance.on("teamRemoved", onTeamRemoved);
     socketInstance.on("teamUpdated", onTeamUpdated);
 
+    // Also listen for a generic update event as a fallback
+    socketInstance.on("activityUpdate", () => {
+      Object.values(updateCallbacks).forEach((cb) => cb("generic"));
+    });
+
     return () => {
       socketInstance.off("taskUpdated", onTaskUpdated);
       socketInstance.off("taskAssigned", onTaskAssigned);
@@ -157,6 +162,7 @@ export const NotificationProvider = ({ children }) => {
       socketInstance.off("teamAdded", onTeamAdded);
       socketInstance.off("teamRemoved", onTeamRemoved);
       socketInstance.off("teamUpdated", onTeamUpdated);
+      socketInstance.off("activityUpdate");
     };
   }, [user, addNotification, updateCallbacks]);
 

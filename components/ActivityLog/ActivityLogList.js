@@ -26,6 +26,21 @@ import {
   GroupAdd as GroupIcon,
   AccessTime as TimeIcon
 } from "@mui/icons-material";
+import { io } from "socket.io-client";
+
+// Socket Initializer
+let socket = null;
+const initializeSocket = () => {
+  if (!socket) {
+    socket = io("http://localhost:5000", {
+      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+  }
+  return socket;
+};
 
 const actionConfig = {
   create: { icon: <CreateIcon />, color: "success" },
@@ -60,19 +75,55 @@ const ActivityLogList = () => {
   const theme = useTheme();
   const [visibleLogsCount, setVisibleLogsCount] = useState(10);
 
+  // Effect for the initial data fetch
   useEffect(() => {
     if (user) {
-      fetchLogs().catch((error) =>
-        console.error("Error fetching logs:", error)
-      );
+      fetchLogs();
     }
   }, [fetchLogs, user]);
+
+  // Effect for REAL-TIME updates via WebSocket
+  useEffect(() => {
+    if (!user) return;
+
+    const socketInstance = initializeSocket();
+    const userId = user?.id || user?._id;
+
+    if (!socketInstance.connected) {
+      socketInstance.connect();
+    }
+    socketInstance.emit("join", userId);
+
+    const handleRealTimeUpdate = () => {
+      fetchLogs();
+    };
+
+    const eventsToWatch = [
+      "taskUpdated",
+      "taskAssigned",
+      "taskUnassigned",
+      "taskAssignedToTeam",
+      "teamAdded",
+      "teamRemoved",
+      "teamUpdated"
+    ];
+
+    eventsToWatch.forEach((event) => {
+      socketInstance.on(event, handleRealTimeUpdate);
+    });
+
+    return () => {
+      eventsToWatch.forEach((event) => {
+        socketInstance.off(event, handleRealTimeUpdate);
+      });
+    };
+  }, [user, fetchLogs]);
 
   const handleShowMore = () => {
     setVisibleLogsCount((prevCount) => prevCount + 5);
   };
 
-  if (loading) {
+  if (loading && logs.length === 0) {
     return (
       <Box display="flex" justifyContent="center" p={4}>
         <CircularProgress />

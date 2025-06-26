@@ -3,13 +3,13 @@ import { ThemeProviderWrapper } from "../context/ThemeContext";
 import { ActivityLogProvider } from "../context/ActivityLogContext";
 import { NotificationProvider } from "../context/NotificationContext";
 import ClientLayout from "@/components/ClientLayout";
-import { Manrope, Noto_Sans } from 'next/font/google';
-import "../app/globals.css"
+import { Manrope, Noto_Sans } from "next/font/google";
+import "../app/globals.css";
 
-const manrope = Manrope({ subsets: ['latin'] });
+const manrope = Manrope({ subsets: ["latin"] });
 const notoSans = Noto_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '700', '900']
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"]
 });
 
 export const metadata = {
@@ -23,11 +23,15 @@ export default function RootLayout({ children }) {
       <body className={`${manrope.className} ${notoSans.className}`}>
         <AuthProvider>
           <ThemeProviderWrapper>
-            <ActivityLogProvider>
-              <NotificationProvider>
+            {/*
+              CORRECTED ORDER:
+              NotificationProvider must wrap ActivityLogProvider to pass updates down.
+            */}
+            <NotificationProvider>
+              <ActivityLogProvider>
                 <ClientLayout>{children}</ClientLayout>
-              </NotificationProvider>
-            </ActivityLogProvider>
+              </ActivityLogProvider>
+            </NotificationProvider>
           </ThemeProviderWrapper>
         </AuthProvider>
       </body>
