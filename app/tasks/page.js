@@ -28,7 +28,8 @@ import {
   DialogActions,
   MenuItem,
   Pagination,
-  Grid
+  Grid,
+  Skeleton
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -65,6 +66,7 @@ export default function Tasks() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
+  const [tasksPerPage, setTasksPerPage] = useState(5); // State for tasks per page
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [filterStatus, setFilterStatus] = useState("");
@@ -76,6 +78,7 @@ export default function Tasks() {
   const [sortDirection, setSortDirection] = useState("asc");
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [loadingTasks, setLoadingTasks] = useState(true); // New state for task loading
 
   useEffect(() => {
     const callbackId = "tasks-page";
@@ -96,10 +99,11 @@ export default function Tasks() {
     if (loading || !user) return;
 
     const fetchTasks = async () => {
+      setLoadingTasks(true); // Set loading to true before fetching
       try {
         const queryParams = new URLSearchParams({
           page,
-          limit: 5,
+          limit: tasksPerPage,
           search: debouncedSearch,
           ...(filterStatus && { status: filterStatus }),
           ...(filterPriority && { priority: filterPriority }),
@@ -120,6 +124,8 @@ export default function Tasks() {
         setTotalPages(response.data.totalPages);
       } catch (error) {
         setError(error.response?.data?.message || "Failed to fetch tasks");
+      } finally {
+        setLoadingTasks(false); // Set loading to false after fetching (success or error)
       }
     };
 
@@ -644,34 +650,72 @@ export default function Tasks() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayTasks.map((task) => (
-              <TableRow key={task._id}>
-                <TableCell component="th" scope="row">
-                  {task.title}
-                </TableCell>
-                <TableCell>{task.description || "-"}</TableCell>
-                <TableCell>{task.status}</TableCell>
-                <TableCell>{task.priority}</TableCell>
-                <TableCell>
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleDateString()
-                    : "-"}
-                </TableCell>
-                <TableCell>
-                  {task.assignee?.name || task.team?.name || "-"}
-                </TableCell>
-                {(user.role === "admin" || user.role === "manager") && (
-                  <TableCell>
-                    <IconButton onClick={() => handleEditTask(task)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteTask(task._id)}>
-                      <DeleteIcon />
-                    </IconButton>
+            {loadingTasks ? (
+              // Skeleton rows
+              Array.from(new Array(tasksPerPage)).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    <Skeleton variant="text" />
                   </TableCell>
-                )}
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <TableCell>
+                      <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
+                      <Skeleton variant="circular" width={30} height={30} />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : displayTasks.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={user.role === "admin" || user.role === "manager" ? 7 : 5} sx={{ textAlign: "center" }}>
+                  No tasks found.
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              displayTasks.map((task) => (
+                <TableRow key={task._id}>
+                  <TableCell component="th" scope="row">
+                    {task.title}
+                  </TableCell>
+                  <TableCell>{task.description || "-"}</TableCell>
+                  <TableCell>{task.status}</TableCell>
+                  <TableCell>{task.priority}</TableCell>
+                  <TableCell>
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString()
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {task.assignee?.name || task.team?.name || "-"}
+                  </TableCell>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <TableCell>
+                      <IconButton onClick={() => handleEditTask(task)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteTask(task._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
