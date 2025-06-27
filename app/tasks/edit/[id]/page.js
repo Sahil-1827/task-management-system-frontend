@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../context/AuthContext";
+import { useActivityLog } from "../../../../context/ActivityLogContext";
 import {
   Container,
   Typography,
@@ -19,14 +20,12 @@ import {
   Chip,
 } from "@mui/material";
 import axios from "axios";
-// Remove this line:
-// import Notification from "../../../../components/Notification";
 
 export default function EditTask({ params }) {
   const { user, token, loading } = useAuth();
   const router = useRouter();
   const [id, setId] = useState(null);
-  const { fetchLogs } = useActivityLog(); // Add this line
+  const { fetchLogs } = useActivityLog();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -37,23 +36,19 @@ export default function EditTask({ params }) {
     tags: [],
   });
   const [task, setTask] = useState(null);
-  const [users, setUsers] = useState([]); // Add users state
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
-  const [loadingData, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false); // <-- add this
-  const [tagInput, setTagInput] = useState(""); // <-- add this for tag input
-  const [success, setSuccess] = useState(""); // <-- add success state
+  const [loadingData, setLoadingData] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // Unwrap params (for Next.js 15+)
   useEffect(() => {
-    async function resolveParams() {
-      const resolvedParams = await params;
-      setId(resolvedParams.id);
+    if (params) {
+      setId(params.id);
     }
-    resolveParams();
   }, [params]);
 
-  // Fetch task and users
   useEffect(() => {
     if (!id || !token) return;
 
@@ -76,7 +71,7 @@ export default function EditTask({ params }) {
           assignedTo: taskData.assignedTo.map((user) => user._id),
           tags: taskData.tags || [],
         });
-        setTagInput(""); // <-- clear tag input
+        setTagInput("");
       } catch (error) {
         setError(error.response?.data?.message || "Failed to fetch task");
       }
@@ -93,11 +88,10 @@ export default function EditTask({ params }) {
       }
     };
 
-    Promise.all([fetchTask(), fetchUsers()]).finally(() => setLoading(false));
+    Promise.all([fetchTask(), fetchUsers()]).finally(() => setLoadingData(false));
   }, [id, token]);
 
-  // Wait for auth to load before rendering
-  if (loading) {
+  if (loading || loadingData) {
     return (
       <Container sx={{ py: 4, textAlign: "center" }}>
         <CircularProgress />
@@ -105,7 +99,6 @@ export default function EditTask({ params }) {
     );
   }
 
-  // Redirect if not authenticated
   if (!user) {
     if (typeof window !== "undefined") router.push("/login");
     return null;
@@ -116,7 +109,6 @@ export default function EditTask({ params }) {
     return null;
   }
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -125,12 +117,10 @@ export default function EditTask({ params }) {
     });
   };
 
-  // Handle assignedTo changes
   const handleAssignedToChange = (e) => {
     setFormData({ ...formData, assignedTo: e.target.value });
   };
 
-  // Handle tags input (comma separated)
   const handleTagsChange = (e) => {
     const value = e.target.value;
     setFormData({
@@ -142,7 +132,6 @@ export default function EditTask({ params }) {
     });
   };
 
-  // Tag input handlers for edit page
   const handleTagInputChange = (e) => {
     setTagInput(e.target.value);
   };
@@ -167,13 +156,11 @@ export default function EditTask({ params }) {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setSuccess(""); // clear previous success
+    setSuccess("");
 
-    // Validation: Ensure assignedTo is not empty
     if (formData.assignedTo.length === 0) {
       setError("Please assign the task to at least one user");
       return;
@@ -185,8 +172,7 @@ export default function EditTask({ params }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccess("Task updated successfully!");
-      fetchLogs(); // Add this line to re-fetch logs after successful update
-      // Optionally, redirect after a short delay:
+      fetchLogs();
       setTimeout(() => router.push("/tasks"), 1000);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to update task");
@@ -197,8 +183,6 @@ export default function EditTask({ params }) {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* // In the return statement, remove this line:
-      // <Notification userId={user?.id} /> */}
       <Typography variant="h4" sx={{ mb: 4 }}>
         Edit Task
       </Typography>
@@ -309,7 +293,7 @@ export default function EditTask({ params }) {
           variant="contained"
           color="primary"
           type="submit"
-          disabled={loadingData || submitting}
+          disabled={submitting}
         >
           {submitting ? "Updating..." : "Update Task"}
         </Button>

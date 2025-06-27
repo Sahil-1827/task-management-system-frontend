@@ -70,7 +70,7 @@ const getActivityConfig = (action, theme) => {
 };
 
 const ActivityLogList = () => {
-  const { logs, loading, fetchLogs, refreshUserEntities } = useActivityLog();
+  const { logs, loading, fetchLogs } = useActivityLog();
   const { user } = useAuth();
   const theme = useTheme();
   const [visibleLogsCount, setVisibleLogsCount] = useState(10);
@@ -96,9 +96,6 @@ const ActivityLogList = () => {
 
     const handleRealTimeUpdate = () => {
       fetchLogs();
-      if (user.role !== 'admin' && user.role !== 'manager') {
-        refreshUserEntities();
-      }
     };
 
     const eventsToWatch = [
