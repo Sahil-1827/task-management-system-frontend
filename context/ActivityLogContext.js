@@ -17,26 +17,26 @@ const ActivityLogContext = createContext();
 
 export const ActivityLogProvider = ({ children }) => {
   const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user, token } = useAuth();
 
   const fetchLogs = useCallback(
     async (filters = {}) => {
-      if (!token) return;
+      if (!token) {
+        setLoading(false); // No token, so we are done loading.
+        return;
+      }
       try {
-        // We don't set loading to true if logs already exist, to prevent UI flicker on real-time updates
-        if (logs.length === 0) {
-          setLoading(true);
-        }
         const data = await activityLogService.getLogs(filters);
         setLogs(data);
       } catch (error) {
         console.error("Error fetching logs:", error);
       } finally {
+        // Set loading to false after the fetch is complete (or has failed).
         setLoading(false);
       }
     },
-    [logs.length, token]
+    [token]
   );
 
   useEffect(() => {
