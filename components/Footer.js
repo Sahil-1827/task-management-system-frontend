@@ -109,10 +109,10 @@ const FooterSocialAmoebaSvg = styled("svg")({
   left: -10,
   display: "block",
   position: "absolute",
-  top: 0,
-  width: "236px",
+  top: -9,
+  width: "260px",
   path: {
-    fill: "#333",
+    fill: "#027b9a",
   },
 });
 
@@ -305,7 +305,7 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "26px", left: "3px", top: "11px", width: "26px" }}
+            style={{ height: "20px", left: "15px", top: "12px", width: "25px" }}
           >
             <span className="hidden-link-text">Linkedin</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
@@ -315,7 +315,7 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "28px", left: "62px", top: "3px", width: "28px" }}
+            style={{ height: "28px", left: "73px", top: "5px", width: "30px" }}
           >
             <span className="hidden-link-text">Twitter</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
@@ -327,9 +327,9 @@ const Footer = () => {
             target="_blank"
             style={{
               height: "24px",
-              left: "123px",
-              top: "12px",
-              width: "24px",
+              left: "136px",
+              top: "15px",
+              width: "23px",
             }}
           >
             <span className="hidden-link-text">Youtube</span>
@@ -340,7 +340,7 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "34px", left: "172px", top: "7px", width: "34px" }}
+            style={{ height: "34px", left: "184px", top: "8px", width: "35px" }}
           >
             <span className="hidden-link-text">Github</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
