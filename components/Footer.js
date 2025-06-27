@@ -5,10 +5,15 @@ import { styled, useTheme } from "@mui/material/styles";
 
 const FooterContainer = styled(Box)(({ theme }) => ({
   fontFamily: "'Roboto', sans-serif",
-  backgroundColor: "#004658",
-  color: "#fff",
+  background:
+    theme.palette.mode === "dark"
+      ? "linear-gradient(180deg, #004658 0%, #001f28 100%)"
+      : "linear-gradient(180deg, #027b9a 0%, #004658 100%)",
+  color: theme.palette.mode === "dark" ? "#fff" : "#fff",
   position: "relative",
   overflow: "hidden",
+  backdropFilter: "blur(8px)", // Blurry effect
+  WebkitBackdropFilter: "blur(8px)", // For Safari
 }));
 
 const FooterWave = styled("svg")({
@@ -24,11 +29,7 @@ const FooterWave = styled("svg")({
 });
 
 const FooterWavePath = styled("path")(({ theme }) => ({
-  // This line correctly uses the theme from context
-  fill:
-    theme.palette.mode === "dark"
-      ? theme.palette.background.default
-      : "#f1f5f9",
+  fill: theme.palette.mode === "dark" ? "#0f172a" : "#f1f5f9",
 }));
 
 const FooterContent = styled(Container)({
@@ -41,8 +42,8 @@ const FooterContentColumn = styled(Grid)({
   color: "#fff",
 });
 
-const FooterMenuName = styled(Typography)({
-  color: "#fffff2",
+const FooterMenuName = styled(Typography)(({ theme }) => ({
+  color: theme.palette.mode === "dark" ? "#fffff2" : "#fff",
   fontSize: "15px",
   fontWeight: 900,
   letterSpacing: ".1em",
@@ -50,7 +51,7 @@ const FooterMenuName = styled(Typography)({
   textTransform: "uppercase",
   marginBottom: 0,
   marginTop: 0,
-});
+}));
 
 const FooterMenuList = styled("ul")({
   listStyle: "none",
@@ -69,8 +70,8 @@ const FooterMenuList = styled("ul")({
   },
 });
 
-const FooterCallToActionButton = styled(Link)({
-  backgroundColor: "#027b9a",
+const FooterCallToActionButton = styled(Link)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
   borderRadius: "21px",
   color: "#fffff2 !important",
   display: "inline-block",
@@ -86,10 +87,13 @@ const FooterCallToActionButton = styled(Link)({
   cursor: "pointer",
   position: "relative",
   "&:hover": {
-    backgroundColor: "#fffff2",
-    color: "#00bef0 !important",
+    backgroundColor: theme.palette.mode === "dark" ? "#fffff2" : "#027b9a",
+    color:
+      theme.palette.mode === "dark"
+        ? "#00bef0 !important"
+        : "#fffff2 !important",
   },
-});
+}));
 
 const FooterSocialLinksContainer = styled("div")({
   position: "relative",
@@ -104,7 +108,7 @@ const FooterSocialLinksContainer = styled("div")({
   },
 });
 
-const FooterSocialAmoebaSvg = styled("svg")({
+const FooterSocialAmoebaSvg = styled("svg")(({ theme }) => ({
   height: "54px",
   left: -10,
   display: "block",
@@ -112,11 +116,11 @@ const FooterSocialAmoebaSvg = styled("svg")({
   top: -9,
   width: "260px",
   path: {
-    fill: "#027b9a",
+    fill: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
   },
-});
+}));
 
-const SocialLink = styled("a")({
+const SocialLink = styled("a")(({ theme }) => ({
   display: "block",
   // padding: "10px",
   top: "20px",
@@ -139,33 +143,33 @@ const SocialLink = styled("a")({
     display: "block",
   },
   "& svg path": {
-    fill: "#fffff2",
+    fill: theme.palette.mode === "dark" ? "#fffff2" : "#fff",
     transition: "fill .2s",
   },
   "&:hover svg path": {
-    fill: "#f1f5f9",
+    fill: theme.palette.mode === "dark" ? "#f1f5f9" : "#00bef0",
   },
-});
+}));
 
-const FooterCopyright = styled(Box)({
-  backgroundColor: "#027b9a",
+const FooterCopyright = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
   color: "#fff",
   padding: "15px 30px",
   textAlign: "center",
-});
+}));
 
-const FooterCopyrightText = styled(Typography)({
+const FooterCopyrightText = styled(Typography)(({ theme }) => ({
   fontSize: "13px",
   fontWeight: 400,
   lineHeight: "18px",
   marginBottom: 0,
   marginTop: 0,
-  color: "#fff",
+  color: theme.palette.mode === "dark" ? "#fff" : "#fff",
   "& a": {
-    color: "#fff",
+    color: theme.palette.mode === "dark" ? "#fff" : "#fff",
     textDecoration: "none",
   },
-});
+}));
 
 const Footer = () => {
   const theme = useTheme();
