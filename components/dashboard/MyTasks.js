@@ -16,7 +16,7 @@ const MyTasks = () => {
 
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/tasks?assignee=${user._id}&limit=5&status=In Progress,To Do`, {
+        const response = await axios.get(`http://localhost:5000/api/tasks?assignee=${user._id}&limit=5&status=In Progress,To Do,Done`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTasks(response.data.tasks);
@@ -29,6 +29,17 @@ const MyTasks = () => {
 
     fetchTasks();
   }, [token, user]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'In Progress':
+        return 'warning';
+      case 'Done':
+        return 'success';
+      default:
+        return 'info';
+    }
+  };
 
   if (loading) {
     return (
@@ -59,7 +70,7 @@ const MyTasks = () => {
                 primary={task.title}
                 secondary={`Due: ${task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'N/A'}`}
               />
-              <Chip label={task.status} size="small" color={task.status === 'In Progress' ? 'warning' : 'info'} />
+              <Chip label={task.status} size="small" color={getStatusColor(task.status)} />
             </ListItem>
           ))}
         </List>
