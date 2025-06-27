@@ -15,7 +15,7 @@ import {
   ListItemText,
   AppBar,
   Toolbar,
-  Container
+  Container,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
@@ -43,7 +43,7 @@ export default function NavBar() {
     { label: "Dashboard", path: "/dashboard" },
     { label: "Tasks", path: "/tasks" },
     { label: "Teams", path: "/teams" },
-    { label: "Activity Log", path: "/activity-log" }
+    { label: "Activity Log", path: "/activity-log" },
   ];
 
   if (user?.role === "admin") {
@@ -67,7 +67,9 @@ export default function NavBar() {
                     justifyContent: "flex-start",
                     color: "text.primary",
                     bgcolor:
-                      pathname === item.path ? "action.selected" : "transparent"
+                      pathname === item.path
+                        ? "action.selected"
+                        : "transparent",
                   }}
                 >
                   <ListItemText primary={item.label} />
@@ -82,7 +84,7 @@ export default function NavBar() {
                   justifyContent: "flex-start",
                   color: "text.primary",
                   bgcolor:
-                    pathname === "/profile" ? "action.selected" : "transparent"
+                    pathname === "/profile" ? "action.selected" : "transparent",
                 }}
               >
                 <ListItemText primary={`Profile (${user?.name || "User"})`} />
@@ -135,21 +137,20 @@ export default function NavBar() {
   return (
     <AppBar
       position="fixed"
-      color="transparent" // Set color to transparent to allow backdropFilter
+      color="transparent"
       elevation={0}
-      sx={{
+      sx={(theme) => ({
         borderBottom: 1,
         borderColor: "divider",
         top: 0,
         zIndex: 1200,
         mb: 10,
-        backdropFilter: "blur(8px)", // Blurry effect
-        backgroundColor: "rgba(255, 255, 255, 0.7)", // Fallback for light mode
-        // Adjust background color for dark mode using theme
-        '@media (prefers-color-scheme: dark)': {
-          backgroundColor: "rgba(33, 33, 33, 0.7)", // Fallback for dark mode
-        },
-      }}
+        backdropFilter: "blur(8px)",
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? "rgba(33, 33, 33, 0.7)" // dark blurry
+            : "rgba(255, 255, 255, 0.7)", // light blurry
+      })}
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -159,7 +160,7 @@ export default function NavBar() {
               alignItems: "center",
               gap: 1,
               cursor: "pointer",
-              flexGrow: 1
+              flexGrow: 1,
             }}
             onClick={() => router.push("/")}
           >
@@ -177,7 +178,7 @@ export default function NavBar() {
             sx={{
               display: { xs: "none", md: "flex" },
               gap: 1,
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             {user ? (
@@ -188,7 +189,7 @@ export default function NavBar() {
                     onClick={() => router.push(item.path)}
                     sx={{
                       color: "text.primary",
-                      fontWeight: pathname === item.path ? "bold" : "normal"
+                      fontWeight: pathname === item.path ? "bold" : "normal",
                     }}
                   >
                     {item.label}
@@ -244,7 +245,7 @@ export default function NavBar() {
         anchor="right"
         sx={{
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 }
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
         }}
       >
         {drawer}
