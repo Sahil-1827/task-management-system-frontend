@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box, Chip } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box, Chip, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
@@ -43,8 +43,22 @@ const MyTasks = () => {
 
   if (loading) {
     return (
-      <Paper sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <CircularProgress />
+      <Paper sx={{ p: 2, height: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Skeleton variant="text" width="60%" height={30} />
+          <Skeleton variant="text" width="20%" height={30} />
+        </Box>
+        <List>
+          {[...Array(5)].map((_, index) => (
+            <ListItem key={index} dense>
+              <ListItemText
+                primary={<Skeleton variant="text" width="80%" />}
+                secondary={<Skeleton variant="text" width="40%" />}
+              />
+              <Skeleton variant="rectangular" width={60} height={20} />
+            </ListItem>
+          ))}
+        </List>
       </Paper>
     );
   }

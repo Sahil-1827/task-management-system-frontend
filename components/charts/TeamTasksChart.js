@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Paper, Typography, Box, Grid, CircularProgress, Card, CardContent } from '@mui/material';
+import { Paper, Typography, Box, Grid, CircularProgress, Card, CardContent, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -35,7 +35,20 @@ const TeamTasksChart = () => {
     }, [token]);
 
     if (error) return <Paper sx={{p:3, height: '100%'}}><Typography color="error">{error}</Typography></Paper>;
-    if (!data) return <Paper sx={{p:3, height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress /></Paper>;
+    if (!data) return (
+        <Paper sx={{ p: 3, height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Skeleton variant="text" width="80%" height={30} />
+                <Grid container spacing={2}>
+                    {[...Array(3)].map((_, index) => (
+                        <Grid item xs={12} sm={6} key={index}>
+                            <Skeleton variant="rectangular" height={100} />
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+        </Paper>
+    );
 
     return (
         <Paper sx={{ p: 3, height: '100%' }}>

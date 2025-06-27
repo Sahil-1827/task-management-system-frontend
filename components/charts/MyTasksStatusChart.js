@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { CircularProgress, Typography, useTheme } from '@mui/material';
+import { CircularProgress, Typography, useTheme, Box, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import PieChart from './PieChart';
@@ -41,7 +41,12 @@ const MyTasksStatusChart = () => {
     }, [token, user, theme]);
     
     if (error) return <Typography color="error">{error}</Typography>;
-    if (!chartData) return <CircularProgress />;
+    if (!chartData) return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+            <Skeleton variant="circular" width={100} height={100} />
+            <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />
+        </Box>
+    );
 
     return <PieChart data={chartData} title="My Assigned Tasks" />;
 };

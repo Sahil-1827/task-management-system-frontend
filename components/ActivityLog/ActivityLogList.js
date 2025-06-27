@@ -11,7 +11,8 @@ import {
   Alert,
   Avatar,
   useTheme,
-  Button
+  Button,
+  Skeleton
 } from "@mui/material";
 import {
   AddCircle as CreateIcon,
@@ -126,8 +127,42 @@ const ActivityLogList = () => {
 
   if (loading && logs.length === 0) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
-        <CircularProgress />
+      <Box sx={{ p: 2 }}>
+        {[...Array(5)].map((_, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: "flex",
+              mb: 3,
+              position: "relative",
+              alignItems: "flex-start",
+            }}
+          >
+            <Skeleton
+              variant="circular"
+              width={44}
+              height={44}
+              sx={{
+                position: "absolute",
+                left: "-25px",
+                top: "15px",
+                zIndex: 1,
+              }}
+            />
+            <Box sx={{ flex: 1, ml: 4, mt: 0.5 }}>
+              <Skeleton variant="rectangular" width="100%" height={120} sx={{ borderRadius: 1 }}>
+                <Box sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Skeleton variant="text" width="60%" height={20} />
+                    <Skeleton variant="text" width="25%" height={20} />
+                  </Box>
+                  <Skeleton variant="text" width="90%" height={15} sx={{ my: 1 }} />
+                  <Skeleton variant="text" width="40%" height={15} />
+                </Box>
+              </Skeleton>
+            </Box>
+          </Box>
+        ))}
       </Box>
     );
   }
