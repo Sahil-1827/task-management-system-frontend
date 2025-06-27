@@ -42,41 +42,49 @@ export const ActivityLogProvider = ({ children }) => {
     [logs.length]
   );
 
-  // This part is for filtering logs for non-admins, it should stay.
-  useEffect(() => {
+  const fetchUserEntities = useCallback(async () => {
     if (!user || !token || user.role === "admin" || user.role === "manager") {
       setUserEntities({ taskIds: [], teamIds: [] });
       return;
     }
-    const fetchUserEntities = async () => {
-      try {
-        const [tasksRes, teamsRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/tasks", {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get("http://localhost:5000/api/teams", {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        ]);
+    try {
+      const [tasksRes, teamsRes] = await Promise.all([
+        axios.get("http://localhost:5000/api/tasks", {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get("http://localhost:5000/api/teams", {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
 
-        const allTasks = tasksRes.data.tasks || tasksRes.data;
-        const myTaskIds = allTasks
-          .filter((task) => task.assignee?._id === user._id)
-          .map((task) => task._id);
+      const allTasks = tasksRes.data.tasks || tasksRes.data;
+      const allTeams = teamsRes.data.teams || teamsRes.data;
 
-        const allTeams = teamsRes.data.teams || teamsRes.data;
-        const myTeamIds = allTeams
-          .filter((team) =>
-            team.members.some((member) => member._id === user._id)
-          )
-          .map((team) => team._id);
-        setUserEntities({ taskIds: myTaskIds, teamIds: myTeamIds });
-      } catch (error) {
-        console.error("Error fetching user entities for activity log:", error);
-      }
-    };
-    fetchUserEntities();
+      const myTeamIds = allTeams
+        .filter((team) =>
+          team.members.some((member) => member._id === user._id)
+        )
+        .map((team) => team._id);
+
+      const myTaskIds = allTasks
+        .filter(
+          (task) =>
+            task.assignee?._id === user._id ||
+            (task.team && myTeamIds.includes(task.team._id || task.team))
+        )
+        .map((task) => task._id);
+
+      setUserEntities({ taskIds: myTaskIds, teamIds: myTeamIds });
+    } catch (error) {
+      console.error("Error fetching user entities for activity log:", error);
+    }
   }, [user, token]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserEntities();
+    }
+  }, [user, fetchUserEntities]);
 
   const getAccessibleLogs = useCallback(() => {
     if (!user) return [];
@@ -86,12 +94,22 @@ export const ActivityLogProvider = ({ children }) => {
 
     return logs.filter((log) => {
       if (log.performedBy?._id === user._id) return true;
-      if (log.entity === "task" && userEntities.taskIds.includes(log.entityId))
+      if (log.entityId === user._id) return true; // Direct action on the user
+
+      // Check if the log is related to a task assigned to the user or their team
+      if (log.entity === "task" && userEntities.taskIds.includes(log.entityId)) {
         return true;
-      if (log.entity === "team" && userEntities.teamIds.includes(log.entityId))
+      }
+
+      // Check if the log is related to a team the user is a member of
+      if (log.entity === "team" && userEntities.teamIds.includes(log.entityId)) {
         return true;
-      if (log.entity === "user" && log.entityId === user._id) return true;
+      }
+
+      // Fallback for logs that mention the user by name or ID in details
       if (log.details?.includes(user.name)) return true;
+      if (log.details?.includes(user._id)) return true;
+
       return false;
     });
   }, [logs, user, userEntities]);
@@ -101,7 +119,8 @@ export const ActivityLogProvider = ({ children }) => {
       value={{
         logs: getAccessibleLogs(),
         loading,
-        fetchLogs
+        fetchLogs,
+        refreshUserEntities: fetchUserEntities
       }}
     >
       {children}
