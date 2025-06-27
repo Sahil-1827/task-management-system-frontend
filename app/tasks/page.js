@@ -633,6 +633,7 @@ export default function Tasks() {
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
+              <TableCell>Description</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Priority</TableCell>
               <TableCell>Due Date</TableCell>
@@ -648,6 +649,7 @@ export default function Tasks() {
                 <TableCell component="th" scope="row">
                   {task.title}
                 </TableCell>
+                <TableCell>{task.description || "-"}</TableCell>
                 <TableCell>{task.status}</TableCell>
                 <TableCell>{task.priority}</TableCell>
                 <TableCell>
