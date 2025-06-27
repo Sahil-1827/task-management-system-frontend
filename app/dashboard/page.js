@@ -85,12 +85,16 @@ const DashboardPage = () => {
 
       <Grid container spacing={3}>
         {/* All Roles */}
-        <Grid item xs={12} md={8}>
-          <MyTasks />
-        </Grid>
+        {(isManager || user.role === 'user') && (
+          <Grid item xs={12} md={8}>
+            <MyTasks />
+          </Grid>
+        )}
+        {(isManager || user.role === 'user') && (
         <Grid item xs={12} md={4}>
           <MyTasksStatusChart />
         </Grid>
+        )}
 
         {/* Admin and Manager View */}
         {(isAdmin || isManager) && (
