@@ -18,6 +18,7 @@ import {
   TextField,
   Snackbar,
   Alert,
+  Skeleton,
 } from "@mui/material";
 import axios from "axios";
 
@@ -88,8 +89,30 @@ export default function Profile() {
 
   if (loading || !user) {
     return (
-      <Container sx={{ py: 4, textAlign: "center" }}>
-        <CircularProgress />
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Typography variant="h4" sx={{ mb: 4 }}>
+          User Profile
+        </Typography>
+        <Paper sx={{ p: { xs: 2, md: 4 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3, flexWrap: 'wrap', gap: 2 }}>
+            <Skeleton variant="circular" width={80} height={80} sx={{ mr: 2 }} />
+            <Box>
+              <Skeleton variant="text" width={150} height={30} />
+              <Skeleton variant="text" width={100} height={20} />
+            </Box>
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              <strong>Email:</strong> <Skeleton variant="text" width={200} />
+            </Typography>
+            <Typography variant="body1">
+              <strong>Joined:</strong> <Skeleton variant="text" width={150} />
+            </Typography>
+          </Box>
+
+          <Skeleton variant="rectangular" width={120} height={36} />
+        </Paper>
       </Container>
     );
   }

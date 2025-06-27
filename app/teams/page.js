@@ -28,7 +28,8 @@ import {
   DialogActions,
   MenuItem,
   Pagination,
-  Grid
+  Grid,
+  Skeleton
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -60,6 +61,7 @@ export default function Teams() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTeams, setTotalTeams] = useState(0);
+  const [teamsPerPage, setTeamsPerPage] = useState(5); // State for teams per page
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
   const [filterMember, setFilterMember] = useState("");
@@ -68,6 +70,7 @@ export default function Teams() {
   const [sortDirection, setSortDirection] = useState("asc");
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [loadingTeams, setLoadingTeams] = useState(true); // New state for team loading
 
   useEffect(() => {
     const callbackId = "teams-page";
@@ -88,6 +91,8 @@ export default function Teams() {
     if (loading || !user) return;
 
     const fetchTeams = async () => {
+      setLoadingTeams(true); // Set loading to true before fetching
+      setDisplayTeams([]); // Clear teams to show skeletons immediately
       try {
         const queryParams = new URLSearchParams({
           page,
@@ -109,6 +114,8 @@ export default function Teams() {
         setTotalPages(response.data.totalPages);
       } catch (error) {
         setError(error.response?.data?.message || "Failed to fetch teams");
+      } finally {
+        setLoadingTeams(false); // Set loading to false after fetching (success or error)
       }
     };
 
@@ -445,26 +452,58 @@ export default function Teams() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayTeams.map((team) => (
-              <TableRow key={team._id}>
-                <TableCell>{team.name}</TableCell>
-                <TableCell>{team.description || "-"}</TableCell>
-                <TableCell>
-                  {team.members.map((member) => member.name).join(", ") || "-"}
-                </TableCell>
-                <TableCell>{team.createdBy?.name || "-"}</TableCell>
-                {(user.role === "admin" || user.role === "manager") && (
-                  <TableCell>
-                    <IconButton onClick={() => handleEditTeam(team)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteTeam(team._id)}>
-                      <DeleteIcon />
-                    </IconButton>
+            {loadingTeams ? (
+              // Skeleton rows
+              Array.from(new Array(teamsPerPage)).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    <Skeleton variant="text" />
                   </TableCell>
-                )}
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <TableCell>
+                      <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
+                      <Skeleton variant="circular" width={30} height={30} />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : displayTeams.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={user.role === "admin" || user.role === "manager" ? 5 : 4} sx={{ textAlign: "center" }}>
+                  No teams found.
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              displayTeams.map((team) => (
+                <TableRow key={team._id}>
+                  <TableCell>{team.name}</TableCell>
+                  <TableCell>{team.description || "-"}</TableCell>
+                  <TableCell>
+                    {team.members.map((member) => member.name).join(", ") || "-"}
+                  </TableCell>
+                  <TableCell>{team.createdBy?.name || "-"}</TableCell>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <TableCell>
+                      <IconButton onClick={() => handleEditTeam(team)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteTeam(team._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

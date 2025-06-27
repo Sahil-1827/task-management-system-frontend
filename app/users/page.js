@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Skeleton,
 } from "@mui/material";
 import axios from "axios";
 
@@ -30,6 +31,7 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [usersPerPage, setUsersPerPage] = useState(5); // Added for skeleton loading
   const [selectedUser, setSelectedUser] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -46,6 +48,7 @@ export default function Users() {
       if (!token) return;
       try {
         setIsLoading(true);
+        setUsers([]); // Clear users to show skeletons immediately
         const response = await axios.get("http://localhost:5000/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -105,22 +108,48 @@ export default function Users() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((u) => (
-              <TableRow key={u._id}>
-                <TableCell>{u.name}</TableCell>
-                <TableCell>{u.email}</TableCell>
-                <TableCell sx={{ textTransform: 'capitalize' }}>{u.role}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => handleViewProfile(u)}
-                  >
-                    View Profile
-                  </Button>
+            {isLoading ? (
+              // Skeleton rows
+              Array.from(new Array(usersPerPage)).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="circular" width={30} height={30} />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} sx={{ textAlign: "center" }}>
+                  No users found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              users.map((u) => (
+                <TableRow key={u._id}>
+                  <TableCell>{u.name}</TableCell>
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell sx={{ textTransform: 'capitalize' }}>{u.role}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleViewProfile(u)}
+                    >
+                      View Profile
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
