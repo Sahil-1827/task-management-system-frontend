@@ -135,9 +135,21 @@ export default function NavBar() {
   return (
     <AppBar
       position="fixed"
-      color="default"
+      color="transparent" // Set color to transparent to allow backdropFilter
       elevation={0}
-      sx={{ borderBottom: 1, borderColor: "divider", top: 0, zIndex: 1200, mb: 10 }}
+      sx={{
+        borderBottom: 1,
+        borderColor: "divider",
+        top: 0,
+        zIndex: 1200,
+        mb: 10,
+        backdropFilter: "blur(8px)", // Blurry effect
+        backgroundColor: "rgba(255, 255, 255, 0.7)", // Fallback for light mode
+        // Adjust background color for dark mode using theme
+        '@media (prefers-color-scheme: dark)': {
+          backgroundColor: "rgba(33, 33, 33, 0.7)", // Fallback for dark mode
+        },
+      }}
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
