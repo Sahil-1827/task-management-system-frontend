@@ -99,9 +99,7 @@ const DashboardPage = () => {
         {/* Admin and Manager View */}
         {(isAdmin || isManager) && (
           <>
-            <Grid item xs={12} lg={8} sx={{ display: 'flex' }}>
-              <RecentActivity />
-            </Grid>
+            
             <Grid item xs={12} sm={6} lg={4} sx={{ display: 'flex' }}>
               <TaskStatusChart />
             </Grid>
@@ -115,6 +113,12 @@ const DashboardPage = () => {
         {isAdmin && (
           <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
             <UserRoleChart />
+          </Grid>
+        )}
+
+         {(isAdmin || isManager) && (
+          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+            <RecentActivity />
           </Grid>
         )}
       </Grid>
