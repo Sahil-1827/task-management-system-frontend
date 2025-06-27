@@ -7,7 +7,7 @@ import {
   Grid,
   Card,
   CardContent,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ListChecks from "@mui/icons-material/FormatListBulleted";
@@ -18,45 +18,46 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/NavBar";
+import { useAuth } from "@/context/AuthContext";
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: '8px',
-  padding: '10px 20px',
-  textTransform: 'none',
+  borderRadius: "8px",
+  padding: "10px 20px",
+  textTransform: "none",
   fontWeight: 700,
-  fontSize: '1rem',
+  fontSize: "1rem",
 }));
 
 const FeatureCard = styled(Card)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
   padding: theme.spacing(3),
-  height: '100%',
+  height: "100%",
 }));
 
 export default function Home() {
   const router = useRouter();
   const theme = useTheme();
-  const isLocalStorageAvailable = typeof window !== 'undefined' && window.localStorage;
+  const { user } = useAuth();
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      {(!isLocalStorageAvailable || !localStorage.getItem('token')) && <Navbar />}
-      
+      {!user && <Navbar />}
+
       <Container maxWidth="xl" sx={{ py: { xs: 4, md: 4 } }}>
         <Box
           sx={{
-            position: 'relative',
+            position: "relative",
             borderRadius: { xs: 0, sm: 4 },
             p: { xs: 3, sm: 6 },
-            minHeight: { xs: '360px', md: '480px' },
+            minHeight: { xs: "360px", md: "480px" },
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
             gap: 3,
-            color: 'common.white',
-            overflow: 'hidden',
+            color: "common.white",
+            overflow: "hidden",
           }}
         >
           <Image
@@ -67,27 +68,41 @@ export default function Home() {
             // width={500}
             // height={500}
             quality={100}
-            // style={{ zIndex: -1 }} 
+            // style={{ zIndex: -1 }}
           />
-          <Box sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: -1 // Ensure the overlay is between the image and the text
-          }}/>
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: -1, // Ensure the overlay is between the image and the text
+            }}
+          />
           <Box sx={{ maxWidth: "md", zIndex: 0 }}>
-            <Typography variant="h2" sx={{ fontWeight: 900, mb: 2, color: '#6366f1' }}>
+            <Typography
+              variant="h2"
+              sx={{ fontWeight: 900, mb: 2, color: "#6366f1" }}
+            >
               Streamline Your Workflow with TaskMaster
             </Typography>
-            <Typography variant="body1" sx={{ color: '#24916c', fontSize: '1.2rem', fontWeight: 700 }}>
+            <Typography
+              variant="body1"
+              sx={{ color: "#24916c", fontSize: "1.2rem", fontWeight: 700 }}
+            >
               Manage tasks, assign team members, track progress, and boost
               productivity with our intuitive task management system.
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexDirection: { xs: "column", sm: "row" },
+            }}
+          >
             <StyledButton
               variant="contained"
               color="primary"
@@ -106,21 +121,47 @@ export default function Home() {
         </Box>
 
         <Box sx={{ py: 8 }}>
-          <Typography variant="h3" sx={{ mb: 2, fontWeight: 700, textAlign: 'center' }}>
+          <Typography
+            variant="h3"
+            sx={{ mb: 2, fontWeight: 700, textAlign: "center" }}
+          >
             Key Features
           </Typography>
-          <Typography variant="body1" sx={{ mb: 5, textAlign: 'center', maxWidth: 'md', mx: 'auto' }}>
+          <Typography
+            variant="body1"
+            sx={{ mb: 5, textAlign: "center", maxWidth: "md", mx: "auto" }}
+          >
             TaskMaster offers a comprehensive suite of tools designed to enhance
             team collaboration and productivity.
           </Typography>
 
           <Grid container spacing={4}>
             {[
-              { icon: <ListChecks sx={{ fontSize: 40 }} color="primary"/>, title: "Task Management", description: "Easily create, assign, and organize tasks with detailed descriptions and deadlines." },
-              { icon: <Users sx={{ fontSize: 40 }} color="primary"/>, title: "Team Collaboration", description: "Assign tasks to team members, set roles, and manage permissions for seamless teamwork." },
-              { icon: <Bell sx={{ fontSize: 40 }} color="primary"/>, title: "Real-Time Notifications", description: "Stay updated with instant notifications on task assignments, updates, and deadlines." },
-              { icon: <Clock sx={{ fontSize: 40 }} color="primary"/>, title: "Progress Tracking", description: "Monitor task completion, track progress, and identify bottlenecks to keep projects on schedule." }
-            ].map(feature => (
+              {
+                icon: <ListChecks sx={{ fontSize: 40 }} color="primary" />,
+                title: "Task Management",
+                description:
+                  "Easily create, assign, and organize tasks with detailed descriptions and deadlines.",
+              },
+              {
+                icon: <Users sx={{ fontSize: 40 }} color="primary" />,
+                title: "Team Collaboration",
+                description:
+                  "Assign tasks to team members, set roles, and manage permissions for seamless teamwork.",
+              },
+              {
+                icon: <Bell sx={{ fontSize: 40 }} color="primary" />,
+                title: "Real-Time Notifications",
+                description:
+                  "Stay updated with instant notifications on task assignments, updates, and deadlines.",
+              },
+              {
+                icon: <Clock sx={{ fontSize: 40 }} color="primary" />,
+                title: "Progress Tracking",
+                description:
+                  "Monitor task completion, track progress, and identify bottlenecks to keep projects on schedule.",
+              },
+            ].map((feature) => (
               <Grid item xs={12} sm={6} md={3} key={feature.title}>
                 <FeatureCard>
                   {feature.icon}
@@ -138,24 +179,44 @@ export default function Home() {
           </Grid>
         </Box>
 
-        <Box sx={{ textAlign: "center", py: 8, bgcolor: 'background.paper', borderRadius: 4 }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            py: 8,
+            bgcolor: "background.paper",
+            borderRadius: 4,
+          }}
+        >
           <Typography variant="h3" sx={{ mb: 2 }}>
             Ready to Transform Your Productivity?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 4, maxWidth: 'md', mx: 'auto' }}>
+          <Typography
+            variant="body1"
+            sx={{ mb: 4, maxWidth: "md", mx: "auto" }}
+          >
             Join thousands of teams already using TaskMaster to achieve their
             goals more efficiently.
           </Typography>
-          <StyledButton
-            variant="contained"
-            color="primary"
-            onClick={() => router.push("/signup")}
-          >
-            Sign Up Now
-          </StyledButton>
+          {user ? (
+            <StyledButton
+              variant="contained"
+              color="primary"
+              onClick={() => router.push("/dashboard")}
+            >
+              Go to Dashboard
+            </StyledButton>
+          ) : (
+            <StyledButton
+              variant="contained"
+              color="primary"
+              onClick={() => router.push("/signup")}
+            >
+              Sign Up Now
+            </StyledButton>
+          )}
         </Box>
       </Container>
-      {(!isLocalStorageAvailable || !localStorage.getItem('token')) && <Footer />}
+      {!user && <Footer />}
     </Box>
   );
 }
