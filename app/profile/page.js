@@ -26,6 +26,8 @@ export default function Profile() {
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   
 
   useEffect(() => {
@@ -52,7 +54,6 @@ export default function Profile() {
 
   const handleClose = () => {
     setOpenDialog(false);
-    setError("");
   };
 
   const handleInputChange = (e) => {
@@ -61,8 +62,6 @@ export default function Profile() {
 
   const handleSubmit = async () => {
     try {
-      setError("");
-      setSuccess("");
       if (!formData.name || !formData.email) {
         toast.error("Name and email are required");
         return;
