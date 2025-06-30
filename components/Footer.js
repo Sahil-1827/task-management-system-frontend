@@ -99,28 +99,31 @@ const FooterCallToActionButton = styled(MuiLink)(({ theme }) => ({
   },
 }));
 
-const FooterSocialLinksContainer = styled("div")({
+const FooterSocialLinksContainer = styled("div")(({ theme }) => ({
   position: "relative",
   marginTop: "30px",
   paddingBottom: "30px",
-  "@media (min-width: 960px)": {
+  [theme.breakpoints.up('md')]: {
     position: "absolute",
     bottom: "-10px",
     right: "60px",
     width: "236px",
     height: "54px",
   },
-});
+}));
 
 const FooterSocialAmoebaSvg = styled("svg")(({ theme }) => ({
   height: "54px",
   left: -10,
-  display: "block",
+  display: "none", // Hidden by default for small and medium screens
   position: "absolute",
   top: -9,
   width: "260px",
   path: {
     fill: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
+  },
+  [theme.breakpoints.up('md')]: { // Visible on large screens and up
+    display: "flex",
   },
 }));
 
@@ -316,7 +319,16 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "20px", left: "15px", top: "12px", width: "25px" }}
+            sx={{
+              height: "20px",
+              left: "15px",
+              top: "12px",
+              width: "25px",
+              [theme.breakpoints.up('md')]: {
+                left: "15px",
+                top: "12px",
+              },
+            }}
           >
             <span className="hidden-link-text">Linkedin</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
@@ -326,7 +338,16 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "28px", left: "73px", top: "5px", width: "30px" }}
+            sx={{
+              height: "28px",
+              left: "73px",
+              top: "5px",
+              width: "30px",
+              [theme.breakpoints.up('md')]: {
+                left: "73px",
+                top: "5px",
+              },
+            }}
           >
             <span className="hidden-link-text">Twitter</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
@@ -336,11 +357,15 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{
+            sx={{
               height: "24px",
               left: "136px",
               top: "15px",
               width: "23px",
+              [theme.breakpoints.up('md')]: {
+                left: "136px",
+                top: "15px",
+              },
             }}
           >
             <span className="hidden-link-text">Youtube</span>
@@ -351,7 +376,16 @@ const Footer = () => {
           <SocialLink
             href="#"
             target="_blank"
-            style={{ height: "34px", left: "184px", top: "8px", width: "35px" }}
+            sx={{
+              height: "34px",
+              left: "184px",
+              top: "8px",
+              width: "35px",
+              [theme.breakpoints.up('md')]: {
+                left: "184px",
+                top: "8px",
+              },
+            }}
           >
             <span className="hidden-link-text">Github</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
