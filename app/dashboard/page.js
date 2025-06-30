@@ -56,6 +56,15 @@ const DashboardPage = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+        <Typography variant="h6">Please log in to view the dashboard.</Typography>
+      </Box>
+    );
+  }
+
   const isAdmin = user.role === 'admin';
   const isManager = user.role === 'manager';
 
