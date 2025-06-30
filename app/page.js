@@ -68,7 +68,7 @@ export default function Home() {
             // width={500}
             // height={500}
             quality={100}
-            // style={{ zIndex: -1 }}
+            style={{ opacity: theme.palette.mode === 'light' ? 0.4 : 0.6 }}
           />
           <Box
             sx={{
