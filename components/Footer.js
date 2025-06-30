@@ -1,8 +1,10 @@
 "use client";
 
-import { Box, Container, Typography, Grid, Link } from "@mui/material";
+import { Box, Container, Typography, Grid, Link as MuiLink } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import Image from "next/image";
+import Link from "next/link"; // Using Next.js Link for navigation
+import { useAuth } from "../context/AuthContext"; // Import the useAuth hook
 
 const FooterContainer = styled(Box)(({ theme }) => ({
   fontFamily: "'Roboto', sans-serif",
@@ -54,6 +56,7 @@ const FooterMenuName = styled(Typography)(({ theme }) => ({
   marginTop: 0,
 }));
 
+// The styling now targets the <a> tag rendered by Next.js's Link component
 const FooterMenuList = styled("ul")({
   listStyle: "none",
   marginBottom: 0,
@@ -71,7 +74,7 @@ const FooterMenuList = styled("ul")({
   },
 });
 
-const FooterCallToActionButton = styled(Link)(({ theme }) => ({
+const FooterCallToActionButton = styled(MuiLink)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
   borderRadius: "21px",
   color: "#fffff2 !important",
@@ -123,7 +126,6 @@ const FooterSocialAmoebaSvg = styled("svg")(({ theme }) => ({
 
 const SocialLink = styled("a")(({ theme }) => ({
   display: "block",
-  // padding: "10px",
   top: "20px",
   left: "0",
   height: "30px",
@@ -174,6 +176,7 @@ const FooterCopyrightText = styled(Typography)(({ theme }) => ({
 
 const Footer = () => {
   const theme = useTheme();
+  const { user } = useAuth(); // Get the current user state
 
   return (
     <FooterContainer>
@@ -182,9 +185,6 @@ const Footer = () => {
         viewBox="0 0 1200 100"
         preserveAspectRatio="none"
       >
-        {/*
-          FIX: The `theme={theme}` prop that was causing the error has been removed from this component.
-        */}
         <FooterWavePath d="M851.8,100c125,0,288.3-45,348.2-64V0H0v44c3.7-1,7.3-1.9,11-2.9C80.7,22,151.7,10.8,223.5,6.3C276.7,2.9,330,4,383,9.8 c52.2,5.7,103.3,16.2,153.4,32.8C623.9,71.3,726.8,100,851.8,100z" />
       </FooterWave>
       <FooterContent maxWidth="xl">
@@ -212,8 +212,7 @@ const Footer = () => {
                   marginBottom: "20px",
                 }}
               >
-                            <Image src="/logo.png" alt="Logo" width={34} height={34} />
-
+                <Image src="/logo.png" alt="Logo" width={34} height={34} />
               </Typography>
             </Box>
             <Box>
@@ -231,13 +230,13 @@ const Footer = () => {
               <FooterMenuName variant="h2">Company</FooterMenuName>
               <FooterMenuList>
                 <li>
+                  <Link href="/about">About Us</Link>
+                </li>
+                <li>
                   <Link href="/contact">Contact</Link>
                 </li>
-                <li>
-                  <Link href="#">News</Link>
-                </li>
-                <li>
-                  <Link href="#">Careers</Link>
+                 <li>
+                  <Link href="/learn-more">Learn More</Link>
                 </li>
               </FooterMenuList>
             </Box>
@@ -245,36 +244,35 @@ const Footer = () => {
               <FooterMenuName variant="h2">Legal</FooterMenuName>
               <FooterMenuList>
                 <li>
-                  <Link href="/privacy">Privacy Notice</Link>
+                  <Link href="/privacy">Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link href="/terms">Terms of Use</Link>
+                  <Link href="/terms">Terms of Service</Link>
                 </li>
               </FooterMenuList>
             </Box>
           </FooterContentColumn>
           <FooterContentColumn item xs={12} sm={6} md={3}>
             <Box>
-              <FooterMenuName variant="h2">Quick Links</FooterMenuName>
+              <FooterMenuName variant="h2">Product</FooterMenuName>
               <FooterMenuList>
                 <li>
-                  <Link href="#">Support Center</Link>
+                   <Link href="/learn-more">Features</Link>
                 </li>
-                <li>
-                  <Link href="#">Service Status</Link>
-                </li>
-                <li>
-                  <Link href="#">Security</Link>
-                </li>
-                <li>
-                  <Link href="#">Blog</Link>
-                </li>
-                <li>
-                  <Link href="#">Customers</Link>
-                </li>
-                <li>
-                  <Link href="#">Reviews</Link>
-                </li>
+                {/* Conditionally render these links based on user login status */}
+                {user && (
+                  <>
+                    <li>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </li>
+                    <li>
+                      <Link href="/tasks">Tasks</Link>
+                    </li>
+                    <li>
+                      <Link href="/teams">Teams</Link>
+                    </li>
+                  </>
+                )}
               </FooterMenuList>
             </Box>
           </FooterContentColumn>
@@ -290,19 +288,19 @@ const Footer = () => {
               >
                 Have a support question?
               </Typography>
-              <FooterCallToActionButton href="/contact">
+              <FooterCallToActionButton component={Link} href="/contact">
                 Get in Touch
               </FooterCallToActionButton>
             </Box>
             <Box sx={{ marginTop: "30px" }}>
               <FooterMenuName variant="h2">You Call Us</FooterMenuName>
               <Typography sx={{ marginTop: "10px" }}>
-                <Link
+                <MuiLink
                   href="tel:0124-64XXXX"
                   sx={{ color: "#fff", textDecoration: "none" }}
                 >
                   0124-64XXXX
-                </Link>
+                </MuiLink>
               </Typography>
             </Box>
           </FooterContentColumn>
@@ -364,10 +362,10 @@ const Footer = () => {
       </FooterContent>
       <FooterCopyright>
         <FooterCopyrightText>
-          <Link href="#" target="_self">
+          <MuiLink href="#" target="_self">
             ©{new Date().getFullYear()}. | Designed By: Sahil Gadhiya. | All
             rights reserved.
-          </Link>
+          </MuiLink>
         </FooterCopyrightText>
       </FooterCopyright>
     </FooterContainer>
