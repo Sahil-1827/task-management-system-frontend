@@ -23,7 +23,8 @@ const TeamTasksChart = () => {
 
                 const teamTaskCounts = teams.map(team => {
                     const count = tasks.filter(task => task.team?._id === team._id).length;
-                    return { name: team.name, count };
+                    // FIX: Pass the unique team._id to be used as a key
+                    return { id: team._id, name: team.name, count };
                 });
                 
                 setData(teamTaskCounts);
@@ -55,7 +56,8 @@ const TeamTasksChart = () => {
             <Typography variant="h6" gutterBottom>Tasks per Team</Typography>
             <Grid container spacing={2} sx={{mt: 1}}>
                 {data.length > 0 ? data.map(team => (
-                    <Grid item xs={12} sm={6} key={team.name}>
+                    // FIX: Use the unique team.id as the key instead of team.name
+                    <Grid item xs={12} sm={6} key={team.id}>
                         <Card variant="outlined">
                              <CardContent>
                                  <Typography variant="body1" fontWeight="bold">{team.name}</Typography>
