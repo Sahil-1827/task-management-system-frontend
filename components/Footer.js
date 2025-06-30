@@ -2,6 +2,7 @@
 
 import { Box, Container, Typography, Grid, Link } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
+import Image from "next/image";
 
 const FooterContainer = styled(Box)(({ theme }) => ({
   fontFamily: "'Roboto', sans-serif",
@@ -187,8 +188,20 @@ const Footer = () => {
         <FooterWavePath d="M851.8,100c125,0,288.3-45,348.2-64V0H0v44c3.7-1,7.3-1.9,11-2.9C80.7,22,151.7,10.8,223.5,6.3C276.7,2.9,330,4,383,9.8 c52.2,5.7,103.3,16.2,153.4,32.8C623.9,71.3,726.8,100,851.8,100z" />
       </FooterWave>
       <FooterContent maxWidth="xl">
-        <Grid container spacing={4}>
-          <FooterContentColumn item xs={12} sm={6} md={3}>
+        <Grid
+          spacing={4}
+          sx={{
+            justifyContent: "space-between",
+            display: "flex",
+            flexWrap: "wrap",
+            maxWidth: "80%",
+            marginX: "auto",
+            marginBottom: "30px",
+            marginTop: "30px",
+          }}
+          container
+        >
+          <FooterContentColumn item xs={12} sm={6} md={3} sx={{maxWidth: '200px'}}>
             <Box>
               <Typography
                 variant="h6"
@@ -199,22 +212,18 @@ const Footer = () => {
                   marginBottom: "20px",
                 }}
               >
-                LOGO
+                            <Image src="/logo.png" alt="Logo" width={34} height={34} />
+
               </Typography>
             </Box>
             <Box>
               <FooterMenuName variant="h2">Get Started</FooterMenuName>
-              <FooterMenuList>
-                <li>
-                  <Link href="#">Start</Link>
-                </li>
-                <li>
-                  <Link href="#">Documentation</Link>
-                </li>
-                <li>
-                  <Link href="#">Installation</Link>
-                </li>
-              </FooterMenuList>
+              <Typography sx={{ color: '#fff', mt: 2, fontSize: '0.9rem', lineHeight: 1.6 }}>
+                Our comprehensive task management system helps teams collaborate efficiently. 
+                Create and organize tasks, track progress in real-time, and boost productivity 
+                with our intuitive project management tools. Perfect for teams of all sizes 
+                looking to streamline their workflow and achieve goals together.
+              </Typography>
             </Box>
           </FooterContentColumn>
           <FooterContentColumn item xs={12} sm={6} md={3}>
@@ -356,7 +365,7 @@ const Footer = () => {
       <FooterCopyright>
         <FooterCopyrightText>
           <Link href="#" target="_self">
-            ©{new Date().getFullYear()}. | Designed By: Pooja Nahelia. | All
+            ©{new Date().getFullYear()}. | Designed By: Sahil Gadhiya. | All
             rights reserved.
           </Link>
         </FooterCopyrightText>
