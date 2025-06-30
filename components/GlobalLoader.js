@@ -26,8 +26,8 @@ const StyledWrapper = styled(Box)`
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-color: ${(props) => props.theme.palette.primary.main};
   }
 
