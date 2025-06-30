@@ -177,6 +177,9 @@ export default function NotificationBell() {
                       </Typography>
                     </Box>
                   }
+                  // FIX: Add props to render wrappers as <div> instead of <p>
+                  primaryTypographyProps={{ component: 'div' }}
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
               </ListItem>
             ))}
