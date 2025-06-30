@@ -9,16 +9,15 @@ import {
   TextField,
   Button,
   Box,
-  Alert,
   CircularProgress,
 } from "@mui/material";
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const { user, login, loading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!loading && user) {
@@ -28,11 +27,11 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     try {
       await login(email, password);
+      toast.success("Login successful!");
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -53,11 +52,6 @@ export default function Login() {
       <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
         Login
       </Typography>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
       <Box component="form" onSubmit={handleLogin}>
         <TextField
           label="Email"

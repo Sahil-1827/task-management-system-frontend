@@ -16,7 +16,6 @@ import {
   TableRow,
   Paper,
   Box,
-  Alert,
   IconButton,
   FormControl,
   InputLabel,
@@ -31,6 +30,7 @@ import {
   Grid,
   Skeleton
 } from "@mui/material";
+import { toast } from 'react-toastify';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
@@ -49,8 +49,6 @@ export default function Tasks() {
   const [displayTasks, setDisplayTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -123,7 +121,7 @@ export default function Tasks() {
         setTotalTasks(response.data.totalTasks);
         setTotalPages(response.data.totalPages);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch tasks");
+        toast.error(error.response?.data?.message || "Failed to fetch tasks");
       } finally {
         setLoadingTasks(false); // Set loading to false after fetching (success or error)
       }
@@ -136,7 +134,7 @@ export default function Tasks() {
         });
         setUsers(response.data);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch users");
+        toast.error(error.response?.data?.message || "Failed to fetch users");
       }
     };
 
@@ -147,7 +145,7 @@ export default function Tasks() {
         });
         setTeams(response.data.teams || response.data);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch teams");
+        toast.error(error.response?.data?.message || "Failed to fetch teams");
       }
     };
 
@@ -226,8 +224,6 @@ export default function Tasks() {
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     try {
       await axios.post("http://localhost:5000/api/tasks", newTask, {
         headers: { Authorization: `Bearer ${token}` }
@@ -241,25 +237,22 @@ export default function Tasks() {
         assignee: "",
         team: ""
       });
-      setSuccess("Task created successfully!");
+      toast.success("Task created successfully!");
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create task");
+      toast.error(error.response?.data?.message || "Failed to create task");
     }
   };
 
   const handleUpdateTask = async () => {
-    setError("");
-    setSuccess("");
-
     if (!newTask.title) {
-      setError("Task title is required");
+      toast.error("Task title is required");
       return;
     }
 
     if (newTask.team && !validateTeamMembers(newTask.team)) {
-      setError("Cannot assign task to a team with no members");
+      toast.error("Cannot assign task to a team with no members");
       return;
     }
 
@@ -277,7 +270,7 @@ export default function Tasks() {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      setSuccess("Task updated successfully");
+      toast.success("Task updated successfully");
       setOpenDialog(false);
       setNewTask({
         title: "",
@@ -292,23 +285,20 @@ export default function Tasks() {
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to update task");
+      toast.error(error.response?.data?.message || "Failed to update task");
     }
   };
 
   const handleDeleteTask = async (taskId) => {
-    setError("");
-    setSuccess("");
-
     try {
       await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSuccess("Task deleted successfully");
+      toast.success("Task deleted successfully");
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to delete task");
+      toast.error(error.response?.data?.message || "Failed to delete task");
     }
   };
 
@@ -504,17 +494,6 @@ export default function Tasks() {
             </Grid>
           </Box>
         </Paper>
-      )}
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
-        </Alert>
       )}
 
       <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>

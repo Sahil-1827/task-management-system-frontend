@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 const BASE_URL = "http://localhost:5000/api/activity-logs";
 
 export const activityLogService = {
@@ -30,6 +32,7 @@ export const activityLogService = {
       return data;
     } catch (error) {
       console.error("Error fetching activity logs:", error);
+      toast.error("Failed to fetch activity logs.");
       throw error;
     }
   }

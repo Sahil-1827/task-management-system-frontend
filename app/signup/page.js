@@ -9,13 +9,13 @@ import {
   TextField,
   Button,
   Box,
-  Alert,
   CircularProgress,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
 } from '@mui/material';
+import { toast } from 'react-toastify';
 
 export default function SignUp() {
   const { user, loading } = useAuth();
@@ -24,7 +24,6 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user');
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!loading && user) {
@@ -34,7 +33,6 @@ export default function SignUp() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
@@ -48,10 +46,11 @@ export default function SignUp() {
         throw new Error(data.message || 'Registration failed');
       }
 
+      toast.success('Registration successful! Please log in.');
       // After successful registration, redirect to login
       router.push('/login');
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -72,11 +71,6 @@ export default function SignUp() {
       <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
         Sign Up
       </Typography>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
       <Box component="form" onSubmit={handleSignUp}>
         <TextField
           label="Name"

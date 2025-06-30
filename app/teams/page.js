@@ -16,7 +16,6 @@ import {
   TableRow,
   Paper,
   Box,
-  Alert,
   IconButton,
   FormControl,
   InputLabel,
@@ -31,6 +30,7 @@ import {
   Grid,
   Skeleton
 } from "@mui/material";
+import { toast } from 'react-toastify';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
@@ -48,8 +48,6 @@ export default function Teams() {
   const [teams, setTeams] = useState([]);
   const [displayTeams, setDisplayTeams] = useState([]);
   const [users, setUsers] = useState([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [newTeam, setNewTeam] = useState({
     name: "",
     description: "",
@@ -113,7 +111,7 @@ export default function Teams() {
         setTotalTeams(response.data.totalTeams);
         setTotalPages(response.data.totalPages);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch teams");
+        toast.error(error.response?.data?.message || "Failed to fetch teams");
       } finally {
         setLoadingTeams(false); // Set loading to false after fetching (success or error)
       }
@@ -126,7 +124,7 @@ export default function Teams() {
         });
         setUsers(response.data);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch users");
+        toast.error(error.response?.data?.message || "Failed to fetch users");
       }
     };
 
@@ -202,11 +200,9 @@ export default function Teams() {
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     if (!newTeam.name) {
-      setError("Team name is required");
+      toast.error("Team name is required");
       return;
     }
 
@@ -214,12 +210,12 @@ export default function Teams() {
       await axios.post("http://localhost:5000/api/teams", newTeam, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSuccess("Team created successfully");
+      toast.success("Team created successfully");
       setNewTeam({ name: "", description: "", members: [] });
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create team");
+      toast.error(error.response?.data?.message || "Failed to create team");
     }
   };
 
@@ -234,11 +230,8 @@ export default function Teams() {
   };
 
   const handleUpdateTeam = async () => {
-    setError("");
-    setSuccess("");
-
     if (!newTeam.name) {
-      setError("Team name is required");
+      toast.error("Team name is required");
       return;
     }
 
@@ -250,28 +243,25 @@ export default function Teams() {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      setSuccess("Team updated successfully");
+      toast.success("Team updated successfully");
       handleCloseDialog();
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to update team");
+      toast.error(error.response?.data?.message || "Failed to update team");
     }
   };
 
   const handleDeleteTeam = async (teamId) => {
-    setError("");
-    setSuccess("");
-
     try {
       await axios.delete(`http://localhost:5000/api/teams/${teamId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSuccess("Team deleted successfully");
+      toast.success("Team deleted successfully");
       setRefetchTrigger((prev) => prev + 1); // Refetch data
       fetchLogs();
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to delete team");
+      toast.error(error.response?.data?.message || "Failed to delete team");
     }
   };
 
@@ -360,16 +350,7 @@ export default function Teams() {
         </Paper>
       )}
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
-        </Alert>
-      )}
+      
 
       <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>

@@ -16,19 +16,17 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Snackbar,
-  Alert,
   Skeleton,
 } from "@mui/material";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export default function Profile() {
   const { user, loading, setUser } = useAuth();
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  
 
   useEffect(() => {
     if (!loading && !user) {
@@ -66,7 +64,7 @@ export default function Profile() {
       setError("");
       setSuccess("");
       if (!formData.name || !formData.email) {
-        setError("Name and email are required");
+        toast.error("Name and email are required");
         return;
       }
 
@@ -80,10 +78,10 @@ export default function Profile() {
 
       setUser(response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
-      setSuccess("Profile updated successfully");
+      toast.success("Profile updated successfully");
       setOpenDialog(false);
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to update profile");
+      toast.error(error.response?.data?.message || "Failed to update profile");
     }
   };
 
@@ -181,28 +179,12 @@ export default function Profile() {
             value={formData.email}
             onChange={handleInputChange}
           />
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-                {error}
-            </Alert>
-          )}
-        </DialogContent>
+          </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained">Save</Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={!!success}
-        autoHideDuration={6000}
-        onClose={() => setSuccess("")}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setSuccess("")} severity="success" sx={{ width: "100%" }}>
-          {success}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }

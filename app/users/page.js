@@ -14,7 +14,6 @@ import {
   TableRow,
   Paper,
   Box,
-  Alert,
   CircularProgress,
   Button,
   Dialog,
@@ -24,12 +23,12 @@ import {
   Skeleton,
 } from "@mui/material";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export default function Users() {
   const { user, token, loading } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState([]);
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [usersPerPage, setUsersPerPage] = useState(5); // Added for skeleton loading
   const [selectedUser, setSelectedUser] = useState(null);
@@ -54,7 +53,7 @@ export default function Users() {
         });
         setUsers(response.data);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch users");
+        toast.error(err.response?.data?.message || "Failed to fetch users");
       } finally {
         setIsLoading(false);
       }
@@ -94,8 +93,6 @@ export default function Users() {
       <Typography variant="h4" sx={{ mb: 4 }}>
         User Management
       </Typography>
-
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <TableContainer component={Paper} sx={{overflowX: 'auto'}}>
         <Table sx={{ minWidth: 650 }}>

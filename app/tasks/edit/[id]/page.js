@@ -14,12 +14,13 @@ import {
   Select,
   MenuItem,
   Box,
-  Alert,
   CircularProgress,
   Grid,
   Chip,
+  Alert
 } from "@mui/material";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 export default function EditTask({ params }) {
   const { user, token, loading } = useAuth();
@@ -41,7 +42,6 @@ export default function EditTask({ params }) {
   const [loadingData, setLoadingData] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     if (params) {
@@ -73,7 +73,7 @@ export default function EditTask({ params }) {
         });
         setTagInput("");
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch task");
+        toast.error(error.response?.data?.message || "Failed to fetch task");
       }
     };
 
@@ -84,7 +84,7 @@ export default function EditTask({ params }) {
         });
         setUsers(response.data);
       } catch (error) {
-        setError(error.response?.data?.message || "Failed to fetch users");
+        toast.error(error.response?.data?.message || "Failed to fetch users");
       }
     };
 
@@ -158,11 +158,9 @@ export default function EditTask({ params }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess("");
 
     if (formData.assignedTo.length === 0) {
-      setError("Please assign the task to at least one user");
+      toast.error("Please assign the task to at least one user");
       return;
     }
 
@@ -171,11 +169,11 @@ export default function EditTask({ params }) {
       await axios.put(`http://localhost:5000/api/tasks/${id}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccess("Task updated successfully!");
+      toast.success("Task updated successfully!");
       fetchLogs();
       setTimeout(() => router.push("/tasks"), 1000);
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to update task");
+      toast.error(error.response?.data?.message || "Failed to update task");
     } finally {
       setSubmitting(false);
     }

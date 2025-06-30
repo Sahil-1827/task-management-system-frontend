@@ -5,6 +5,8 @@ import { NotificationProvider } from "../context/NotificationContext";
 import ClientLayout from "@/components/ClientLayout";
 import { Manrope, Noto_Sans } from "next/font/google";
 import "../app/globals.css";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const manrope = Manrope({ subsets: ["latin"] });
 const notoSans = Noto_Sans({
@@ -30,6 +32,7 @@ export default function RootLayout({ children }) {
             <NotificationProvider>
               <ActivityLogProvider>
                 <ClientLayout>{children}</ClientLayout>
+                <ToastContainer />
               </ActivityLogProvider>
             </NotificationProvider>
           </ThemeProviderWrapper>
