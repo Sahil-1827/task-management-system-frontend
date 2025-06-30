@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { useGlobalLoader } from "../context/GlobalLoaderContext"; // Import the hook
 import {
   Box,
   Typography,
@@ -29,14 +30,23 @@ export default function NavBar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { mode, toggleTheme } = useTheme();
+  const { setIsLoading } = useGlobalLoader(); // Use the loader context
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  // Wrapper for navigation to set loading state
+  const handleNavigation = (path) => {
+    if (pathname !== path) {
+      setIsLoading(true);
+    }
+    router.push(path);
+  };
+  
   const handleLogout = () => {
+    setIsLoading(true);
     logout();
-    router.push("/");
   };
 
   const navItems = [
@@ -46,7 +56,7 @@ export default function NavBar() {
     { label: "Activity Log", path: "/activity-log" },
   ];
 
-  if (user?.role === "admin") {
+  if (user?.role === "admin" || user?.role === "manager") {
     navItems.splice(3, 0, { label: "Users", path: "/users" });
   }
 
@@ -62,7 +72,7 @@ export default function NavBar() {
               <ListItem key={item.label} disablePadding>
                 <Button
                   fullWidth
-                  onClick={() => router.push(item.path)}
+                  onClick={() => handleNavigation(item.path)}
                   sx={{
                     justifyContent: "flex-start",
                     color: "text.primary",
@@ -79,7 +89,7 @@ export default function NavBar() {
             <ListItem disablePadding>
               <Button
                 fullWidth
-                onClick={() => router.push("/profile")}
+                onClick={() => handleNavigation("/profile")}
                 sx={{
                   justifyContent: "flex-start",
                   color: "text.primary",
@@ -105,7 +115,7 @@ export default function NavBar() {
             <ListItem disablePadding>
               <Button
                 fullWidth
-                onClick={() => router.push("/signup")}
+                onClick={() => handleNavigation("/signup")}
                 sx={{ justifyContent: "flex-start", color: "text.primary" }}
               >
                 <ListItemText primary="Sign Up" />
@@ -114,7 +124,7 @@ export default function NavBar() {
             <ListItem disablePadding>
               <Button
                 fullWidth
-                onClick={() => router.push("/login")}
+                onClick={() => handleNavigation("/login")}
                 sx={{ justifyContent: "flex-start", color: "text.primary" }}
               >
                 <ListItemText primary="Login" />
@@ -148,8 +158,8 @@ export default function NavBar() {
         backdropFilter: "blur(8px)",
         backgroundColor:
           theme.palette.mode === "dark"
-            ? "rgba(33, 33, 33, 0.7)" // dark blurry
-            : "rgba(255, 255, 255, 0.7)", // light blurry
+            ? "rgba(33, 33, 33, 0.7)" 
+            : "rgba(255, 255, 255, 0.7)", 
       })}
     >
       <Container maxWidth="xl">
@@ -162,7 +172,7 @@ export default function NavBar() {
               cursor: "pointer",
               flexGrow: 1,
             }}
-            onClick={() => router.push("/")}
+            onClick={() => handleNavigation("/")}
           >
             <Image src="/logo.png" alt="Logo" width={32} height={32} />
             <Typography
@@ -186,7 +196,7 @@ export default function NavBar() {
                 {navItems.map((item) => (
                   <Button
                     key={item.label}
-                    onClick={() => router.push(item.path)}
+                    onClick={() => handleNavigation(item.path)}
                     sx={{
                       color: "text.primary",
                       fontWeight: pathname === item.path ? "bold" : "normal",
@@ -196,7 +206,7 @@ export default function NavBar() {
                   </Button>
                 ))}
                 <Button
-                  onClick={() => router.push("/profile")}
+                  onClick={() => handleNavigation("/profile")}
                   sx={{ color: "text.primary" }}
                 >
                   {user?.name || "User"}
@@ -213,11 +223,11 @@ export default function NavBar() {
               <>
                 <Button
                   variant="contained"
-                  onClick={() => router.push("/signup")}
+                  onClick={() => handleNavigation("/signup")}
                 >
                   Sign Up
                 </Button>
-                <Button onClick={() => router.push("/login")}>Login</Button>
+                <Button onClick={() => handleNavigation("/login")}>Login</Button>
               </>
             )}
           </Box>
