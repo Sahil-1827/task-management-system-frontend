@@ -341,7 +341,7 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              left: "43%",
+              left: "20%",
               width: "40px",
               height: "40px",
               backgroundColor: "#027b9a",
@@ -365,7 +365,7 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              left: "50%",
+              left: "35%",
               width: "40px",
               height: "40px",
               backgroundColor: "#027b9a",
@@ -389,7 +389,7 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              left: "57%",
+              left: "50%", 
               width: "40px",
               height: "40px",
               backgroundColor: "#027b9a",
@@ -413,8 +413,8 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              left: "64%",
-              width: "40px",
+              left: "65%",
+              width: "40px", 
               height: "40px",
               backgroundColor: "#027b9a",
               borderRadius: "50%",
