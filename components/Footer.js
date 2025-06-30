@@ -1,6 +1,12 @@
 "use client";
 
-import { Box, Container, Typography, Grid, Link as MuiLink } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Link as MuiLink
+} from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import Link from "next/link"; // Using Next.js Link for navigation
@@ -16,7 +22,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
   position: "relative",
   overflow: "hidden",
   backdropFilter: "blur(8px)", // Blurry effect
-  WebkitBackdropFilter: "blur(8px)", // For Safari
+  WebkitBackdropFilter: "blur(8px)" // For Safari
 }));
 
 const FooterWave = styled("svg")({
@@ -27,22 +33,22 @@ const FooterWave = styled("svg")({
   top: "-1px",
   width: "100%",
   "@media (min-width: 760px)": {
-    height: "50px",
-  },
+    height: "50px"
+  }
 });
 
 const FooterWavePath = styled("path")(({ theme }) => ({
-  fill: theme.palette.mode === "dark" ? "#0f172a" : "#f1f5f9",
+  fill: theme.palette.mode === "dark" ? "#0f172a" : "#f1f5f9"
 }));
 
 const FooterContent = styled(Container)({
   padding: "40px 15px",
-  position: "relative",
+  position: "relative"
 });
 
 const FooterContentColumn = styled(Grid)({
   boxSizing: "border-box",
-  color: "#fff",
+  color: "#fff"
 });
 
 const FooterMenuName = styled(Typography)(({ theme }) => ({
@@ -53,7 +59,7 @@ const FooterMenuName = styled(Typography)(({ theme }) => ({
   lineHeight: "18px",
   textTransform: "uppercase",
   marginBottom: 0,
-  marginTop: 0,
+  marginTop: 0
 }));
 
 // The styling now targets the <a> tag rendered by Next.js's Link component
@@ -63,15 +69,15 @@ const FooterMenuList = styled("ul")({
   marginTop: "10px",
   paddingLeft: 0,
   "& li": {
-    marginTop: "5px",
+    marginTop: "5px"
   },
   "& a": {
     color: "#fff",
     textDecoration: "none",
     "&:hover": {
-      textDecoration: "underline",
-    },
-  },
+      textDecoration: "underline"
+    }
+  }
 });
 
 const FooterCallToActionButton = styled(MuiLink)(({ theme }) => ({
@@ -95,21 +101,21 @@ const FooterCallToActionButton = styled(MuiLink)(({ theme }) => ({
     color:
       theme.palette.mode === "dark"
         ? "#00bef0 !important"
-        : "#fffff2 !important",
-  },
+        : "#fffff2 !important"
+  }
 }));
 
 const FooterSocialLinksContainer = styled("div")(({ theme }) => ({
   position: "relative",
   marginTop: "30px",
   paddingBottom: "30px",
-  [theme.breakpoints.up('md')]: {
+  [theme.breakpoints.up("md")]: {
     position: "absolute",
     bottom: "-10px",
     right: "60px",
     width: "236px",
-    height: "54px",
-  },
+    height: "54px"
+  }
 }));
 
 const FooterSocialAmoebaSvg = styled("svg")(({ theme }) => ({
@@ -120,11 +126,12 @@ const FooterSocialAmoebaSvg = styled("svg")(({ theme }) => ({
   top: -9,
   width: "260px",
   path: {
-    fill: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
+    fill: theme.palette.mode === "dark" ? "#027b9a" : "#004658"
   },
-  [theme.breakpoints.up('md')]: { // Visible on large screens and up
-    display: "flex",
-  },
+  [theme.breakpoints.up("md")]: {
+    // Visible on large screens and up
+    display: "flex"
+  }
 }));
 
 const SocialLink = styled("a")(({ theme }) => ({
@@ -143,25 +150,25 @@ const SocialLink = styled("a")(({ theme }) => ({
     height: "1px",
     width: "1px",
     padding: 0,
-    border: 0,
+    border: 0
   },
   "& svg": {
-    display: "block",
+    display: "block"
   },
   "& svg path": {
     fill: theme.palette.mode === "dark" ? "#fffff2" : "#fff",
-    transition: "fill .2s",
+    transition: "fill .2s"
   },
   "&:hover svg path": {
-    fill: theme.palette.mode === "dark" ? "#f1f5f9" : "#00bef0",
-  },
+    fill: theme.palette.mode === "dark" ? "#f1f5f9" : "#00bef0"
+  }
 }));
 
 const FooterCopyright = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#027b9a" : "#004658",
   color: "#fff",
   padding: "15px 30px",
-  textAlign: "center",
+  textAlign: "center"
 }));
 
 const FooterCopyrightText = styled(Typography)(({ theme }) => ({
@@ -173,8 +180,8 @@ const FooterCopyrightText = styled(Typography)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? "#fff" : "#fff",
   "& a": {
     color: theme.palette.mode === "dark" ? "#fff" : "#fff",
-    textDecoration: "none",
-  },
+    textDecoration: "none"
+  }
 }));
 
 const Footer = () => {
@@ -200,11 +207,17 @@ const Footer = () => {
             maxWidth: "80%",
             marginX: "auto",
             marginBottom: "30px",
-            marginTop: "30px",
+            marginTop: "30px"
           }}
           container
         >
-          <FooterContentColumn item xs={12} sm={6} md={3} sx={{maxWidth: '200px'}}>
+          <FooterContentColumn
+            item
+            xs={12}
+            sm={6}
+            md={3}
+            sx={{ maxWidth: "200px" }}
+          >
             <Box>
               <Typography
                 variant="h6"
@@ -212,7 +225,7 @@ const Footer = () => {
                 sx={{
                   fontWeight: "bold",
                   color: "#fffff2",
-                  marginBottom: "20px",
+                  marginBottom: "20px"
                 }}
               >
                 <Image src="/logo.png" alt="Logo" width={34} height={34} />
@@ -220,11 +233,19 @@ const Footer = () => {
             </Box>
             <Box>
               <FooterMenuName variant="h2">Get Started</FooterMenuName>
-              <Typography sx={{ color: '#fff', mt: 2, fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Our comprehensive task management system helps teams collaborate efficiently. 
-                Create and organize tasks, track progress in real-time, and boost productivity 
-                with our intuitive project management tools. Perfect for teams of all sizes 
-                looking to streamline their workflow and achieve goals together.
+              <Typography
+                sx={{
+                  color: "#fff",
+                  mt: 2,
+                  fontSize: "0.9rem",
+                  lineHeight: 1.6
+                }}
+              >
+                Our comprehensive task management system helps teams collaborate
+                efficiently. Create and organize tasks, track progress in
+                real-time, and boost productivity with our intuitive project
+                management tools. Perfect for teams of all sizes looking to
+                streamline their workflow and achieve goals together.
               </Typography>
             </Box>
           </FooterContentColumn>
@@ -238,7 +259,7 @@ const Footer = () => {
                 <li>
                   <Link href="/contact">Contact</Link>
                 </li>
-                 <li>
+                <li>
                   <Link href="/learn-more">Learn More</Link>
                 </li>
               </FooterMenuList>
@@ -260,7 +281,7 @@ const Footer = () => {
               <FooterMenuName variant="h2">Product</FooterMenuName>
               <FooterMenuList>
                 <li>
-                   <Link href="/learn-more">Features</Link>
+                  <Link href="/learn-more">Features</Link>
                 </li>
                 {/* Conditionally render these links based on user login status */}
                 {user && (
@@ -286,7 +307,7 @@ const Footer = () => {
                 sx={{
                   color: "#fffff2",
                   marginTop: "10px",
-                  marginBottom: "10px",
+                  marginBottom: "10px"
                 }}
               >
                 Have a support question?
@@ -320,14 +341,19 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              height: "20px",
-              left: "15px",
-              top: "12px",
-              width: "25px",
-              [theme.breakpoints.up('md')]: {
+              left: "43%",
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#027b9a",
+              borderRadius: "50%",
+              padding: "5px",
+              [theme.breakpoints.up("md")]: {
                 left: "15px",
                 top: "12px",
-              },
+                width: "25px",
+                backgroundColor: "transparent",
+                padding: "0px"
+              }
             }}
           >
             <span className="hidden-link-text">Linkedin</span>
@@ -339,14 +365,19 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              height: "28px",
-              left: "73px",
-              top: "5px",
-              width: "30px",
-              [theme.breakpoints.up('md')]: {
+              left: "50%",
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#027b9a",
+              borderRadius: "50%",
+              padding: "5px",
+              [theme.breakpoints.up("md")]: {
                 left: "73px",
                 top: "5px",
-              },
+                width: "30px",
+                backgroundColor: "transparent",
+                padding: "0px"
+              }
             }}
           >
             <span className="hidden-link-text">Twitter</span>
@@ -358,14 +389,19 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              height: "24px",
-              left: "136px",
-              top: "15px",
-              width: "23px",
-              [theme.breakpoints.up('md')]: {
+              left: "57%",
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#027b9a",
+              borderRadius: "50%",
+              padding: "5px",
+              [theme.breakpoints.up("md")]: {
                 left: "136px",
                 top: "15px",
-              },
+                width: "23px",
+                backgroundColor: "transparent",
+                padding: "0px"
+              }
             }}
           >
             <span className="hidden-link-text">Youtube</span>
@@ -377,14 +413,19 @@ const Footer = () => {
             href="#"
             target="_blank"
             sx={{
-              height: "34px",
-              left: "184px",
-              top: "8px",
-              width: "35px",
-              [theme.breakpoints.up('md')]: {
+              left: "64%",
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#027b9a",
+              borderRadius: "50%",
+              padding: "2px",
+              [theme.breakpoints.up("md")]: {
                 left: "184px",
                 top: "8px",
-              },
+                width: "35px",
+                backgroundColor: "transparent",
+                padding: "0px"
+              }
             }}
           >
             <span className="hidden-link-text">Github</span>
