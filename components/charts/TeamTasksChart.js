@@ -3,13 +3,25 @@ import { useState, useEffect } from 'react';
 import { Paper, Typography, Box, Grid, Card, CardContent, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 const TeamTasksChart = () => {
     const { token } = useAuth();
+    const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const [data, setData] = useState(null);
     const [error, setError] = useState("");
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     useEffect(() => {
+        const callbackId = "team-tasks-chart";
+        const handleDataUpdate = (entityType) => {
+            if (entityType === "task" || entityType === "team") {
+                setRefetchTrigger((prev) => prev + 1);
+            }
+        };
+
+        registerUpdateCallback(callbackId, handleDataUpdate);
+
         const fetchData = async () => {
             if (!token) return;
             try {
@@ -33,7 +45,11 @@ const TeamTasksChart = () => {
             }
         };
         fetchData();
-    }, [token]);
+
+        return () => {
+            unregisterUpdateCallback(callbackId);
+        };
+    }, [token, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
     if (error) return <Paper sx={{p:3, height: '100%'}}><Typography color="error">{error}</Typography></Paper>;
     if (!data) return (

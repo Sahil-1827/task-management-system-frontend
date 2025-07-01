@@ -4,15 +4,27 @@ import { Typography, useTheme, Box, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import BarChart from './BarChart';
+import { useNotifications } from '../../context/NotificationContext';
 
 const TaskDueDateChart = () => {
     const { token } = useAuth();
+    const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
     const [chartData, setChartData] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     useEffect(() => {
+        const callbackId = "task-due-date-chart";
+        const handleDataUpdate = (entityType) => {
+            if (entityType === "task") {
+                setRefetchTrigger((prev) => prev + 1);
+            }
+        };
+
+        registerUpdateCallback(callbackId, handleDataUpdate);
+
         const fetchData = async () => {
             if (!token) {
                 setLoading(false);
@@ -66,7 +78,11 @@ const TaskDueDateChart = () => {
             }
         };
         fetchData();
-    }, [token, theme]);
+
+        return () => {
+            unregisterUpdateCallback(callbackId);
+        };
+    }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
     if (loading) return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>

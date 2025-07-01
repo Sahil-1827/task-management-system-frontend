@@ -17,20 +17,42 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import TeamTaskDistribution from '../../components/charts/TeamTaskDistribution';
 import UserTaskCompletionRate from '../../components/charts/UserTaskCompletionRate';
 import axios from 'axios';
+import { useNotifications } from '../../context/NotificationContext';
 
 const DashboardPage = () => {
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
   const { user, token, loading } = useAuth();
+  const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const [stats, setStats] = useState({ users: 0, tasks: 0, teams: 0, completedTasks: 0, pendingTasks: 0, highPriorityTasks: 0, teamsWithTasks: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
-    if (!token || !user) return;
+    const callbackId = "dashboard-page";
+    const handleDataUpdate = (entityType) => {
+      if (entityType === "task" || entityType === "team") {
+        setRefetchTrigger((prev) => prev + 1);
+      }
+    };
+
+    registerUpdateCallback(callbackId, handleDataUpdate);
+
+    return () => {
+      unregisterUpdateCallback(callbackId);
+    };
+  }, [registerUpdateCallback, unregisterUpdateCallback]);
+
+  useEffect(() => {
+    if (!token || !user) {
+      setStatsLoading(false);
+      return;
+    }
     if (user.role === 'user') {
       setStatsLoading(false);
       return;
     }
 
     const fetchStats = async () => {
+      setStatsLoading(true);
       try {
         const [usersRes, tasksRes, teamsRes] = await Promise.all([
           axios.get('http://localhost:5000/api/users', { headers: { Authorization: `Bearer ${token}` } }),
@@ -62,7 +84,7 @@ const DashboardPage = () => {
     };
 
     fetchStats();
-  }, [token, user]);
+  }, [token, user, refetchTrigger]);
 
   if (loading || statsLoading) {
     return (

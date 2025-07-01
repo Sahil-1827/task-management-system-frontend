@@ -3,17 +3,29 @@ import { Typography, useTheme, Box, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import BarChart from './BarChart';
+import { useNotifications } from '../../context/NotificationContext';
 
 const TaskPriorityChart = () => {
     const { token } = useAuth();
+    const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
     
     // Initialize state to null. We will conditionally render based on this.
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     useEffect(() => {
+        const callbackId = "task-priority-chart";
+        const handleDataUpdate = (entityType) => {
+            if (entityType === "task") {
+                setRefetchTrigger((prev) => prev + 1);
+            }
+        };
+
+        registerUpdateCallback(callbackId, handleDataUpdate);
+
         const fetchData = async () => {
             if (!token) {
                 setLoading(false);
@@ -48,7 +60,11 @@ const TaskPriorityChart = () => {
         };
         
         fetchData();
-    }, [token, theme]);
+
+        return () => {
+            unregisterUpdateCallback(callbackId);
+        };
+    }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
     // --- Conditional Rendering Logic ---
 

@@ -4,14 +4,26 @@ import { CircularProgress, Typography, useTheme, Box, Skeleton } from '@mui/mate
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import PieChart from './PieChart';
+import { useNotifications } from '../../context/NotificationContext';
 
 const MyTasksStatusChart = () => {
     const { user, token } = useAuth();
+    const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
     const [chartData, setChartData] = useState(null);
     const [error, setError] = useState("");
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     useEffect(() => {
+        const callbackId = "my-tasks-status-chart";
+        const handleDataUpdate = (entityType) => {
+            if (entityType === "task") {
+                setRefetchTrigger((prev) => prev + 1);
+            }
+        };
+
+        registerUpdateCallback(callbackId, handleDataUpdate);
+
         const fetchData = async () => {
             if (!token || !user) return;
             try {
@@ -38,7 +50,11 @@ const MyTasksStatusChart = () => {
             }
         };
         fetchData();
-    }, [token, user, theme]);
+
+        return () => {
+            unregisterUpdateCallback(callbackId);
+        };
+    }, [token, user, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
     if (error) return <Typography color="error">{error}</Typography>;
     if (!chartData) return (

@@ -5,14 +5,26 @@ import { useTheme } from '@mui/material';
 import BarChart from './BarChart';
 import axios from 'axios';
 import { Skeleton, Box } from '@mui/material';
+import { useNotifications } from '../../context/NotificationContext';
 
 const UserTaskCompletionRate = () => {
   const { token } = useAuth();
+  const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const theme = useTheme();
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
+    const callbackId = "user-task-completion-rate-chart";
+    const handleDataUpdate = (entityType) => {
+      if (entityType === "task" || entityType === "user" || entityType === "team") {
+        setRefetchTrigger((prev) => prev + 1);
+      }
+    };
+
+    registerUpdateCallback(callbackId, handleDataUpdate);
+
     const fetchData = async () => {
       if (!token) {
         setLoading(false);
@@ -62,7 +74,11 @@ const UserTaskCompletionRate = () => {
       }
     };
     fetchData();
-  }, [token, theme]);
+
+    return () => {
+      unregisterUpdateCallback(callbackId);
+    };
+  }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
   if (loading) {
     return (

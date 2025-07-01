@@ -4,17 +4,39 @@ import { useAuth } from '../../context/AuthContext';
 import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box, Chip, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useNotifications } from '../../context/NotificationContext';
 
 const MyTasks = () => {
   const { user, token } = useAuth();
+  const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    if (!token || !user) return;
+    const callbackId = "my-tasks-dashboard";
+    const handleDataUpdate = (entityType) => {
+      if (entityType === "task") {
+        setRefetchTrigger((prev) => prev + 1);
+      }
+    };
 
+    registerUpdateCallback(callbackId, handleDataUpdate);
+
+    return () => {
+      unregisterUpdateCallback(callbackId);
+    };
+  }, [registerUpdateCallback, unregisterUpdateCallback]);
+
+  useEffect(() => {
     const fetchTasks = async () => {
+      if (!token || !user) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true); // Set loading to true before fetching
+
       try {
         const response = await axios.get(`http://localhost:5000/api/tasks?assignee=${user._id}&limit=5&status=In Progress,To Do,Done`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -22,13 +44,14 @@ const MyTasks = () => {
         setTasks(response.data.tasks);
       } catch (error) {
         console.error("Failed to fetch user's tasks", error);
+        setTasks([]); // Clear tasks on error
       } finally {
-        setLoading(false);
+        setLoading(false); // Always set loading to false
       }
     };
 
     fetchTasks();
-  }, [token, user]);
+  }, [token, user, refetchTrigger]);
 
   const getStatusColor = (status) => {
     switch (status) {

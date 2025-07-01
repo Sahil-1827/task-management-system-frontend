@@ -4,15 +4,27 @@ import { CircularProgress, Typography, useTheme, Box } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import PieChart from './PieChart';
+import { useNotifications } from '../../context/NotificationContext';
 
 const UserRoleChart = () => {
     const { user, token } = useAuth();
+    const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
     const [chartData, setChartData] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
     useEffect(() => {
+        const callbackId = "user-role-chart";
+        const handleDataUpdate = (entityType) => {
+            if (entityType === "user") {
+                setRefetchTrigger((prev) => prev + 1);
+            }
+        };
+
+        registerUpdateCallback(callbackId, handleDataUpdate);
+
         const fetchData = async () => {
             if (!token || !user) {
                 setLoading(false);
@@ -46,7 +58,11 @@ const UserRoleChart = () => {
             }
         };
         fetchData();
-    }, [token, user, theme]);
+
+        return () => {
+            unregisterUpdateCallback(callbackId);
+        };
+    }, [token, user, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
     if (loading) return <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}><CircularProgress /></Box>;
     if (error) return <Typography color="error">{error}</Typography>;

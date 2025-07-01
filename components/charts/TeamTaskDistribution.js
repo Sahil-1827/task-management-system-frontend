@@ -4,13 +4,25 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '@mui/material';
 import PieChart from './PieChart';
 import axios from 'axios';
+import { useNotifications } from '../../context/NotificationContext';
 
 const TeamTaskDistribution = () => {
   const { token } = useAuth();
+  const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const theme = useTheme();
   const [chartData, setChartData] = useState(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
+    const callbackId = "team-task-distribution-chart";
+    const handleDataUpdate = (entityType) => {
+      if (entityType === "task" || entityType === "team") {
+        setRefetchTrigger((prev) => prev + 1);
+      }
+    };
+
+    registerUpdateCallback(callbackId, handleDataUpdate);
+
     const fetchData = async () => {
       if (!token) return;
       try {
@@ -48,7 +60,11 @@ const TeamTaskDistribution = () => {
       }
     };
     fetchData();
-  }, [token, theme]);
+
+    return () => {
+      unregisterUpdateCallback(callbackId);
+    };
+  }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
   if (!chartData) return null;
 
