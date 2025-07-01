@@ -78,14 +78,6 @@ export default function Tasks() {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [loadingTasks, setLoadingTasks] = useState(true); // New state for task loading
 
-  const getTodayDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   useEffect(() => {
     const callbackId = "tasks-page";
     const handleDataUpdate = (entityType) => {
@@ -104,69 +96,51 @@ export default function Tasks() {
   useEffect(() => {
     if (loading || !user) return;
 
-    const fetchTasks = async () => {
-      setLoadingTasks(true); // Set loading to true before fetching
-      try {
-        const queryParams = new URLSearchParams({
-          page,
-          limit: tasksPerPage,
-          search: debouncedSearch,
-          ...(filterStatus && { status: filterStatus }),
-          ...(filterPriority && { priority: filterPriority }),
-          ...(filterAssignee && { assignee: filterAssignee }),
-          ...(filterTeam && { team: filterTeam })
-        });
+    const fetchData = async () => {
+        setLoadingTasks(true);
+        try {
+            const queryParams = new URLSearchParams({
+                page,
+                limit: tasksPerPage,
+                search: debouncedSearch,
+                ...(filterStatus && { status: filterStatus }),
+                ...(filterPriority && { priority: filterPriority }),
+                ...(filterAssignee && { assignee: filterAssignee }),
+                ...(filterTeam && { team: filterTeam })
+            });
 
-        const response = await axios.get(
-          `http://localhost:5000/api/tasks?${queryParams.toString()}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+            const [tasksRes, usersRes, teamsRes] = await Promise.all([
+                axios.get(
+                    `http://localhost:5000/api/tasks?${queryParams.toString()}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                ),
+                axios.get("http://localhost:5000/api/users", {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                axios.get("http://localhost:5000/api/teams", {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            ]);
 
-        setTasks(response.data.tasks);
-        setDisplayTasks(response.data.tasks);
-        setTotalTasks(response.data.totalTasks);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to fetch tasks");
-      } finally {
-        setLoadingTasks(false); // Set loading to false after fetching (success or error)
-      }
+            setTasks(tasksRes.data.tasks);
+            setTotalTasks(tasksRes.data.totalTasks);
+            setTotalPages(tasksRes.data.totalPages);
+            setUsers(usersRes.data);
+            setTeams(teamsRes.data.teams || teamsRes.data);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to fetch page data");
+        } finally {
+            setLoadingTasks(false);
+        }
     };
 
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/users", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setUsers(response.data);
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to fetch users");
-      }
-    };
-
-    const fetchTeams = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/teams", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setTeams(response.data.teams || response.data);
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to fetch teams");
-      }
-    };
-
-    fetchTasks();
-    if (user.role !== "user") {
-      fetchUsers();
-      fetchTeams();
-    }
+    fetchData();
   }, [
     token,
     user,
     loading,
     page,
+    tasksPerPage,
     debouncedSearch,
     filterStatus,
     filterPriority,
@@ -176,7 +150,10 @@ export default function Tasks() {
   ]);
 
   useEffect(() => {
-    if (!tasks || tasks.length === 0) return;
+    if (!tasks || tasks.length === 0) {
+        setDisplayTasks([]);
+        return;
+    };
 
     const sortedTasks = [...tasks];
     if (sortField) {
@@ -196,9 +173,9 @@ export default function Tasks() {
         }
 
         if (sortDirection === "asc") {
-          return valueA - valueB;
+          return valueA > valueB ? 1 : -1;
         } else {
-          return valueB - valueA;
+          return valueA < valueB ? 1 : -1;
         }
       });
     }
@@ -210,6 +187,26 @@ export default function Tasks() {
       router.push("/");
     }
   }, [user, loading, router]);
+  
+  const isUserAssigned = (task, currentUser, allTeams) => {
+    if (!task || !currentUser || !allTeams) return false;
+
+    const currentUserId = currentUser._id || currentUser.id;
+    if (!currentUserId) return false;
+
+    if (task.assignee && task.assignee._id === currentUserId) {
+        return true;
+    }
+
+    if (task.team && task.team._id) {
+        const assignedTeam = allTeams.find(t => t._id === task.team._id);
+        if (assignedTeam && assignedTeam.members) {
+            return assignedTeam.members.some(member => member._id === currentUserId);
+        }
+    }
+
+    return false;
+  };
 
   if (loading || !user) {
     return (
@@ -246,7 +243,7 @@ export default function Tasks() {
         team: ""
       });
       toast.success("Task created successfully!");
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
+      setRefetchTrigger((prev) => prev + 1);
       fetchLogs();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to create task");
@@ -290,7 +287,7 @@ export default function Tasks() {
         team: ""
       });
       setEditTask(null);
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
+      setRefetchTrigger((prev) => prev + 1);
       fetchLogs();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update task");
@@ -303,7 +300,7 @@ export default function Tasks() {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Task deleted successfully");
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
+      setRefetchTrigger((prev) => prev + 1);
       fetchLogs();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete task");
@@ -369,6 +366,23 @@ export default function Tasks() {
     setSortField("");
     setSortDirection("asc");
     setPage(1);
+  };
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+        await axios.put(
+            `http://localhost:5000/api/tasks/${taskId}`,
+            { status: newStatus },
+            {
+                headers: { Authorization: `Bearer ${token}` },
+            }
+        );
+        toast.success("Task status updated successfully!");
+        setRefetchTrigger((prev) => prev + 1);
+        fetchLogs();
+    } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to update task status");
+    }
   };
 
   return (
@@ -443,7 +457,7 @@ export default function Tasks() {
                   value={newTask.dueDate}
                   onChange={handleInputChange}
                   fullWidth
-                  slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
@@ -641,35 +655,25 @@ export default function Tasks() {
               // Skeleton rows
               Array.from(new Array(tasksPerPage)).map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
-                      <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
-                      <Skeleton variant="circular" width={30} height={30} />
+                      <Box sx={{ display: 'flex' }}>
+                        <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
+                        <Skeleton variant="circular" width={30} height={30} />
+                      </Box>
                     </TableCell>
                   )}
                 </TableRow>
               ))
             ) : displayTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={user.role === "admin" || user.role === "manager" ? 7 : 5} sx={{ textAlign: "center" }}>
+                <TableCell colSpan={user.role === "admin" || user.role === "manager" ? 7 : 6} sx={{ textAlign: "center" }}>
                   No tasks found.
                 </TableCell>
               </TableRow>
@@ -680,7 +684,22 @@ export default function Tasks() {
                     {task.title}
                   </TableCell>
                   <TableCell>{task.description || "-"}</TableCell>
-                  <TableCell>{task.status}</TableCell>
+                  <TableCell>
+                  {(user.role === 'user' && isUserAssigned(task, user, teams)) ? (
+                      <FormControl fullWidth size="small">
+                          <Select
+                              value={task.status}
+                              onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                          >
+                              <MenuItem value="To Do">To Do</MenuItem>
+                              <MenuItem value="In Progress">In Progress</MenuItem>
+                              <MenuItem value="Done">Done</MenuItem>
+                          </Select>
+                      </FormControl>
+                  ) : (
+                      task.status
+                  )}
+                  </TableCell>
                   <TableCell>{task.priority}</TableCell>
                   <TableCell>
                     {task.dueDate
@@ -787,7 +806,7 @@ export default function Tasks() {
                 value={newTask.dueDate}
                 onChange={handleInputChange}
                 fullWidth
-                slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
