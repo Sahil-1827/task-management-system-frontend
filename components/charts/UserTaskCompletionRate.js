@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '@mui/material';
-import BarChart from './BarChart'; // This now passes the correct data format to BarChart
+import BarChart from './BarChart';
 import axios from 'axios';
 import { Skeleton, Box } from '@mui/material';
 
@@ -20,26 +20,38 @@ const UserTaskCompletionRate = () => {
       };
 
       try {
-        const [usersRes, tasksRes] = await Promise.all([
+        // Step 1: Fetch users, tasks, AND teams
+        const [usersRes, tasksRes, teamsRes] = await Promise.all([
           axios.get('http://localhost:5000/api/users', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5000/api/tasks', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get('http://localhost:5000/api/tasks', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5000/api/teams', { headers: { Authorization: `Bearer ${token}` } })
         ]);
         
         const users = usersRes.data || [];
         const tasks = tasksRes.data.tasks || [];
+        const teams = teamsRes.data.teams || [];
 
         const userTaskStats = users.map(user => {
-          const assignedTasks = tasks.filter(task => task.assignee?._id === user._id);
+          // Step 2: Find all teams the user is a member of
+          const userTeamIds = teams
+            .filter(team => team.members.some(member => member._id === user._id))
+            .map(team => team._id);
+
+          // Step 3: Filter for tasks assigned to the user OR their teams
+          const assignedTasks = tasks.filter(task => 
+            (task.assignee?._id === user._id) || 
+            (task.team?._id && userTeamIds.includes(task.team._id))
+          );
+
           const completedTasks = assignedTasks.filter(task => task.status === 'Done');
           const completionRate = assignedTasks.length > 0 ? Math.round((completedTasks.length / assignedTasks.length) * 100) : 0;
           return { name: user.name, value: completionRate };
         });
 
-        // FIX: Create an array of objects, which is the format BarChart.js expects.
         const dataForChart = userTaskStats.map(stat => ({
           name: stat.name,
           value: stat.value,
-          color: theme.palette.secondary.main,
+          color: theme.palette.success.main, // Changed color for better representation
         }));
 
         setChartData(dataForChart);
