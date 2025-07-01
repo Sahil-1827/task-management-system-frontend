@@ -78,6 +78,14 @@ export default function Tasks() {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [loadingTasks, setLoadingTasks] = useState(true); // New state for task loading
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     const callbackId = "tasks-page";
     const handleDataUpdate = (entityType) => {
@@ -457,7 +465,7 @@ export default function Tasks() {
                   value={newTask.dueDate}
                   onChange={handleInputChange}
                   fullWidth
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
@@ -806,7 +814,7 @@ export default function Tasks() {
                 value={newTask.dueDate}
                 onChange={handleInputChange}
                 fullWidth
-                InputLabelProps={{ shrink: true }}
+                slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>

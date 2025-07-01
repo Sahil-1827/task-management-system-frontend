@@ -43,6 +43,14 @@ export default function EditTask({ params }) {
   const [submitting, setSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     if (params) {
       setId(params.id);
@@ -238,9 +246,7 @@ export default function EditTask({ params }) {
           onChange={handleChange}
           fullWidth
           sx={{ mb: 2 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
+          slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
         />
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Assigned To</InputLabel>
