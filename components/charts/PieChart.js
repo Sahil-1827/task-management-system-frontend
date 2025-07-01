@@ -31,7 +31,7 @@ const PieChart = ({ data, title }) => {
             <Typography variant="h6" gutterBottom>{title}</Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1, my: 2 }}>
                 <svg width="150" height="150" viewBox="0 0 40 40">
-                    {data.map((item, index) => { // Added index here
+                    {data.map((item) => {
                         if (item.value === 0) return null;
 
                         const percentage = (item.value / total) * 100;
@@ -40,8 +40,8 @@ const PieChart = ({ data, title }) => {
                         cumulativeAngle += (percentage / 100) * 360;
 
                         return (
-                            // FIX: Use a guaranteed unique key
-                            <Tooltip key={`${item.name}-${index}`} title={`${item.name}: ${item.value}`} placement="top" arrow>
+                            // Using item.id as the key if available, otherwise fallback to item.name
+                            <Tooltip key={item.id || item.name} title={`${item.name}: ${item.value}`} placement="top" arrow>
                                 <circle
                                     cx="20" cy="20" r={radius}
                                     fill="transparent"
@@ -60,9 +60,9 @@ const PieChart = ({ data, title }) => {
                 </svg>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
-                {data.map((item, index) => ( // Added index here
-                    // FIX: Use a guaranteed unique key
-                    <Box key={`${item.name}-${index}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {data.map((item) => (
+                    // Using item.id as the key if available, otherwise fallback to item.name
+                    <Box key={item.id || item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
                         <Typography variant="caption">{item.name} ({item.value})</Typography>
                     </Box>

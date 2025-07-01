@@ -24,7 +24,7 @@ const TeamTaskDistribution = () => {
 
         const teamTaskCounts = teams.map(team => {
           const taskCount = tasks.filter(task => task.team && task.team._id === team._id).length;
-          return { name: team.name, value: taskCount };
+          return { id: team._id, name: team.name, value: taskCount }; // Add the 'id'
         });
 
         // Assign colors dynamically
