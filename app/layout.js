@@ -6,7 +6,7 @@ import { GlobalLoaderProvider } from "../context/GlobalLoaderContext"; // 1. Imp
 import ClientLayout from "@/components/ClientLayout";
 import { Manrope, Noto_Sans } from "next/font/google";
 import "../app/globals.css";
-import { ToastContainer } from 'react-toastify';
+import ThemedToastContainer from '@/components/ThemedToastContainer';
 import 'react-toastify/dist/ReactToastify.css';
 
 const manrope = Manrope({ subsets: ["latin"] });
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
               <NotificationProvider>
                 <ActivityLogProvider>
                   <ClientLayout>{children}</ClientLayout>
-                  <ToastContainer />
+                  <ThemedToastContainer />
                 </ActivityLogProvider>
               </NotificationProvider>
             </GlobalLoaderProvider> {/* 3. And close here */}
