@@ -162,7 +162,7 @@ export default function Home() {
                   "Monitor task completion, track progress, and identify bottlenecks to keep projects on schedule.",
               },
             ].map((feature) => (
-              <Grid item xs={12} sm={6} md={3} key={feature.title}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={feature.title}>
                 <FeatureCard>
                   {feature.icon}
                   <Box>

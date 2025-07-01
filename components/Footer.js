@@ -437,10 +437,8 @@ const Footer = () => {
       </FooterContent>
       <FooterCopyright>
         <FooterCopyrightText>
-          <MuiLink href="#" target="_self">
-            ©{new Date().getFullYear()}. | Designed By: Sahil Gadhiya. | All
-            rights reserved.
-          </MuiLink>
+          {new Date().getFullYear()}. Designed By: Sahil Gadhiya. All rights
+          reserved.
         </FooterCopyrightText>
       </FooterCopyright>
     </FooterContainer>

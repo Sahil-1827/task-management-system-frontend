@@ -80,13 +80,13 @@ const DashboardPage = () => {
       {/* Admin and Manager Stats */}
       {(isAdmin || isManager) && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary" />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <StatCard title="Total Users" value={stats.users} icon={<PeopleIcon />} color="secondary" />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <StatCard title="Total Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info" />
           </Grid>
         </Grid>
@@ -95,12 +95,12 @@ const DashboardPage = () => {
       <Grid container spacing={3}>
         {/* All Roles */}
         {(isManager || user.role === 'user') && (
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <MyTasks />
           </Grid>
         )}
         {(isManager || user.role === 'user') && (
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <MyTasksStatusChart />
         </Grid>
         )}
@@ -109,10 +109,10 @@ const DashboardPage = () => {
         {(isAdmin || isManager) && (
           <>
             
-            <Grid item xs={12} sm={6} lg={4} sx={{ display: 'flex' }}>
+            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex' }}>
               <TaskStatusChart />
             </Grid>
-            <Grid item xs={12} sm={6} lg={isAdmin ? 8 : 12} sx={{ display: 'flex' }}>
+            <Grid size={{ xs: 12, sm: 6, lg: isAdmin ? 8 : 12 }} sx={{ display: 'flex' }}>
               <TeamTasksChart />
             </Grid>
           </>
@@ -120,13 +120,13 @@ const DashboardPage = () => {
 
         {/* Admin-Only View */}
         {isAdmin && (
-          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
             <UserRoleChart />
           </Grid>
         )}
 
          {(isAdmin || isManager) && (
-          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
             <RecentActivity />
           </Grid>
         )}

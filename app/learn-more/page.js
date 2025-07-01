@@ -66,7 +66,7 @@ export default function LearnMore() {
               { icon: <ChartLine />, title: 'Progress Tracking', description: 'Monitor progress and identify bottlenecks.' },
               { icon: <File />, title: 'File Sharing', description: 'Share files and documents seamlessly.' }
             ].map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                 <FeatureCard>
                   <IconButton sx={{ alignSelf: 'flex-start', color: 'text.primary' }}>
                     {feature.icon}
@@ -107,7 +107,7 @@ export default function LearnMore() {
               { icon: <Money />, title: 'Cost-Effective', description: 'Affordable pricing plans to suit your needs.' },
               { icon: <Smiley />, title: 'User-Friendly Interface', description: 'Easy to learn and use, even for beginners.' }
             ].map((benefit, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                 <FeatureCard>
                   <IconButton sx={{ alignSelf: 'flex-start', color: 'text.primary' }}>
                     {benefit.icon}

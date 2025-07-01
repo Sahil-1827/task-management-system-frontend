@@ -43,7 +43,7 @@ export default function NavBar() {
     }
     router.push(path);
   };
-  
+
   const handleLogout = () => {
     setIsLoading(true);
     logout();
@@ -158,8 +158,8 @@ export default function NavBar() {
         backdropFilter: "blur(8px)",
         backgroundColor:
           theme.palette.mode === "dark"
-            ? "rgba(33, 33, 33, 0.7)" 
-            : "rgba(255, 255, 255, 0.7)", 
+            ? "rgba(33, 33, 33, 0.7)"
+            : "rgba(255, 255, 255, 0.7)",
       })}
     >
       <Container maxWidth="xl">
@@ -199,6 +199,10 @@ export default function NavBar() {
                     onClick={() => handleNavigation(item.path)}
                     sx={{
                       color: "text.primary",
+                      color:
+                        pathname === item.path
+                          ? "primary.main"
+                          : "text.primary",
                       fontWeight: pathname === item.path ? "bold" : "normal",
                     }}
                   >
@@ -207,7 +211,12 @@ export default function NavBar() {
                 ))}
                 <Button
                   onClick={() => handleNavigation("/profile")}
-                  sx={{ color: "text.primary" }}
+                  sx={{
+                    color: "text.primary",
+                    color:
+                      pathname === "/profile" ? "primary.main" : "text.primary",
+                    fontWeight: pathname === "/profile" ? "bold" : "normal",
+                  }}
                 >
                   {user?.name || "User"}
                 </Button>
@@ -227,7 +236,9 @@ export default function NavBar() {
                 >
                   Sign Up
                 </Button>
-                <Button onClick={() => handleNavigation("/login")}>Login</Button>
+                <Button onClick={() => handleNavigation("/login")}>
+                  Login
+                </Button>
               </>
             )}
           </Box>
