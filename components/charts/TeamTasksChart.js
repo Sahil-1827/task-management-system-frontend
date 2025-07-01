@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Paper, Typography, Box, Grid, CircularProgress, Card, CardContent, Skeleton } from '@mui/material';
+import { Paper, Typography, Box, Grid, Card, CardContent, Skeleton } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -41,8 +41,8 @@ const TeamTasksChart = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Skeleton variant="text" width="80%" height={30} />
                 <Grid container spacing={2}>
-                    {[...Array(3)].map((_, index) => (
-                        <Grid size={{ xs: 12, sm: 6 }} key={index}>
+                    {[...Array(2)].map((_, index) => (
+                        <Grid item xs={12} sm={6} key={index}>
                             <Skeleton variant="rectangular" height={100} />
                         </Grid>
                     ))}
@@ -69,7 +69,7 @@ const TeamTasksChart = () => {
                         </Card>
                     </Grid>
                 )) : (
-                    <Grid size={{ xs: 12 }}>
+                    <Grid item xs={12}>
                         <Typography color="text.secondary">No teams with assigned tasks found.</Typography>
                     </Grid>
                 )}

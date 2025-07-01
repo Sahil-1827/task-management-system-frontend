@@ -14,6 +14,8 @@ import MyTasks from '../../components/dashboard/MyTasks';
 import PeopleIcon from '@mui/icons-material/People';
 import TaskIcon from '@mui/icons-material/Task';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import TeamTaskDistribution from '../../components/charts/TeamTaskDistribution';
+import UserTaskCompletionRate from '../../components/charts/UserTaskCompletionRate';
 import axios from 'axios';
 
 const DashboardPage = () => {
@@ -84,93 +86,63 @@ const DashboardPage = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" sx={{ mb: 1 }}>
+      <Typography variant="h4" sx={{ mb: 1, color: 'primary.main' }}>
         Welcome back, {user.name}!
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
         Here&apos;s a snapshot of your workspace.
       </Typography>
 
-      {/* Admin and Manager Stats */}
       {(isAdmin || isManager) && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary" />
+          <Grid item xs={12} sm={4}>
+            <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" />
           </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Total Users" value={stats.users} icon={<PeopleIcon />} color="secondary" />
+          <Grid item xs={12} sm={4}>
+            <StatCard title="Total Users" value={stats.users} icon={<PeopleIcon />} color="secondary.main" />
           </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Total Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info" />
-          </Grid>
-        </Grid>
-      )}
-
-      {/* Task Overview for Admin/Manager */}
-      {(isAdmin || isManager) && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Completed Tasks" value={stats.completedTasks} icon={<TaskIcon />} color="success" />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Pending Tasks" value={stats.pendingTasks} icon={<TaskIcon />} color="warning" />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="High Priority Tasks" value={stats.highPriorityTasks} icon={<TaskIcon />} color="error" />
-          </Grid>
-        </Grid>
-      )}
-
-      {/* Team Performance for Admin/Manager */}
-      {(isAdmin || isManager) && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <StatCard title="Teams with Tasks" value={stats.teamsWithTasks} icon={<GroupWorkIcon />} color="info" />
+          <Grid item xs={12} sm={4}>
+            <StatCard title="Total Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" />
           </Grid>
         </Grid>
       )}
 
       <Grid container spacing={3}>
-        {/* All Roles */}
-        {(isManager || user.role === 'user') && (
-          <Grid size={{ xs: 12, md: 8 }}>
-            <MyTasks />
-          </Grid>
-        )}
-        {(isManager || user.role === 'user') && (
-        <Grid size={{ xs: 12, md: 4 }}>
-          <MyTasksStatusChart />
-        </Grid>
-        )}
-
-        {/* Admin and Manager View */}
         {(isAdmin || isManager) && (
           <>
-            
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex' }}>
-              <TaskStatusChart />
+            <Grid item xs={12} md={6}>
+              <TeamTaskDistribution />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex' }}>
-              <TaskPriorityChart />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, lg: 4 }} sx={{ display: 'flex' }}>
-              <TaskDueDateChart />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, lg: isAdmin ? 4 : 8 }} sx={{ display: 'flex' }}>
-              <TeamTasksChart />
+            <Grid item xs={12} md={6}>
+              <UserTaskCompletionRate />
             </Grid>
           </>
         )}
 
-        {/* Admin-Only View */}
+        {(isManager || user.role === 'user') && (
+          <Grid item xs={12}>
+            <MyTasks />
+          </Grid>
+        )}
+
+        <Grid item xs={12} md={4}>
+          <TaskStatusChart />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TaskPriorityChart />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TaskDueDateChart />
+        </Grid>
+
         {isAdmin && (
-          <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
+          <Grid item xs={12} md={4}>
             <UserRoleChart />
           </Grid>
         )}
 
-         {(isAdmin || isManager) && (
-          <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
+        {(isAdmin || isManager) && (
+          <Grid item xs={12}>
             <RecentActivity />
           </Grid>
         )}

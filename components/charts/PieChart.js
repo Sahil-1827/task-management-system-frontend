@@ -2,13 +2,22 @@
 import { Box, Typography, Tooltip, Paper } from '@mui/material';
 
 const PieChart = ({ data, title }) => {
+    if (!data || data.length === 0) {
+        return (
+            <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h6" gutterBottom>{title}</Typography>
+                <Typography color="text.secondary">No data available</Typography>
+            </Paper>
+        );
+    }
+
     const total = data.reduce((acc, item) => acc + item.value, 0);
     
     if (total === 0) {
         return (
             <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Typography variant="h6" gutterBottom>{title}</Typography>
-                <Typography color="text.secondary">No data available</Typography>
+                <Typography color="text.secondary">No data to display in chart</Typography>
             </Paper>
         );
     }
@@ -22,7 +31,7 @@ const PieChart = ({ data, title }) => {
             <Typography variant="h6" gutterBottom>{title}</Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1, my: 2 }}>
                 <svg width="150" height="150" viewBox="0 0 40 40">
-                    {data.map(item => {
+                    {data.map((item, index) => { // Added index here
                         if (item.value === 0) return null;
 
                         const percentage = (item.value / total) * 100;
@@ -31,7 +40,8 @@ const PieChart = ({ data, title }) => {
                         cumulativeAngle += (percentage / 100) * 360;
 
                         return (
-                            <Tooltip key={item.name} title={`${item.name}: ${item.value}`} placement="top" arrow>
+                            // FIX: Use a guaranteed unique key
+                            <Tooltip key={`${item.name}-${index}`} title={`${item.name}: ${item.value}`} placement="top" arrow>
                                 <circle
                                     cx="20" cy="20" r={radius}
                                     fill="transparent"
@@ -50,8 +60,9 @@ const PieChart = ({ data, title }) => {
                 </svg>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
-                {data.map(item => (
-                    <Box key={item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {data.map((item, index) => ( // Added index here
+                    // FIX: Use a guaranteed unique key
+                    <Box key={`${item.name}-${index}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
                         <Typography variant="caption">{item.name} ({item.value})</Typography>
                     </Box>

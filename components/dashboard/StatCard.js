@@ -1,23 +1,26 @@
 "use client";
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box, Avatar } from '@mui/material';
 
 const StatCard = ({ title, value, icon, color }) => {
   return (
-    <Card sx={{ display: 'flex', alignItems: 'center', p: 2, height: '100%' }}>
-      <Box sx={{
-        bgcolor: `${color}.light`,
-        color: `${color}.main`,
-        borderRadius: '50%',
-        p: 1.5,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        mr: 2,
+    <Card sx={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      p: 3, 
+      backgroundColor: 'background.paper',
+      borderRadius: '16px',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.1)'
+    }}>
+      <Avatar sx={{
+        bgcolor: color,
+        width: 56,
+        height: 56,
+        mr: 2
       }}>
         {icon}
-      </Box>
+      </Avatar>
       <Box>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{value}</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{value}</Typography>
         <Typography variant="body2" color="text.secondary">{title}</Typography>
       </Box>
     </Card>
