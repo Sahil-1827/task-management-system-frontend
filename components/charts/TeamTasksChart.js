@@ -11,6 +11,7 @@ const TeamTasksChart = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState("");
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const callbackId = "team-tasks-chart";
@@ -42,6 +43,8 @@ const TeamTasksChart = () => {
                 setData(teamTaskCounts);
             } catch (err) {
                 setError("Failed to fetch team task data");
+            } finally {
+                setIsInitialLoad(false);
             }
         };
         fetchData();
@@ -52,7 +55,7 @@ const TeamTasksChart = () => {
     }, [token, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
     if (error) return <Paper sx={{p:3, height: '100%'}}><Typography color="error">{error}</Typography></Paper>;
-    if (!data) return (
+    if (!data && isInitialLoad) return (
         <Paper sx={{ p: 3, height: '100%' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Skeleton variant="text" width="80%" height={30} />

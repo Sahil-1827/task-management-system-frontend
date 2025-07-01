@@ -13,6 +13,7 @@ const MyTasksStatusChart = () => {
     const [chartData, setChartData] = useState(null);
     const [error, setError] = useState("");
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const callbackId = "my-tasks-status-chart";
@@ -47,6 +48,8 @@ const MyTasksStatusChart = () => {
                 setChartData(dataForChart);
             } catch (err) {
                 setError("Failed to fetch your task data");
+            } finally {
+                setIsInitialLoad(false);
             }
         };
         fetchData();
@@ -57,7 +60,7 @@ const MyTasksStatusChart = () => {
     }, [token, user, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
     if (error) return <Typography color="error">{error}</Typography>;
-    if (!chartData) return (
+    if (!chartData && isInitialLoad) return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <Skeleton variant="circular" width={100} height={100} />
             <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />

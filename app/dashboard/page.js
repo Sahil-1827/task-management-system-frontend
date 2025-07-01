@@ -25,6 +25,7 @@ const DashboardPage = () => {
   const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const [stats, setStats] = useState({ users: 0, tasks: 0, teams: 0, completedTasks: 0, pendingTasks: 0, highPriorityTasks: 0, teamsWithTasks: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const callbackId = "dashboard-page";
@@ -52,7 +53,9 @@ const DashboardPage = () => {
     }
 
     const fetchStats = async () => {
-      setStatsLoading(true);
+      if (isInitialLoad) {
+        setStatsLoading(true);
+      }
       try {
         const [usersRes, tasksRes, teamsRes] = await Promise.all([
           axios.get('http://localhost:5000/api/users', { headers: { Authorization: `Bearer ${token}` } }),
@@ -80,11 +83,12 @@ const DashboardPage = () => {
         console.error("Failed to fetch dashboard stats", error);
       } finally {
         setStatsLoading(false);
+        setIsInitialLoad(false);
       }
     };
 
     fetchStats();
-  }, [token, user, refetchTrigger]);
+  }, [token, user, refetchTrigger, isInitialLoad]);
 
   if (loading || statsLoading) {
     return (

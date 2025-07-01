@@ -14,6 +14,7 @@ const UserTaskCompletionRate = () => {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const callbackId = "user-task-completion-rate-chart";
@@ -30,6 +31,9 @@ const UserTaskCompletionRate = () => {
         setLoading(false);
         return;
       };
+      if (isInitialLoad) {
+        setLoading(true);
+      }
 
       try {
         // Step 1: Fetch users, tasks, AND teams
@@ -71,6 +75,7 @@ const UserTaskCompletionRate = () => {
         console.error("Failed to fetch user task completion data", err);
       } finally {
         setLoading(false);
+        setIsInitialLoad(false);
       }
     };
     fetchData();
@@ -80,7 +85,7 @@ const UserTaskCompletionRate = () => {
     };
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
-  if (loading) {
+  if (loading && isInitialLoad) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
           <Skeleton variant="rectangular" width="100%" height={200} />

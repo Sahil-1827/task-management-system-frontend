@@ -14,6 +14,7 @@ const TaskDueDateChart = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const callbackId = "task-due-date-chart";
@@ -26,9 +27,8 @@ const TaskDueDateChart = () => {
         registerUpdateCallback(callbackId, handleDataUpdate);
 
         const fetchData = async () => {
-            if (!token) {
-                setLoading(false);
-                return;
+            if (isInitialLoad) {
+                setLoading(true);
             };
             try {
                 const res = await axios.get('http://localhost:5000/api/tasks', {
@@ -72,9 +72,9 @@ const TaskDueDateChart = () => {
                 setChartData(dataForChart);
             } catch (err) {
                 setError("Failed to fetch task data");
-            }
-            finally {
+            } finally {
                 setLoading(false);
+                setIsInitialLoad(false);
             }
         };
         fetchData();
@@ -84,7 +84,7 @@ const TaskDueDateChart = () => {
         };
     }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
-    if (loading) return (
+    if (loading && isInitialLoad) return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <Skeleton variant="rectangular" width="100%" height={200} />
             <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />

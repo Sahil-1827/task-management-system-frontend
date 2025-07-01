@@ -11,6 +11,7 @@ const MyTasks = () => {
   const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const router = useRouter();
 
@@ -35,7 +36,9 @@ const MyTasks = () => {
         setLoading(false);
         return;
       }
-      setLoading(true); // Set loading to true before fetching
+      if (isInitialLoad) {
+        setLoading(true); // Set loading to true before fetching
+      }
 
       try {
         const response = await axios.get(`http://localhost:5000/api/tasks?assignee=${user._id}&limit=5&status=In Progress,To Do,Done`, {
@@ -47,6 +50,7 @@ const MyTasks = () => {
         setTasks([]); // Clear tasks on error
       } finally {
         setLoading(false); // Always set loading to false
+        setIsInitialLoad(false);
       }
     };
 

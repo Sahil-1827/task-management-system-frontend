@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useActivityLog } from '../../context/ActivityLogContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box } from '@mui/material';
@@ -7,6 +7,7 @@ import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box 
 const RecentActivity = () => {
   const { logs, loading, fetchLogs } = useActivityLog();
   const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const callbackId = "recent-activity-dashboard";
@@ -18,14 +19,14 @@ const RecentActivity = () => {
     };
 
     registerUpdateCallback(callbackId, handleDataUpdate);
-    fetchLogs({ limit: 5 });
+    fetchLogs({ limit: 5 }).then(() => setIsInitialLoad(false)); // Set initial load to false after first fetch
 
     return () => {
       unregisterUpdateCallback(callbackId);
     };
   }, [fetchLogs, registerUpdateCallback, unregisterUpdateCallback]);
 
-  if (loading && logs.length === 0) {
+  if (loading && logs.length === 0 && isInitialLoad) {
     return (
       <Paper sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
         <CircularProgress />

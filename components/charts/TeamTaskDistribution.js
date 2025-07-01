@@ -12,6 +12,7 @@ const TeamTaskDistribution = () => {
   const theme = useTheme();
   const [chartData, setChartData] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const callbackId = "team-task-distribution-chart";
@@ -57,6 +58,8 @@ const TeamTaskDistribution = () => {
         setChartData(dataForChart);
       } catch (err) {
         console.error("Failed to fetch team task data", err);
+      } finally {
+        setIsInitialLoad(false);
       }
     };
     fetchData();
@@ -66,7 +69,7 @@ const TeamTaskDistribution = () => {
     };
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
-  if (!chartData) return null;
+  if (!chartData && isInitialLoad) return null;
 
   return <PieChart data={chartData} title="Team Task Distribution" />;
 };

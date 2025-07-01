@@ -14,6 +14,7 @@ const UserRoleChart = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const callbackId = "user-role-chart";
@@ -29,6 +30,9 @@ const UserRoleChart = () => {
             if (!token || !user) {
                 setLoading(false);
                 return;
+            }
+            if (isInitialLoad) {
+                setLoading(true);
             }
             try {
                 const res = await axios.get('http://localhost:5000/api/users', {
@@ -55,6 +59,7 @@ const UserRoleChart = () => {
                 setError("Failed to fetch user data");
             } finally {
                 setLoading(false);
+                setIsInitialLoad(false);
             }
         };
         fetchData();
@@ -64,7 +69,7 @@ const UserRoleChart = () => {
         };
     }, [token, user, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
-    if (loading) return <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}><CircularProgress /></Box>;
+    if (loading && isInitialLoad) return <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}><CircularProgress /></Box>;
     if (error) return <Typography color="error">{error}</Typography>;
 
     return <PieChart data={chartData} title="Users by Role" />;

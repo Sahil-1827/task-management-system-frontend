@@ -15,6 +15,7 @@ const TaskPriorityChart = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     useEffect(() => {
         const callbackId = "task-priority-chart";
@@ -32,7 +33,9 @@ const TaskPriorityChart = () => {
                 return;
             }
             
-            setLoading(true);
+            if (isInitialLoad) {
+                setLoading(true);
+            }
             setError("");
 
             try {
@@ -56,6 +59,7 @@ const TaskPriorityChart = () => {
                 console.error("TaskPriorityChart: Error fetching data:", err);
             } finally {
                 setLoading(false);
+                setIsInitialLoad(false);
             }
         };
         
@@ -76,7 +80,7 @@ const TaskPriorityChart = () => {
     // 2. Show a loading skeleton while fetching OR if chartData is not yet available.
     //    This is the key part of the fix. It prevents the BarChart from ever
     //    receiving a 'null' or 'undefined' data prop.
-    if (loading || !chartData) {
+    if (loading && isInitialLoad) {
         return (
             <Box sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Skeleton variant="rectangular" width="90%" height={150} />

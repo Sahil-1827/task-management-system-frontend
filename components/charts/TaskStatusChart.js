@@ -12,6 +12,7 @@ const TaskStatusChart = () => {
   const theme = useTheme();
   const [chartData, setChartData] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const callbackId = "task-status-chart";
@@ -43,6 +44,8 @@ const TaskStatusChart = () => {
         setChartData(dataForChart);
       } catch (err) {
         console.error("Failed to fetch task data", err);
+      } finally {
+        setIsInitialLoad(false);
       }
     };
     fetchData();
@@ -52,7 +55,7 @@ const TaskStatusChart = () => {
     };
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
-  if (!chartData) return null;
+  if (!chartData && isInitialLoad) return null;
 
   return <PieChart data={chartData} title="All Tasks by Status" />;
 };
