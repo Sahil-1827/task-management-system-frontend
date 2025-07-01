@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from 'react';
 import { Typography, useTheme, Box, Skeleton } from '@mui/material';
 import axios from 'axios';
@@ -8,50 +7,68 @@ import BarChart from './BarChart';
 const TaskPriorityChart = () => {
     const { token } = useAuth();
     const theme = useTheme();
+    
+    // Initialize state to null. We will conditionally render based on this.
     const [chartData, setChartData] = useState(null);
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             if (!token) {
                 setLoading(false);
                 return;
-            };
+            }
+            
+            setLoading(true);
+            setError("");
+
             try {
-                const res = await axios.get('http://localhost:5000/api/tasks', {
+                const res = await axios.get('http://localhost:5000/api/tasks/stats/priority', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const tasks = res.data.tasks || res.data;
-                const priorityCounts = tasks.reduce((acc, task) => {
-                    acc[task.priority] = (acc[task.priority] || 0) + 1;
-                    return acc;
-                }, {});
                 
+                const priorityCounts = res.data;
+                
+                // This is the data structure your BarChart will receive
                 const dataForChart = [
-                    { name: 'Low', value: priorityCounts['Low'] || 0, color: theme.palette.info.main },
-                    { name: 'Medium', value: priorityCounts['Medium'] || 0, color: theme.palette.warning.main },
-                    { name: 'High', value: priorityCounts['High'] || 0, color: theme.palette.error.main }
+                    { name: 'Low', value: priorityCounts.low || 0, color: theme.palette.info.main },
+                    { name: 'Medium', value: priorityCounts.medium || 0, color: theme.palette.warning.main },
+                    { name: 'High', value: priorityCounts.high || 0, color: theme.palette.error.main }
                 ];
+                
                 setChartData(dataForChart);
+
             } catch (err) {
-                setError("Failed to fetch task data");
-            }
-            finally {
+                setError("Failed to fetch task data.");
+                console.error("TaskPriorityChart: Error fetching data:", err);
+            } finally {
                 setLoading(false);
             }
         };
+        
         fetchData();
     }, [token, theme]);
-    
-    if (loading) return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <Skeleton variant="rectangular" width="100%" height={200} />
-            <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />
-        </Box>
-    );
-    if (error) return <Typography color="error">{error}</Typography>;
 
+    // --- Conditional Rendering Logic ---
+
+    // 1. Show an error message if the API call fails
+    if (error) {
+        return <Typography sx={{ p: 2 }} color="error">{error}</Typography>;
+    }
+
+    // 2. Show a loading skeleton while fetching OR if chartData is not yet available.
+    //    This is the key part of the fix. It prevents the BarChart from ever
+    //    receiving a 'null' or 'undefined' data prop.
+    if (loading || !chartData) {
+        return (
+            <Box sx={{ p: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Skeleton variant="rectangular" width="90%" height={150} />
+            </Box>
+        );
+    }
+    
+    // 3. Only when loading is complete AND chartData is a valid array, render the chart.
     return <BarChart data={chartData} title="All Tasks by Priority" />;
 };
 
