@@ -20,16 +20,18 @@ const BarChart = ({ data, title, xAxisLabel, yAxisLabel }) => {
   return (
     <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h6" gutterBottom>{title}</Typography>
-      <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ height: 200, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
         {data.map((item, index) => (
           <Box
-            key={`${item.name}-${index}`} // FIX: Use a unique key
+            key={`${item.name}-${index}`}
             sx={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              width: '100%',
+              width: `${100 / data.length}%`,
               px: 0.5,
+              height: '100%',
+              justifyContent: 'flex-end',
             }}
           >
             <Tooltip title={`${item.name}: ${item.value}`} placement="top" arrow>
