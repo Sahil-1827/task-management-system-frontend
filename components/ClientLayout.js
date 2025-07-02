@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation';
 import { useGlobalLoader } from "../context/GlobalLoaderContext";
 import GlobalLoader from "./GlobalLoader";
 import { useEffect } from 'react';
+import Lottie from "lottie-react";
+import animationData from "../public/BGanimation.json";
 
 export default function ClientLayout({ children }) {
   const { user, loading: authLoading } = useAuth();
@@ -30,6 +32,8 @@ export default function ClientLayout({ children }) {
   const showNavAndFooter = !isLoginPage && !authLoading && user;
   const isHomePageUnauthed = pathname === '/' && !user && !authLoading;
 
+  const showBackground = pathname !== '/';
+
   return (
     <div style={{
       display: 'flex',
@@ -37,19 +41,39 @@ export default function ClientLayout({ children }) {
       minHeight: '100vh',
       position: 'relative',
     }}>
-      {/* Render the GlobalLoader if the app is in any loading state */}
+      {showBackground && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -1,
+          overflow: 'hidden',
+        }}>
+          <Lottie animationData={animationData} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(10px)',
+          }}/>
+        </div>
+      )}
       {isAppLoading && <GlobalLoader />}
 
       <div style={{
           display: 'flex',
           flexDirection: 'column',
           flex: '1 0 auto',
-          // Blur the content only during page-to-page navigation.
           filter: navIsLoading ? 'blur(4px)' : 'none',
-          // Hide the main content during the initial auth load to prevent seeing page-specific loaders.
           visibility: authLoading ? 'hidden' : 'visible',
           transition: 'filter 0.2s linear, visibility 0s',
           pointerEvents: isAppLoading ? 'none' : 'auto',
+          backgroundColor: showBackground ? 'transparent' : 'var(--background)'
       }}>
         {(showNavAndFooter || isHomePageUnauthed) && <NavBar />}
         <main style={{
@@ -58,7 +82,6 @@ export default function ClientLayout({ children }) {
           flexDirection: 'column',
           paddingTop: (showNavAndFooter || isHomePageUnauthed) ? '64px' : '0'
         }}>
-          {/* The children are always rendered so contexts work, but they are hidden by the parent div's visibility style during initial load. */}
           {children}
         </main>
         {(showNavAndFooter || isHomePageUnauthed) && <Footer />}

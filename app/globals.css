@@ -22,7 +22,7 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--background); /* This line will be overridden by the ClientLayout component for non-landing pages */
   font-family: 'Manrope', 'Noto Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
