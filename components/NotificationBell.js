@@ -153,12 +153,12 @@ export default function NotificationBell() {
                   borderLeftColor: 'primary.main'
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 40 }}>
+                <ListItemIcon sx={{ minWidth: 50 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: '20px' }}>{notification.icon}</span>
                     {!notification.read && (
                       <CircleIcon sx={{ fontSize: 8, color: 'primary.main' }} />
                     )}
+                    <span style={{ fontSize: '20px' }}>{notification.icon}</span>
                   </Box>
                 </ListItemIcon>
                 <ListItemText

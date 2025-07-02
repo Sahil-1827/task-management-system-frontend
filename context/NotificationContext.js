@@ -38,6 +38,11 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { user } = useAuth();
   const [updateCallbacks, setUpdateCallbacks] = useState({});
+  const [notificationSoundEnabled, setNotificationSoundEnabled] = useState(true);
+
+  const toggleNotificationSound = useCallback(() => {
+    setNotificationSoundEnabled((prev) => !prev);
+  }, []);
 
   const registerUpdateCallback = useCallback((key, callback) => {
     setUpdateCallbacks((prev) => ({ ...prev, [key]: callback }));
@@ -56,12 +61,17 @@ export const NotificationProvider = ({ children }) => {
       id: Date.now() + Math.random(),
       ...notification,
       timestamp: new Date(),
-      read: false
+      read: false,
     };
 
     setNotifications((prev) => [newNotification, ...prev].slice(0, 20)); // Keep last 20
     setUnreadCount((prev) => prev + 1);
-  }, []);
+
+    if (notificationSoundEnabled) {
+      const audio = new Audio('/bell.mp3');
+      audio.play().catch(e => console.error("Error playing notification sound:", e));
+    }
+  }, [notificationSoundEnabled]);
 
   const markAsRead = useCallback((notificationId) => {
     setNotifications((prev) =>
@@ -175,7 +185,9 @@ export const NotificationProvider = ({ children }) => {
     markAllAsRead,
     clearAllNotifications,
     registerUpdateCallback,
-    unregisterUpdateCallback
+    unregisterUpdateCallback,
+    notificationSoundEnabled,
+    toggleNotificationSound,
   };
 
   return (

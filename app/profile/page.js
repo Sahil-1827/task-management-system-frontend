@@ -115,7 +115,7 @@ export default function Profile() {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
         User Profile
       </Typography>
