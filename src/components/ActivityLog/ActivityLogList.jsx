@@ -33,7 +33,7 @@ import { io } from "socket.io-client";
 let socket = null;
 const initializeSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:5000", {
+    socket = io(import.meta.env.VITE_SOCKET_URL, {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
