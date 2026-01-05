@@ -4,7 +4,7 @@ import ActivityLogList from "../components/ActivityLog/ActivityLogList";
 export default function ActivityLogPage() {
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4 }}>
+      <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
         Activity Log
       </Typography>
       <ActivityLogList />

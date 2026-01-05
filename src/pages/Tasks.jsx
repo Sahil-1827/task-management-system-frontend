@@ -87,9 +87,7 @@ export default function Tasks() {
   useEffect(() => {
     const callbackId = "tasks-page";
     const handleDataUpdate = (entityType) => {
-      if (entityType === "task" || entityType === "team") {
-        setRefetchTrigger((prev) => prev + 1);
-      }
+      setRefetchTrigger((prev) => prev + 1);
     };
 
     registerUpdateCallback(callbackId, handleDataUpdate);
