@@ -46,7 +46,7 @@ export default function Login() {
   }
 
   return (
-    <Container sx={{ py: 4, maxWidth: "400px" }}>
+    <Container sx={{ maxWidth: '500px !important', my: 'auto' }}>
       <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
         Login
       </Typography>
