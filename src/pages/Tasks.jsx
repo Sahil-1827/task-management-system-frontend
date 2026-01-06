@@ -226,28 +226,8 @@ export default function Tasks() {
     return selectedTeam.members && selectedTeam.members.length > 0;
   };
 
-  const handleCreateTask = async (e) => {
+  const handleSubmitTask = async (e) => {
     e.preventDefault();
-    try {
-      await api.post("/tasks", newTask);
-      setNewTask({
-        title: "",
-        description: "",
-        status: "To Do",
-        priority: "Medium",
-        dueDate: "",
-        assignee: "",
-        team: ""
-      });
-      toast.success("Task created successfully!");
-      setRefetchTrigger((prev) => prev + 1);
-      fetchLogs();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create task");
-    }
-  };
-
-  const handleUpdateTask = async () => {
     if (!newTask.title) {
       toast.error("Task title is required");
       return;
@@ -265,11 +245,15 @@ export default function Tasks() {
     };
 
     try {
-      await api.put(
-        `/tasks/${editTask._id}`,
-        taskData
-      );
-      toast.success("Task updated successfully");
+      if (editTask) {
+        // Update
+        await api.put(`/tasks/${editTask._id}`, taskData);
+        toast.success("Task updated successfully");
+      } else {
+        // Create
+        await api.post("/tasks", taskData);
+        toast.success("Task created successfully!");
+      }
       setOpenDialog(false);
       setNewTask({
         title: "",
@@ -284,7 +268,7 @@ export default function Tasks() {
       setRefetchTrigger((prev) => prev + 1);
       fetchLogs();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update task");
+      toast.error(error.response?.data?.message || (editTask ? "Failed to update task" : "Failed to create task"));
     }
   };
 
@@ -381,130 +365,27 @@ export default function Tasks() {
       </Typography>
 
       {(user.role === "admin" || user.role === "manager") && (
-        <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Create New Task
-          </Typography>
-          <Box component="form" onSubmit={handleCreateTask}>
-            <Grid container spacing={2}>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <TextField
-                  label="Task Title"
-                  name="title"
-                  value={newTask.title}
-                  onChange={handleInputChange}
-                  fullWidth
-                  required
-                />
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <TextField
-                  label="Description"
-                  name="description"
-                  value={newTask.description}
-                  onChange={handleInputChange}
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    name="status"
-                    value={newTask.status}
-                    onChange={handleInputChange}
-                    label="Status"
-                  >
-                    <MenuItem value="To Do">To Do</MenuItem>
-                    <MenuItem value="In Progress">In Progress</MenuItem>
-                    <MenuItem value="Done">Done</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth>
-                  <InputLabel>Priority</InputLabel>
-                  <Select
-                    name="priority"
-                    value={newTask.priority}
-                    onChange={handleInputChange}
-                    label="Priority"
-                  >
-                    <MenuItem value="Low">Low</MenuItem>
-                    <MenuItem value="Medium">Medium</MenuItem>
-                    <MenuItem value="High">High</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <TextField
-                  label="Due Date"
-                  name="dueDate"
-                  type="date"
-                  value={newTask.dueDate}
-                  onChange={handleInputChange}
-                  fullWidth
-                  slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
-                />
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth disabled={!!newTask.team}>
-                  <InputLabel>Assignee</InputLabel>
-                  <Select
-                    name="assignee"
-                    value={newTask.assignee}
-                    onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        assignee: e.target.value,
-                        team: ""
-                      })
-                    }
-                    label="Assignee"
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {users.map((u) => (
-                      <MenuItem key={u._id} value={u._id}>
-                        {u.name} ({u.email})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth disabled={!!newTask.assignee}>
-                  <InputLabel>Team</InputLabel>
-                  <Select
-                    name="team"
-                    value={newTask.team}
-                    onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        team: e.target.value,
-                        assignee: ""
-                      })
-                    }
-                    label="Team"
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {teams.map((t) => (
-                      <MenuItem key={t._id} value={t._id}>
-                        {t.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <Button type="submit" variant="contained" color="primary">
-                  Create Task
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Paper>
+        <Box sx={{ mb: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setEditTask(null);
+              setNewTask({
+                title: "",
+                description: "",
+                status: "To Do",
+                priority: "Medium",
+                dueDate: "",
+                assignee: "",
+                team: ""
+              });
+              setOpenDialog(true);
+            }}
+          >
+            Add New Task
+          </Button>
+        </Box>
       )}
 
       <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
@@ -733,9 +614,10 @@ export default function Tasks() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Edit Task</DialogTitle>
+        <DialogTitle>{editTask ? "Edit Task" : "Add Task"}</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ pt: 1 }}>
+          <Box component="form" onSubmit={handleSubmitTask} id="task-form">
+            <Grid container spacing={2} sx={{ pt: 1 }}>
             <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Task Title"
@@ -847,13 +729,14 @@ export default function Tasks() {
               </FormControl>
             </Grid>
           </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleUpdateTask} variant="contained">
-            Update
-          </Button>
-        </DialogActions>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDialog}>Cancel</Button>
+        <Button type="submit" form="task-form" variant="contained">
+          {editTask ? "Update" : "Create"}
+        </Button>
+      </DialogActions>
       </Dialog>
     </Container>
   );
