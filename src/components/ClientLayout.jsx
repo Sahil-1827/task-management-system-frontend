@@ -5,8 +5,6 @@ import { useLocation } from 'react-router-dom';
 import { useGlobalLoader } from "../context/GlobalLoaderContext";
 import GlobalLoader from "./GlobalLoader";
 import { useEffect } from 'react';
-import Lottie from "lottie-react";
-import animationData from "../assets/BGanimation.json";
 
 export default function ClientLayout({ children }) {
   const { user, loading: authLoading } = useAuth();
@@ -31,8 +29,6 @@ export default function ClientLayout({ children }) {
   const showNavAndFooter = !isLoginPage && !authLoading && user;
   const isHomePageUnauthed = pathname === '/' && !user && !authLoading;
 
-  const showBackground = pathname !== '/';
-
   return (
     <div style={{
       display: 'flex',
@@ -40,28 +36,6 @@ export default function ClientLayout({ children }) {
       minHeight: '100vh',
       position: 'relative',
     }}>
-      {showBackground && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: -1,
-          overflow: 'hidden',
-        }}>
-          <Lottie animationData={animationData} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            backdropFilter: 'blur(10px)',
-          }}/>
-        </div>
-      )}
       {isAppLoading && <GlobalLoader />}
 
       <div style={{
@@ -72,7 +46,7 @@ export default function ClientLayout({ children }) {
           visibility: authLoading ? 'hidden' : 'visible',
           transition: 'filter 0.2s linear, visibility 0s',
           pointerEvents: isAppLoading ? 'none' : 'auto',
-          backgroundColor: showBackground ? 'transparent' : 'var(--background)'
+          backgroundColor: 'var(--background)'
       }}>
         {(showNavAndFooter || isHomePageUnauthed) && <NavBar />}
         <main style={{
