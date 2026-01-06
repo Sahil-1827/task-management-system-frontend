@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useActivityLog } from '../../context/ActivityLogContext';
 import { useNotifications } from '../../context/NotificationContext';
-import { List, ListItem, ListItemText, Typography, Paper, CircularProgress, Box } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Paper, Skeleton, Box } from '@mui/material';
 
 const RecentActivity = () => {
   const { logs, loading, fetchLogs } = useActivityLog();
@@ -26,10 +26,20 @@ const RecentActivity = () => {
     };
   }, [fetchLogs, registerUpdateCallback, unregisterUpdateCallback]);
 
-  if (loading && logs.length === 0 && isInitialLoad) {
+  if ((loading || isInitialLoad) && logs.length === 0) {
     return (
-      <Paper sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <CircularProgress />
+      <Paper sx={{ p: 2, height: '100%', width: "100%" }}>
+        <Skeleton variant="text" width="100%" height={28} sx={{ mb: 2 }} />
+        <List>
+          {[1, 2, 3].map((i) => (
+            <ListItem key={i} dense>
+              <ListItemText
+                primary={<Skeleton variant="text" width="100%" />}
+                secondary={<Skeleton variant="text" width="60%" />}
+              />
+            </ListItem>
+          ))}
+        </List>
       </Paper>
     );
   }
@@ -39,7 +49,7 @@ const RecentActivity = () => {
       <Typography variant="h6" gutterBottom>Recent Activity</Typography>
       {logs.length > 0 ? (
         <List>
-          {logs.slice(0, 5).map(log => (
+          {logs.slice(0, 3).map(log => (
             <ListItem key={log._id} dense>
               <ListItemText
                 primary={log.details}

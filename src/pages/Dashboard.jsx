@@ -89,13 +89,13 @@ const DashboardPage = () => {
     fetchStats();
   }, [token, user, refetchTrigger, isInitialLoad]);
 
-  if (loading || statsLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // if (loading || statsLoading) {
+  //   return (
+  //     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
 
   if (!user) {
     return (
@@ -121,13 +121,33 @@ const DashboardPage = () => {
       {(isAdmin || isManager) && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item sx={{ minWidth: "150px" }}>
-            <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" />
+            <StatCard
+              title="Total Tasks"
+              value={stats?.tasks}
+              icon={<TaskIcon />}
+              color="primary.main"
+              loading={statsLoading}
+            />
           </Grid>
+
           <Grid item sx={{ minWidth: "150px" }}>
-            <StatCard title="Total Users" value={stats.users} icon={<PeopleIcon />} color="secondary.main" />
+            <StatCard
+              title="Total Users"
+              value={stats?.users}
+              icon={<PeopleIcon />}
+              color="secondary.main"
+              loading={statsLoading}
+            />
           </Grid>
+
           <Grid item sx={{ minWidth: "150px" }}>
-            <StatCard title="Total Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" />
+            <StatCard
+              title="Total Teams"
+              value={stats?.teams}
+              icon={<GroupWorkIcon />}
+              color="info.main"
+              loading={statsLoading}
+            />
           </Grid>
         </Grid>
       )}
