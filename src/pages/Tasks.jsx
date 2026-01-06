@@ -32,7 +32,6 @@ import { toast } from 'react-toastify';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api";
-import useDebounce from "../hooks/useDebounce";
 import { useActivityLog } from "../context/ActivityLogContext";
 import { useNotifications } from "../context/NotificationContext";
 
@@ -63,15 +62,6 @@ export default function Tasks() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
   const [tasksPerPage, setTasksPerPage] = useState(5); // State for tasks per page
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterPriority, setFilterPriority] = useState("");
-  const [filterAssignee, setFilterAssignee] = useState("");
-  const [filterTeam, setFilterTeam] = useState("");
-
-  const [sortField, setSortField] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [loadingTasks, setLoadingTasks] = useState(true); // New state for task loading
@@ -105,12 +95,7 @@ export default function Tasks() {
         try {
             const queryParams = new URLSearchParams({
                 page,
-                limit: tasksPerPage,
-                search: debouncedSearch,
-                ...(filterStatus && { status: filterStatus }),
-                ...(filterPriority && { priority: filterPriority }),
-                ...(filterAssignee && { assignee: filterAssignee }),
-                ...(filterTeam && { team: filterTeam })
+                limit: tasksPerPage
             });
 
             const [tasksRes, usersRes, teamsRes] = await Promise.all([
@@ -122,6 +107,7 @@ export default function Tasks() {
             ]);
 
             setTasks(tasksRes.data.tasks);
+            setDisplayTasks(tasksRes.data.tasks);
             setTotalTasks(tasksRes.data.totalTasks);
             setTotalPages(tasksRes.data.totalPages);
             setUsers(usersRes.data);
@@ -140,46 +126,9 @@ export default function Tasks() {
     loading,
     page,
     tasksPerPage,
-    debouncedSearch,
-    filterStatus,
-    filterPriority,
-    filterAssignee,
-    filterTeam,
     refetchTrigger
   ]);
 
-  useEffect(() => {
-    if (!tasks || tasks.length === 0) {
-        setDisplayTasks([]);
-        return;
-    };
-
-    const sortedTasks = [...tasks];
-    if (sortField) {
-      sortedTasks.sort((a, b) => {
-        let valueA, valueB;
-
-        if (sortField === "dueDate") {
-          valueA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-          valueB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-        } else if (sortField === "priority") {
-          const priorityOrder = { Low: 1, Medium: 2, High: 3 };
-          valueA = priorityOrder[a.priority] || 0;
-          valueB = priorityOrder[b.priority] || 0;
-        } else if (sortField === "createdAt") {
-          valueA = new Date(a.createdAt).getTime();
-          valueB = new Date(b.createdAt).getTime();
-        }
-
-        if (sortDirection === "asc") {
-          return valueA > valueB ? 1 : -1;
-        } else {
-          return valueA < valueB ? 1 : -1;
-        }
-      });
-    }
-    setDisplayTasks(sortedTasks);
-  }, [tasks, sortField, sortDirection]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -315,34 +264,6 @@ export default function Tasks() {
     setPage(value);
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    setPage(1);
-  };
-
-  const handleFilterChange = (setter) => (e) => {
-    setter(e.target.value);
-    setPage(1);
-  };
-
-  const handleSortFieldChange = (e) => {
-    setSortField(e.target.value);
-  };
-
-  const handleSortDirectionChange = (e) => {
-    setSortDirection(e.target.value);
-  };
-
-  const handleClearFilters = () => {
-    setSearch("");
-    setFilterStatus("");
-    setFilterPriority("");
-    setFilterAssignee("");
-    setFilterTeam("");
-    setSortField("");
-    setSortDirection("asc");
-    setPage(1);
-  };
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
@@ -388,122 +309,6 @@ export default function Tasks() {
         </Box>
       )}
 
-      <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Filters & Sorting
-        </Typography>
-        <Grid container spacing={2}>
-           <Grid item sx={{ minWidth: "150px" }}>
-             <TextField
-               label="Search by Title or Description"
-               value={search}
-               onChange={handleSearchChange}
-               fullWidth
-             />
-           </Grid>
-           <Grid item sx={{ minWidth: "150px" }}>
-             <FormControl fullWidth>
-               <InputLabel>Filter by Status</InputLabel>
-               <Select
-                 value={filterStatus}
-                 onChange={handleFilterChange(setFilterStatus)}
-                 label="Filter by Status"
-               >
-                 <MenuItem value="">All</MenuItem>
-                 <MenuItem value="To Do">To Do</MenuItem>
-                 <MenuItem value="In Progress">In Progress</MenuItem>
-                 <MenuItem value="Done">Done</MenuItem>
-               </Select>
-             </FormControl>
-           </Grid>
-           <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Filter by Priority</InputLabel>
-              <Select
-                value={filterPriority}
-                onChange={handleFilterChange(setFilterPriority)}
-                label="Filter by Priority"
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          {(user.role === "admin" || user.role === "manager") && (
-            <>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth>
-                  <InputLabel>Filter by Assignee</InputLabel>
-                  <Select
-                    value={filterAssignee}
-                    onChange={handleFilterChange(setFilterAssignee)}
-                    label="Filter by Assignee"
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    {users.map((u) => (
-                      <MenuItem key={u._id} value={u._id}>
-                        {u.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Filter by Team</InputLabel>
-              <Select
-                value={filterTeam}
-                onChange={handleFilterChange(setFilterTeam)}
-                label="Filter by Team"
-              >
-                <MenuItem value="">All</MenuItem>
-                {teams.map((t) => (
-                  <MenuItem key={t._id} value={t._id}>
-                    {t.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-            </>
-          )}
-          <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortField}
-                onChange={handleSortFieldChange}
-                label="Sort By"
-              >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="dueDate">Due Date</MenuItem>
-                <MenuItem value="priority">Priority</MenuItem>
-                <MenuItem value="createdAt">Creation Date</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth disabled={!sortField}>
-              <InputLabel>Sort Direction</InputLabel>
-              <Select
-                value={sortDirection}
-                onChange={handleSortDirectionChange}
-                label="Sort Direction"
-              >
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item sx={{ minWidth: "150px" }}>
-            <Button variant="outlined" onClick={handleClearFilters}>
-              Clear Filters
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
       <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
         <Table sx={{ minWidth: 650 }}>

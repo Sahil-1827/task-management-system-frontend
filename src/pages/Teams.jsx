@@ -32,7 +32,6 @@ import { toast } from 'react-toastify';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api";
-import useDebounce from "../hooks/useDebounce";
 import { useActivityLog } from "../context/ActivityLogContext";
 import { useNotifications } from "../context/NotificationContext";
 
@@ -58,12 +57,6 @@ export default function Teams() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalTeams, setTotalTeams] = useState(0);
   const [teamsPerPage, setTeamsPerPage] = useState(5); // State for teams per page
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
-  const [filterMember, setFilterMember] = useState("");
-
-  const [sortField, setSortField] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
 
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [loadingTeams, setLoadingTeams] = useState(true); // New state for team loading
@@ -92,9 +85,7 @@ export default function Teams() {
       try {
         const queryParams = new URLSearchParams({
           page,
-          limit: 5,
-          search: debouncedSearch,
-          ...(filterMember && { member: filterMember })
+          limit: 5
         });
 
         const response = await api.get(
@@ -130,38 +121,9 @@ export default function Teams() {
     user,
     loading,
     page,
-    debouncedSearch,
-    filterMember,
     refetchTrigger
   ]);
 
-  useEffect(() => {
-    if (!teams || teams.length === 0) return;
-
-    const sortedTeams = [...teams];
-    if (sortField) {
-      sortedTeams.sort((a, b) => {
-        let valueA, valueB;
-
-        if (sortField === "name") {
-          valueA = a.name.toLowerCase();
-          valueB = b.name.toLowerCase();
-        } else if (sortField === "createdAt") {
-          valueA = new Date(a.createdAt).getTime();
-          valueB = new Date(b.createdAt).getTime();
-        } else {
-          return 0;
-        }
-
-        if (sortDirection === "asc") {
-          return valueA > valueB ? 1 : -1;
-        } else {
-          return valueA < valueB ? 1 : -1;
-        }
-      });
-    }
-    setDisplayTeams(sortedTeams);
-  }, [teams, sortField, sortDirection]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -250,18 +212,6 @@ export default function Teams() {
     setPage(value);
   };
 
-  const handleFilterChange = (setter) => (e) => {
-    setter(e.target.value);
-    setPage(1);
-  };
-
-  const handleClearFilters = () => {
-    setSearch("");
-    setFilterMember("");
-    setSortField("");
-    setSortDirection("asc");
-    setPage(1);
-  };
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -289,72 +239,6 @@ export default function Teams() {
         </Box>
       )}
 
-      <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Filters & Sorting
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item sx={{ minWidth: "150px" }}>
-            <TextField
-              label="Search by Name"
-              value={search}
-              onChange={handleFilterChange(setSearch)}
-              fullWidth
-            />
-          </Grid>
-          {(user.role === "admin" || user.role === "manager") && (
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth>
-                <InputLabel>Filter by Member</InputLabel>
-                <Select
-                  value={filterMember}
-                  onChange={handleFilterChange(setFilterMember)}
-                  label="Filter by Member"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {users.map((u) => (
-                    <MenuItem key={u._id} value={u._id}>
-                      {u.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          )}
-          <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortField}
-                onChange={(e) => setSortField(e.target.value)}
-                label="Sort By"
-              >
-                <MenuItem value="">None</MenuItem>
-                <MenuItem value="name">Name</MenuItem>
-                <MenuItem value="createdAt">Creation Date</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item sx={{ minWidth: "150px" }}>
-            <FormControl fullWidth disabled={!sortField}>
-              <InputLabel>Sort Direction</InputLabel>
-              <Select
-                value={sortDirection}
-                onChange={(e) => setSortDirection(e.target.value)}
-                label="Sort Direction"
-              >
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item sx={{ minWidth: "150px" }}>
-            <Button variant="outlined" onClick={handleClearFilters}>
-              Clear Filters
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
       <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
         <Table sx={{ minWidth: 650 }}>
