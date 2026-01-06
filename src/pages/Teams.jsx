@@ -191,25 +191,6 @@ export default function Teams() {
     });
   };
 
-  const handleCreateTeam = async (e) => {
-    e.preventDefault();
-
-    if (!newTeam.name) {
-      toast.error("Team name is required");
-      return;
-    }
-
-    try {
-      await api.post("/teams", newTeam);
-      toast.success("Team created successfully");
-      setNewTeam({ name: "", description: "", members: [] });
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
-      fetchLogs();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create team");
-    }
-  };
-
   const handleEditTeam = (team) => {
     setEditTeam(team);
     setNewTeam({
@@ -220,23 +201,31 @@ export default function Teams() {
     setOpenDialog(true);
   };
 
-  const handleUpdateTeam = async () => {
+  const handleSubmitTeam = async (e) => {
+    e.preventDefault();
+
     if (!newTeam.name) {
       toast.error("Team name is required");
       return;
     }
 
     try {
-      await api.put(
-        `/teams/${editTeam._id}`,
-        newTeam
-      );
-      toast.success("Team updated successfully");
-      handleCloseDialog();
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
+      if (editTeam) {
+        // Update
+        await api.put(`/teams/${editTeam._id}`, newTeam);
+        toast.success("Team updated successfully");
+      } else {
+        // Create
+        await api.post("/teams", newTeam);
+        toast.success("Team created successfully!");
+      }
+      setOpenDialog(false);
+      setNewTeam({ name: "", description: "", members: [] });
+      setEditTeam(null);
+      setRefetchTrigger((prev) => prev + 1);
       fetchLogs();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update team");
+      toast.error(error.response?.data?.message || (editTeam ? "Failed to update team" : "Failed to create team"));
     }
   };
 
@@ -281,62 +270,24 @@ export default function Teams() {
       </Typography>
 
       {(user.role === "admin" || user.role === "manager") && (
-        <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Create New Team
-          </Typography>
-          <Box component="form" onSubmit={handleCreateTeam}>
-            <Grid container spacing={2}>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <TextField
-                  label="Team Name"
-                  name="name"
-                  value={newTeam.name}
-                  onChange={handleInputChange}
-                  fullWidth
-                  required
-                />
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <TextField
-                  label="Description"
-                  name="description"
-                  value={newTeam.description}
-                  onChange={handleInputChange}
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <FormControl fullWidth>
-                  <InputLabel>Members</InputLabel>
-                  <Select
-                    multiple
-                    name="members"
-                    value={newTeam.members}
-                    onChange={handleMembersChange}
-                    label="Members"
-                  >
-                    {users.map((u) => (
-                      <MenuItem key={u._id} value={u._id}>
-                        {u.name} ({u.email})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item sx={{ minWidth: "150px" }}>
-                <Button type="submit" variant="contained" color="primary">
-                  Create Team
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Paper>
+        <Box sx={{ mb: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setEditTeam(null);
+              setNewTeam({
+                name: "",
+                description: "",
+                members: []
+              });
+              setOpenDialog(true);
+            }}
+          >
+            Add New Team
+          </Button>
+        </Box>
       )}
-
-      
 
       <Paper sx={{ p: { xs: 2, md: 3 }, mb: 4 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
@@ -493,9 +444,10 @@ export default function Teams() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Edit Team</DialogTitle>
+        <DialogTitle>{editTeam ? "Edit Team" : "Add Team"}</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ pt: 1 }}>
+          <Box component="form" onSubmit={handleSubmitTeam} id="team-form">
+            <Grid container spacing={2} sx={{ pt: 1 }}>
             <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Team Name"
@@ -536,13 +488,14 @@ export default function Teams() {
               </FormControl>
             </Grid>
           </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleUpdateTeam} variant="contained">
-            Update
-          </Button>
-        </DialogActions>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDialog}>Cancel</Button>
+        <Button type="submit" form="team-form" variant="contained">
+          {editTeam ? "Update" : "Create"}
+        </Button>
+      </DialogActions>
       </Dialog>
     </Container>
   );
