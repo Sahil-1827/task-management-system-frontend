@@ -22,7 +22,7 @@ let socket = null;
 const initializeSocket = () => {
   if (!socket) {
     socket = io(import.meta.env.VITE_SOCKET_URL, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
