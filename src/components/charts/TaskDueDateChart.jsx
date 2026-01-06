@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Typography, useTheme, Box, Skeleton } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import BarChart from './BarChart';
@@ -11,8 +11,8 @@ const TaskDueDateChart = () => {
     const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
     const [chartData, setChartData] = useState(null);
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [refetchTrigger, setRefetchTrigger] = useState(0);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -27,9 +27,11 @@ const TaskDueDateChart = () => {
         registerUpdateCallback(callbackId, handleDataUpdate);
 
         const fetchData = async () => {
-            if (isInitialLoad) {
-                setLoading(true);
-            };
+            if (!token) return;
+
+            setLoading(true);
+            setError('');
+
             try {
                 const res = await api.get('/tasks');
                 const tasks = res.data.tasks || res.data;
@@ -57,40 +59,41 @@ const TaskDueDateChart = () => {
                     } else if (dueDate > today && dueDate <= new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)) {
                         counts['This Week']++;
                     } else {
-                        counts['Later']++;
+                        counts.Later++;
                     }
                 });
-                
-                const dataForChart = [
-                    { name: 'Overdue', value: counts['Overdue'] || 0, color: theme.palette.error.main },
-                    { name: 'Today', value: counts['Today'] || 0, color: theme.palette.warning.main },
-                    { name: 'This Week', value: counts['This Week'] || 0, color: theme.palette.info.main },
-                    { name: 'Later', value: counts['Later'] || 0, color: theme.palette.success.main },
-                ];
-                setChartData(dataForChart);
+
+                setChartData([
+                    { name: 'Overdue', value: counts.Overdue, color: theme.palette.error.main },
+                    { name: 'Today', value: counts.Today, color: theme.palette.warning.main },
+                    { name: 'This Week', value: counts['This Week'], color: theme.palette.info.main },
+                    { name: 'Later', value: counts.Later, color: theme.palette.success.main }
+                ]);
             } catch (err) {
-                setError("Failed to fetch task data");
+                console.error(err);
+                setError('Failed to fetch task data');
+                setChartData([]);
             } finally {
                 setLoading(false);
-                setIsInitialLoad(false);
             }
         };
+
         fetchData();
 
-        return () => {
-            unregisterUpdateCallback(callbackId);
-        };
+        return () => unregisterUpdateCallback(callbackId);
     }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
-    
-    if (loading && isInitialLoad) return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-            <Skeleton variant="rectangular" width="100%" height={200} />
-            <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />
-        </Box>
-    );
-    if (error) return <Typography color="error">{error}</Typography>;
 
-    return <BarChart data={chartData} title="Tasks by Due Date" />;
+    if (error) {
+        return <Typography color="error">{error}</Typography>;
+    }
+
+    return (
+        <BarChart
+            title="Tasks by Due Date"
+            data={chartData}
+            loading={loading}
+        />
+    );
 };
 
 export default TaskDueDateChart;

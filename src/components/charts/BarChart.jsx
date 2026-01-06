@@ -1,15 +1,78 @@
 "use client";
 import React from 'react';
-import { Box, Typography, Paper, useTheme, Tooltip } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  useTheme,
+  Tooltip,
+  Skeleton
+} from '@mui/material';
 
-const BarChart = ({ data, title, xAxisLabel, yAxisLabel }) => {
+const BarChart = ({ data, title, loading, xAxisLabel }) => {
   const theme = useTheme();
 
-  // FIX: Handle null, undefined, or empty data to prevent crash
+  if (loading) {
+    return (
+      <Paper
+        sx={{
+          p: 3,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {/* Title */}
+        <Skeleton variant="text" width="60%" height={28} />
+
+        {/* Bars skeleton */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-around',
+            mt: 2
+          }}
+        >
+          {[1, 2, 3].map((i) => (
+            <Box
+              key={i}
+              sx={{
+                width: '20%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1
+              }}
+            >
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={90 + i * 20}
+                sx={{ borderRadius: '4px 4px 0 0' }}
+              />
+              <Skeleton variant="text" width={30} height={16} />
+            </Box>
+          ))}
+        </Box>
+          <Skeleton variant="text" width="100%" height={5} sx={{mt: 1}}/>
+      </Paper>
+    );
+  }
+
   if (!data || data.length === 0) {
     return (
-      <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="h6" gutterBottom>{title}</Typography>
+      <Paper
+        sx={{
+          p: 3,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <Typography variant="h6">{title}</Typography>
         <Typography color="text.secondary">No data available</Typography>
       </Paper>
     );
@@ -18,9 +81,30 @@ const BarChart = ({ data, title, xAxisLabel, yAxisLabel }) => {
   const maxValue = Math.max(...data.map(item => item.value));
 
   return (
-    <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h6" gutterBottom>{title}</Typography>
-      <Box sx={{ height: 200, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+    <Paper
+      sx={{
+        p: 3,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+
+      <Box
+        sx={{
+          flexGrow: 1,
+          height: '100%',
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-around',
+          py: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
+        }}
+      >
         {data.map((item, index) => (
           <Box
             key={`${item.name}-${index}`}
@@ -42,7 +126,7 @@ const BarChart = ({ data, title, xAxisLabel, yAxisLabel }) => {
                   minHeight: '4px',
                   bgcolor: item.color || theme.palette.primary.main,
                   borderRadius: '4px 4px 0 0',
-                  transition: 'height 0.3s ease-in-out',
+                  transition: 'height 0.3s ease',
                    '&:hover': {
                       opacity: 0.8
                   }

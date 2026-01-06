@@ -1,11 +1,49 @@
 "use client";
-import { Box, Typography, Tooltip, Paper } from '@mui/material';
+import { Box, Typography, Tooltip, Paper, Skeleton } from '@mui/material';
 
-const PieChart = ({ data, title }) => {
+const PieChart = ({ data, title, loading }) => {
+
+    if (loading) {
+        return (
+            <Paper
+                sx={{
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
+            >
+                {/* Title */}
+                <Skeleton variant="text" width="60%" height={28} sx={{mb: 2}}/>
+
+                {/* Circle Skeleton */}
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <Skeleton variant="circular" width={150} height={150} sx={{mb: 2}}/>
+                </Box>
+
+                {/* Legend Skeleton */}
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                    {[1, 2, 3].map((i) => (
+                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Skeleton variant="circular" width={12} height={12} />
+                            <Skeleton variant="text" width={60} height={16} />
+                        </Box>
+                    ))}
+                </Box>
+            </Paper>
+        );
+    }
+
     if (!data || data.length === 0) {
         return (
-            <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant="h6" gutterBottom>{title}</Typography>
+            <Paper sx={{ p: 3, height: "100%", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h6">{title}</Typography>
                 <Typography color="text.secondary">No data available</Typography>
             </Paper>
         );
@@ -15,9 +53,9 @@ const PieChart = ({ data, title }) => {
     
     if (total === 0) {
         return (
-            <Paper sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant="h6" gutterBottom>{title}</Typography>
-                <Typography color="text.secondary">No data to display in chart</Typography>
+            <Paper sx={{ p: 3, height: "100%", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography variant="h6">{title}</Typography>
+                <Typography color="text.secondary">No data to display</Typography>
             </Paper>
         );
     }
@@ -40,8 +78,7 @@ const PieChart = ({ data, title }) => {
                         cumulativeAngle += (percentage / 100) * 360;
 
                         return (
-                            // Using item.id as the key if available, otherwise fallback to item.name
-                            <Tooltip key={item.id || item.name} title={`${item.name}: ${item.value}`} placement="top" arrow>
+                            <Tooltip key={item.name} title={`${item.name}: ${item.value}`} arrow placement="top">
                                 <circle
                                     cx="20" cy="20" r={radius}
                                     fill="transparent"
@@ -51,7 +88,7 @@ const PieChart = ({ data, title }) => {
                                     style={{
                                         transform: `rotate(${rotation}deg)`,
                                         transformOrigin: '20px 20px',
-                                        transition: 'all 0.5s ease-out'
+                                        transition: 'all 0.5s ease'
                                     }}
                                 />
                             </Tooltip>
@@ -61,8 +98,7 @@ const PieChart = ({ data, title }) => {
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
                 {data.map((item) => (
-                    // Using item.id as the key if available, otherwise fallback to item.name
-                    <Box key={item.id || item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box key={item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
                         <Typography variant="caption">{item.name} ({item.value})</Typography>
                     </Box>

@@ -69,11 +69,11 @@ const MyTasks = () => {
     return (
       <Paper sx={{ p: 2, height: '100%' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Skeleton variant="text" width="60%" height={30} />
-          <Skeleton variant="text" width="20%" height={30} />
+          <Skeleton variant="text" width={120} height={28} />
+          <Skeleton variant="text" width={50} height={22} sx={{ ml: 1 }}/>
         </Box>
         <List>
-          {[...Array(5)].map((_, index) => (
+          {[...Array(3)].map((_, index) => (
             <ListItem key={index} dense>
               <ListItemText
                 primary={<Skeleton variant="text" width="80%" />}
@@ -95,7 +95,7 @@ const MyTasks = () => {
             variant="body2"
             color="primary"
             onClick={() => navigate('/tasks')}
-            sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+            sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' }, ml: 1 }}
           >
             View All
           </Typography>
