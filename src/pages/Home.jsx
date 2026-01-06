@@ -14,8 +14,6 @@ import Users from "@mui/icons-material/Group";
 import Bell from "@mui/icons-material/NotificationsActive";
 import Clock from "@mui/icons-material/AccessTime";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/NavBar";
 import { useAuth } from "../context/AuthContext";
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -41,8 +39,6 @@ export default function Home() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      {!user && <Navbar />}
-
       <Container maxWidth="xl" sx={{ py: { xs: 4, md: 4 } }}>
         <Box
           sx={{
@@ -219,7 +215,6 @@ export default function Home() {
           )}
         </Box>
       </Container>
-      {!user && <Footer />}
     </Box>
   );
 }
