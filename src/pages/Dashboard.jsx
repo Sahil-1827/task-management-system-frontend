@@ -120,13 +120,13 @@ const DashboardPage = () => {
 
       {(isAdmin || isManager) && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <StatCard title="Total Users" value={stats.users} icon={<PeopleIcon />} color="secondary.main" />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <StatCard title="Total Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" />
           </Grid>
         </Grid>
@@ -135,39 +135,39 @@ const DashboardPage = () => {
       <Grid container spacing={3}>
         {(isAdmin || isManager) && (
           <>
-            <Grid item xs={12} md={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TeamTaskDistribution />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <UserTaskCompletionRate />
             </Grid>
           </>
         )}
 
         {(isManager || user.role === 'user') && (
-          <Grid item xs={12}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <MyTasks />
           </Grid>
         )}
 
-        <Grid item xs={12} md={4}>
+        <Grid item sx={{ minWidth: "150px" }}>
           <TaskStatusChart />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item sx={{ minWidth: "150px" }}>
           <TaskPriorityChart />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item sx={{ minWidth: "150px" }}>
           <TaskDueDateChart />
         </Grid>
 
         {isAdmin && (
-          <Grid item xs={12} md={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <UserRoleChart />
           </Grid>
         )}
 
         {(isAdmin || isManager) && (
-          <Grid item xs={12}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <RecentActivity />
           </Grid>
         )}

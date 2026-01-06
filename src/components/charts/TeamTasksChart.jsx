@@ -61,8 +61,8 @@ const TeamTasksChart = () => {
                 <Skeleton variant="text" width="80%" height={30} />
                 <Grid container spacing={2}>
                     {[...Array(2)].map((_, index) => (
-                        <Grid item xs={12} sm={6} key={index}>
-                            <Skeleton variant="rectangular" height={100} />
+                        <Grid item sx={{ minWidth: "150px" }} key={index}>
+                            <Skeleton variant="rectangular" height={100} sx={{ width: '100%' }} />
                         </Grid>
                     ))}
                 </Grid>
@@ -76,8 +76,8 @@ const TeamTasksChart = () => {
             <Grid container spacing={2} sx={{mt: 1}}>
                 {data.length > 0 ? data.map(team => (
                     // FIX: Use the unique team.id as the key instead of team.name
-                    <Grid item xs={12} sm={6} key={team.id}>
-                        <Card variant="outlined">
+                    <Grid item sx={{ minWidth: "150px" }} key={team.id}>
+                        <Card variant="outlined" sx={{ width: '100%' }}>
                              <CardContent>
                                  <Typography variant="body1" fontWeight="bold">{team.name}</Typography>
                                  <Typography variant="h4" color="primary">{team.count}</Typography>
@@ -88,7 +88,7 @@ const TeamTasksChart = () => {
                         </Card>
                     </Grid>
                 )) : (
-                    <Grid item xs={12}>
+                    <Grid item sx={{ minWidth: "150px" }}>
                         <Typography color="text.secondary">No teams with assigned tasks found.</Typography>
                     </Grid>
                 )}

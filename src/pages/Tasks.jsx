@@ -387,7 +387,7 @@ export default function Tasks() {
           </Typography>
           <Box component="form" onSubmit={handleCreateTask}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <TextField
                   label="Task Title"
                   name="title"
@@ -397,7 +397,7 @@ export default function Tasks() {
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <TextField
                   label="Description"
                   name="description"
@@ -408,7 +408,7 @@ export default function Tasks() {
                   rows={3}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -423,7 +423,7 @@ export default function Tasks() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth>
                   <InputLabel>Priority</InputLabel>
                   <Select
@@ -438,7 +438,7 @@ export default function Tasks() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <TextField
                   label="Due Date"
                   name="dueDate"
@@ -449,7 +449,7 @@ export default function Tasks() {
                   slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth disabled={!!newTask.team}>
                   <InputLabel>Assignee</InputLabel>
                   <Select
@@ -473,7 +473,7 @@ export default function Tasks() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth disabled={!!newTask.assignee}>
                   <InputLabel>Team</InputLabel>
                   <Select
@@ -497,7 +497,7 @@ export default function Tasks() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <Button type="submit" variant="contained" color="primary">
                   Create Task
                 </Button>
@@ -512,30 +512,30 @@ export default function Tasks() {
           Filters & Sorting
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField
-              label="Search by Title or Description"
-              value={search}
-              onChange={handleSearchChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Filter by Status</InputLabel>
-              <Select
-                value={filterStatus}
-                onChange={handleFilterChange(setFilterStatus)}
-                label="Filter by Status"
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="To Do">To Do</MenuItem>
-                <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Done">Done</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+           <Grid item sx={{ minWidth: "150px" }}>
+             <TextField
+               label="Search by Title or Description"
+               value={search}
+               onChange={handleSearchChange}
+               fullWidth
+             />
+           </Grid>
+           <Grid item sx={{ minWidth: "150px" }}>
+             <FormControl fullWidth>
+               <InputLabel>Filter by Status</InputLabel>
+               <Select
+                 value={filterStatus}
+                 onChange={handleFilterChange(setFilterStatus)}
+                 label="Filter by Status"
+               >
+                 <MenuItem value="">All</MenuItem>
+                 <MenuItem value="To Do">To Do</MenuItem>
+                 <MenuItem value="In Progress">In Progress</MenuItem>
+                 <MenuItem value="Done">Done</MenuItem>
+               </Select>
+             </FormControl>
+           </Grid>
+           <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth>
               <InputLabel>Filter by Priority</InputLabel>
               <Select
@@ -552,7 +552,7 @@ export default function Tasks() {
           </Grid>
           {(user.role === "admin" || user.role === "manager") && (
             <>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth>
                   <InputLabel>Filter by Assignee</InputLabel>
                   <Select
@@ -569,7 +569,7 @@ export default function Tasks() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth>
               <InputLabel>Filter by Team</InputLabel>
               <Select
@@ -588,7 +588,7 @@ export default function Tasks() {
           </Grid>
             </>
           )}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth>
               <InputLabel>Sort By</InputLabel>
               <Select
@@ -603,7 +603,7 @@ export default function Tasks() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth disabled={!sortField}>
               <InputLabel>Sort Direction</InputLabel>
               <Select
@@ -616,7 +616,7 @@ export default function Tasks() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <Button variant="outlined" onClick={handleClearFilters}>
               Clear Filters
             </Button>
@@ -736,7 +736,7 @@ export default function Tasks() {
         <DialogTitle>Edit Task</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item xs={12}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Task Title"
                 name="title"
@@ -746,7 +746,7 @@ export default function Tasks() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Description"
                 name="description"
@@ -757,7 +757,7 @@ export default function Tasks() {
                 rows={3}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -772,7 +772,7 @@ export default function Tasks() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth>
                 <InputLabel>Priority</InputLabel>
                 <Select
@@ -787,7 +787,7 @@ export default function Tasks() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Due Date"
                 name="dueDate"
@@ -798,7 +798,7 @@ export default function Tasks() {
                 slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth disabled={!!newTask.team}>
                 <InputLabel>Assignee</InputLabel>
                 <Select
@@ -822,7 +822,7 @@ export default function Tasks() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth disabled={!!newTask.assignee}>
                 <InputLabel>Team</InputLabel>
                 <Select

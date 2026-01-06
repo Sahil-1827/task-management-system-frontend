@@ -212,7 +212,7 @@ const Footer = () => {
           }}
           container
         >
-          <FooterContentColumn item xs={12} sm={6} md={3} sx={{ maxWidth: "200px" }}>
+          <FooterContentColumn item sx={{ minWidth: "150px", maxWidth: "200px" }}>
             <Box><Typography variant="h6" component="h1" sx={{ fontWeight: "bold", mb: "20px" }}>
                 <img src="/logo.png" alt="Logo" width={34} height={34} />
             </Typography></Box>
@@ -224,7 +224,7 @@ const Footer = () => {
               </Typography>
             </Box>
           </FooterContentColumn>
-          <FooterContentColumn item xs={12} sm={6} md={3}>
+          <FooterContentColumn item sx={{ minWidth: "150px" }}>
             <Box><FooterMenuName variant="h2">Company</FooterMenuName>
               <FooterMenuList>
                 <li><Link to="/about">About Us</Link></li>
@@ -238,7 +238,7 @@ const Footer = () => {
               </FooterMenuList>
             </Box>
           </FooterContentColumn>
-          <FooterContentColumn item xs={12} sm={6} md={3}>
+          <FooterContentColumn item sx={{ minWidth: "150px" }}>
             <Box><FooterMenuName variant="h2">Product</FooterMenuName>
               <FooterMenuList>
                 <li><Link to="/learn-more">Features</Link></li>
@@ -252,7 +252,7 @@ const Footer = () => {
               </FooterMenuList>
             </Box>
           </FooterContentColumn>
-          <FooterContentColumn item xs={12} sm={6} md={3}>
+          <FooterContentColumn item sx={{ minWidth: "150px" }}>
             <Box><FooterMenuName variant="h2">Let's Chat</FooterMenuName>
               <Typography sx={{ color: "inherit", opacity: 0.9, marginTop: "10px", marginBottom: "10px" }}>
                 Have a support question?

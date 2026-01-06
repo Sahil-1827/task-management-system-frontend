@@ -287,7 +287,7 @@ export default function Teams() {
           </Typography>
           <Box component="form" onSubmit={handleCreateTeam}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <TextField
                   label="Team Name"
                   name="name"
@@ -297,7 +297,7 @@ export default function Teams() {
                   required
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <TextField
                   label="Description"
                   name="description"
@@ -308,7 +308,7 @@ export default function Teams() {
                   rows={3}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <FormControl fullWidth>
                   <InputLabel>Members</InputLabel>
                   <Select
@@ -326,7 +326,7 @@ export default function Teams() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
+              <Grid item sx={{ minWidth: "150px" }}>
                 <Button type="submit" variant="contained" color="primary">
                   Create Team
                 </Button>
@@ -343,7 +343,7 @@ export default function Teams() {
           Filters & Sorting
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <TextField
               label="Search by Name"
               value={search}
@@ -352,7 +352,7 @@ export default function Teams() {
             />
           </Grid>
           {(user.role === "admin" || user.role === "manager") && (
-            <Grid item xs={12} sm={6}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth>
                 <InputLabel>Filter by Member</InputLabel>
                 <Select
@@ -370,7 +370,7 @@ export default function Teams() {
               </FormControl>
             </Grid>
           )}
-          <Grid item xs={12} sm={6}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth>
               <InputLabel>Sort By</InputLabel>
               <Select
@@ -384,7 +384,7 @@ export default function Teams() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <FormControl fullWidth disabled={!sortField}>
               <InputLabel>Sort Direction</InputLabel>
               <Select
@@ -397,7 +397,7 @@ export default function Teams() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item sx={{ minWidth: "150px" }}>
             <Button variant="outlined" onClick={handleClearFilters}>
               Clear Filters
             </Button>
@@ -496,7 +496,7 @@ export default function Teams() {
         <DialogTitle>Edit Team</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item xs={12}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Team Name"
                 name="name"
@@ -506,7 +506,7 @@ export default function Teams() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <TextField
                 label="Description"
                 name="description"
@@ -517,7 +517,7 @@ export default function Teams() {
                 rows={3}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item sx={{ minWidth: "150px" }}>
               <FormControl fullWidth>
                 <InputLabel>Members</InputLabel>
                 <Select
