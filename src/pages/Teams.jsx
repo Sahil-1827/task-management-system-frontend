@@ -258,22 +258,16 @@ export default function Teams() {
               // Skeleton rows
               Array.from(new Array(teamsPerPage)).map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" />
-                  </TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
+                  <TableCell><Skeleton /></TableCell>
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
+                      <Box sx={{ display: 'flex' }}>
                       <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
                       <Skeleton variant="circular" width={30} height={30} />
+                      </Box>
                     </TableCell>
                   )}
                 </TableRow>
