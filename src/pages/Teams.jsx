@@ -345,58 +345,75 @@ export default function Teams() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>{editTeam ? "Edit Team" : "Add Team"}</DialogTitle>
+        <DialogTitle>
+          {editTeam ? "Edit Team" : "Add Team"}
+        </DialogTitle>
+
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmitTeam} id="team-form">
-            <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <TextField
-                label="Team Name"
-                name="name"
-                value={newTeam.name}
-                onChange={handleInputChange}
-                fullWidth
-                required
-              />
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <TextField
-                label="Description"
-                name="description"
-                value={newTeam.description}
-                onChange={handleInputChange}
-                fullWidth
-                multiline
-                rows={3}
-              />
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth>
-                <InputLabel>Members</InputLabel>
-                <Select
-                  multiple
-                  name="members"
-                  value={newTeam.members}
-                  onChange={handleMembersChange}
-                  label="Members"
-                >
-                  {users.map((u) => (
-                    <MenuItem key={u._id} value={u._id}>
-                      {u.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseDialog}>Cancel</Button>
-        <Button type="submit" form="team-form" variant="contained">
-          {editTeam ? "Update" : "Create"}
-        </Button>
-      </DialogActions>
+          <Box
+            component="form"
+            onSubmit={handleSubmitTeam}
+            id="team-form"
+            sx={{
+              mt: 1,
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: 2,
+            }}
+          >
+            {/* Team Name */}
+            <TextField
+              label="Team Name"
+              name="name"
+              value={newTeam.name}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+
+            {/* Description */}
+            <TextField
+              label="Description"
+              name="description"
+              value={newTeam.description}
+              onChange={handleInputChange}
+              fullWidth
+              multiline
+              rows={3}
+            />
+
+            {/* Members */}
+            <FormControl fullWidth>
+              <InputLabel>Members</InputLabel>
+              <Select
+                multiple
+                name="members"
+                value={newTeam.members}
+                onChange={handleMembersChange}
+                label="Members"
+              >
+                {users.map((u) => (
+                  <MenuItem key={u._id} value={u._id}>
+                    {u.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="team-form"
+            variant="contained"
+          >
+            {editTeam ? "Update" : "Create"}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Container>
   );

@@ -442,130 +442,151 @@ export default function Tasks() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>{editTask ? "Edit Task" : "Add Task"}</DialogTitle>
+        <DialogTitle>
+          {editTask ? "Edit Task" : "Add Task"}
+        </DialogTitle>
+
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmitTask} id="task-form">
-            <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <TextField
-                label="Task Title"
-                name="title"
-                value={newTask.title}
+          <Box
+            component="form"
+            onSubmit={handleSubmitTask}
+            id="task-form"
+            sx={{
+              mt: 1,
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: 2,
+            }}
+          >
+            {/* Task Title */}
+            <TextField
+              label="Task Title"
+              name="title"
+              value={newTask.title}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+
+            {/* Description */}
+            <TextField
+              label="Description"
+              name="description"
+              value={newTask.description}
+              onChange={handleInputChange}
+              fullWidth
+              multiline
+              rows={3}
+            />
+
+            {/* Status */}
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                name="status"
+                value={newTask.status}
                 onChange={handleInputChange}
-                fullWidth
-                required
-              />
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <TextField
-                label="Description"
-                name="description"
-                value={newTask.description}
+                label="Status"
+              >
+                <MenuItem value="To Do">To Do</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Done">Done</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Priority */}
+            <FormControl fullWidth>
+              <InputLabel>Priority</InputLabel>
+              <Select
+                name="priority"
+                value={newTask.priority}
                 onChange={handleInputChange}
-                fullWidth
-                multiline
-                rows={3}
-              />
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  name="status"
-                  value={newTask.status}
-                  onChange={handleInputChange}
-                  label="Status"
-                >
-                  <MenuItem value="To Do">To Do</MenuItem>
-                  <MenuItem value="In Progress">In Progress</MenuItem>
-                  <MenuItem value="Done">Done</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth>
-                <InputLabel>Priority</InputLabel>
-                <Select
-                  name="priority"
-                  value={newTask.priority}
-                  onChange={handleInputChange}
-                  label="Priority"
-                >
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <TextField
-                label="Due Date"
-                name="dueDate"
-                type="date"
-                value={newTask.dueDate}
-                onChange={handleInputChange}
-                fullWidth
-                slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
-              />
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth disabled={!!newTask.team}>
-                <InputLabel>Assignee</InputLabel>
-                <Select
-                  name="assignee"
-                  value={newTask.assignee}
-                  onChange={(e) =>
-                    setNewTask({
-                      ...newTask,
-                      assignee: e.target.value,
-                      team: ""
-                    })
-                  }
-                  label="Assignee"
-                >
-                  <MenuItem value="">None</MenuItem>
-                  {users.map((u) => (
-                    <MenuItem key={u._id} value={u._id}>
-                      {u.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item sx={{ minWidth: "150px" }}>
-              <FormControl fullWidth disabled={!!newTask.assignee}>
-                <InputLabel>Team</InputLabel>
-                <Select
-                  name="team"
-                  value={newTask.team}
-                  onChange={(e) =>
-                    setNewTask({
-                      ...newTask,
-                      team: e.target.value,
-                      assignee: ""
-                    })
-                  }
-                  label="Team"
-                >
-                  <MenuItem value="">None</MenuItem>
-                  {teams.map((t) => (
-                    <MenuItem key={t._id} value={t._id}>
-                      {t.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseDialog}>Cancel</Button>
-        <Button type="submit" form="task-form" variant="contained">
-          {editTask ? "Update" : "Create"}
-        </Button>
-      </DialogActions>
+                label="Priority"
+              >
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Due Date */}
+            <TextField
+              label="Due Date"
+              name="dueDate"
+              type="date"
+              value={newTask.dueDate}
+              onChange={handleInputChange}
+              fullWidth
+              slotProps={{
+                htmlInput: { min: getTodayDate() },
+                inputLabel: { shrink: true },
+              }}
+            />
+
+            {/* Assignee */}
+            <FormControl fullWidth disabled={!!newTask.team}>
+              <InputLabel>Assignee</InputLabel>
+              <Select
+                name="assignee"
+                value={newTask.assignee}
+                onChange={(e) =>
+                  setNewTask({
+                    ...newTask,
+                    assignee: e.target.value,
+                    team: "",
+                  })
+                }
+                label="Assignee"
+              >
+                <MenuItem value="">None</MenuItem>
+                {users.map((u) => (
+                  <MenuItem key={u._id} value={u._id}>
+                    {u.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Team */}
+            <FormControl fullWidth disabled={!!newTask.assignee}>
+              <InputLabel>Team</InputLabel>
+              <Select
+                name="team"
+                value={newTask.team}
+                onChange={(e) =>
+                  setNewTask({
+                    ...newTask,
+                    team: e.target.value,
+                    assignee: "",
+                  })
+                }
+                label="Team"
+              >
+                <MenuItem value="">None</MenuItem>
+                {teams.map((t) => (
+                  <MenuItem key={t._id} value={t._id}>
+                    {t.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="task-form"
+            variant="contained"
+          >
+            {editTask ? "Update" : "Create"}
+          </Button>
+        </DialogActions>
       </Dialog>
+
     </Container>
   );
 }
