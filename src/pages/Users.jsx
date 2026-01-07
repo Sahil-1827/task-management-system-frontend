@@ -69,14 +69,6 @@ export default function Users() {
     setSelectedUser(null);
   };
 
-  if (loading || isLoading) {
-    return (
-      <Container sx={{ py: 4, textAlign: "center" }}>
-        <CircularProgress />
-      </Container>
-    );
-  }
-
   if (user?.role !== "admin" && user?.role !== "manager") {
     return (
       <Container sx={{ py: 4 }}>
@@ -116,7 +108,7 @@ export default function Users() {
                     <Skeleton variant="text" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton variant="circular" width={30} height={30} />
+                    <Skeleton variant="rounded" height={24} width="28%" />
                   </TableCell>
                 </TableRow>
               ))

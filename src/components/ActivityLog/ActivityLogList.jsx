@@ -138,6 +138,7 @@ const ActivityLogList = () => {
               alignItems: "flex-start",
             }}
           >
+            {/* Timeline circle */}
             <Skeleton
               variant="circular"
               width={44}
@@ -145,21 +146,33 @@ const ActivityLogList = () => {
               sx={{
                 position: "absolute",
                 left: "-25px",
-                top: "15px",
-                zIndex: 1,
+                top: "18px",
               }}
             />
-            <Box sx={{ flex: 1, ml: 4, mt: 0.5 }}>
-              <Skeleton variant="rectangular" width="100%" height={120} sx={{ borderRadius: 1 }}>
-                <Box sx={{ p: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Skeleton variant="text" width="60%" height={20} />
-                    <Skeleton variant="text" width="25%" height={20} />
-                  </Box>
-                  <Skeleton variant="text" width="90%" height={15} sx={{ my: 1 }} />
-                  <Skeleton variant="text" width="40%" height={15} />
+
+            {/* Card skeleton */}
+            <Box sx={{ flex: 1, ml: 4 }}>
+              <Paper variant="outlined" sx={{ p: 2 }}>
+
+                {/* Title + Time */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
+                  }}
+                >
+                  <Skeleton variant="text" width="28%" height={22} />
+                  <Skeleton variant="rounded" width="30%" height={22} />
                 </Box>
-              </Skeleton>
+
+                {/* Description lines */}
+                <Skeleton variant="text" width="90%" />
+
+                {/* Footer */}
+                <Skeleton variant="text" width="15%" sx={{ mt: 1 }} />
+
+              </Paper>
             </Box>
           </Box>
         ))}
