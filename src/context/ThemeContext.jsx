@@ -20,6 +20,19 @@ export function ThemeProviderWrapper({ children }) {
     }
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (mode === 'dark') {
+      root.style.setProperty('--background', '#0f172a');
+      root.style.setProperty('--foreground', '#f1f5f9');
+      root.style.setProperty('--filter-bg', '#1e293b');
+    } else {
+      root.style.setProperty('--background', '#ffffff');
+      root.style.setProperty('--foreground', '#1e293b');
+      root.style.setProperty('--filter-bg', '#ffffff');
+    }
+  }, [mode]);
+
   const toggleTheme = () => {
     const newMode = mode === 'light' ? 'dark' : 'light';
     setMode(newMode);

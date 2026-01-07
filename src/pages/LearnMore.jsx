@@ -19,9 +19,9 @@ const FeatureCard = styled(Card)(({ theme }) => ({
   flexDirection: 'column',
   gap: '12px',
   padding: '16px',
-  border: `1px solid ${theme.palette.mode === 'light' ? '#d4dce2' : '#2d3748'}`,
+  border: `1px solid ${theme.palette.divider}`,
   borderRadius: '8px',
-  backgroundColor: theme.palette.mode === 'light',
+  backgroundColor: theme.palette.background.paper,
 }));
 
 export default function LearnMore() {

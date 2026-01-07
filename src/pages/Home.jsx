@@ -80,13 +80,13 @@ export default function Home() {
         <Box sx={{ maxWidth: "md", zIndex: 2, position: 'relative' }}>
           <Typography
             variant="h2"
-            sx={{ fontWeight: 900, mb: 2, color: "#6366f1" }}
+            sx={{ fontWeight: 900, mb: 2, color: theme.palette.primary.main }}
           >
             Streamline Your Workflow with TaskMaster
           </Typography>
           <Typography
             variant="body1"
-            sx={{ color: "#24916c", fontSize: "1.2rem", fontWeight: 700 }}
+            sx={{ color: theme.palette.secondary.main, fontSize: "1.2rem", fontWeight: 700 }}
           >
             Manage tasks, assign team members, track progress, and boost
             productivity with our intuitive task management system.

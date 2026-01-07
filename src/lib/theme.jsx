@@ -24,7 +24,7 @@ export const getTheme = (mode) => createTheme({
             dark: '#1d4ed8',
           },
           background: {
-            default: '#f1f5f9',
+            default: '#ffffff',
             paper: '#ffffff',
           },
           text: {
