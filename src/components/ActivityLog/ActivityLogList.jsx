@@ -76,6 +76,20 @@ const ActivityLogList = () => {
   const theme = useTheme();
   const [visibleLogsCount, setVisibleLogsCount] = useState(5);
 
+  const pulseKeyframes = {
+    "@keyframes pulse": {
+      "0%": {
+        boxShadow: `0 0 0 0 ${theme.palette.mode === 'light' ? theme.palette.primary.main + '85' : '#ffffff85'}`,
+      },
+      "70%": {
+        boxShadow: `0 0 0 6px ${theme.palette.mode === 'light' ? theme.palette.primary.main + '1f' : '#ffffff1f'}`,
+      },
+      "100%": {
+        boxShadow: `0 0 0 0 ${theme.palette.mode === 'light' ? theme.palette.primary.main + '1f' : '#ffffff1f'}`,
+      },
+    },
+  };
+
   // Effect for the initial data fetch
   useEffect(() => {
     if (user) {
@@ -224,24 +238,14 @@ const ActivityLogList = () => {
                   width: 40,
                   height: 40,
                   position: "absolute",
-                  left: "-25px",
+                  left: "-23px",
                   top: "15px",
                   // border: "4px solid",
                   // borderColor: "background.paper",
 
                   animation: "pulse 1.8s infinite",
 
-                  "@keyframes pulse": {
-                    "0%": {
-                      boxShadow: `0 0 0 0 ${config.color}80`,
-                    },
-                    "70%": {
-                      boxShadow: `0 0 0 10px ${config.color}00`,
-                    },
-                    "100%": {
-                      boxShadow: `0 0 0 0 ${config.color}00`,
-                    },
-                  },
+                  ...pulseKeyframes,
                 }}
               >
                 {config.icon}
