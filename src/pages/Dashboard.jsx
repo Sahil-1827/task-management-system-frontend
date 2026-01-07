@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Container, Grid, Typography, Box, CircularProgress } from '@mui/material';
 import TaskStatusChart from '../components/charts/TaskStatusChart';
@@ -21,6 +22,7 @@ import { useNotifications } from '../context/NotificationContext';
 const DashboardPage = () => {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const { user, token, loading } = useAuth();
+  const navigate = useNavigate();
   const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
   const [stats, setStats] = useState({ users: 0, tasks: 0, teams: 0, completedTasks: 0, pendingTasks: 0, highPriorityTasks: 0, teamsWithTasks: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
@@ -40,6 +42,12 @@ const DashboardPage = () => {
       unregisterUpdateCallback(callbackId);
     };
   }, [registerUpdateCallback, unregisterUpdateCallback]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     if (!token || !user) {
@@ -98,12 +106,7 @@ const DashboardPage = () => {
   // }
 
   if (!user) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <CircularProgress />
-        <Typography variant="h6">Please log in to view the dashboard.</Typography>
-      </Box>
-    );
+    return null;
   }
 
   const isAdmin = user.role === 'admin';
