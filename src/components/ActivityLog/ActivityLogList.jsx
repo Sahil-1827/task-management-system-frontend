@@ -74,7 +74,7 @@ const ActivityLogList = () => {
   const { logs, loading, fetchLogs } = useActivityLog();
   const { user } = useAuth();
   const theme = useTheme();
-  const [visibleLogsCount, setVisibleLogsCount] = useState(10);
+  const [visibleLogsCount, setVisibleLogsCount] = useState(5);
 
   // Effect for the initial data fetch
   useEffect(() => {
@@ -221,13 +221,27 @@ const ActivityLogList = () => {
                 sx={{
                   bgcolor: config.color,
                   color: "white",
-                  width: 44,
-                  height: 44,
+                  width: 40,
+                  height: 40,
                   position: "absolute",
                   left: "-25px",
                   top: "15px",
-                  border: "4px solid",
-                  borderColor: "background.paper"
+                  // border: "4px solid",
+                  // borderColor: "background.paper",
+
+                  animation: "pulse 1.8s infinite",
+
+                  "@keyframes pulse": {
+                    "0%": {
+                      boxShadow: `0 0 0 0 ${config.color}80`,
+                    },
+                    "70%": {
+                      boxShadow: `0 0 0 10px ${config.color}00`,
+                    },
+                    "100%": {
+                      boxShadow: `0 0 0 0 ${config.color}00`,
+                    },
+                  },
                 }}
               >
                 {config.icon}
