@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import {
   Container,
   Typography,
@@ -29,6 +30,7 @@ import {
   Skeleton
 } from "@mui/material";
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api";
@@ -37,6 +39,7 @@ import { useNotifications } from "../context/NotificationContext";
 
 export default function Teams() {
   const { user, token, loading } = useAuth();
+  const { mode } = useTheme();
   const navigate = useNavigate();
   const { fetchLogs } = useActivityLog();
   const { registerUpdateCallback, unregisterUpdateCallback } =
@@ -192,14 +195,34 @@ export default function Teams() {
   };
 
   const handleDeleteTeam = async (teamId) => {
-    try {
-      await api.delete(`/teams/${teamId}`);
-      toast.success("Team deleted successfully");
-      setRefetchTrigger((prev) => prev + 1); // Refetch data
-      fetchLogs();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete team");
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: mode === 'dark' ? '#1e293b' : '#ffffff',
+      color: mode === 'dark' ? '#f1f5f9' : '#1e293b'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await api.delete(`/teams/${teamId}`);
+          Swal.fire({
+            title: "Deleted!",
+            text: "Team has been deleted.",
+            icon: "success",
+            background: mode === 'dark' ? '#1e293b' : '#ffffff',
+            color: mode === 'dark' ? '#f1f5f9' : '#1e293b'
+          });
+          setRefetchTrigger((prev) => prev + 1); // Refetch data
+          fetchLogs();
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to delete team");
+        }
+      }
+    });
   };
 
   const handleCloseDialog = () => {
