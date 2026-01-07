@@ -29,7 +29,7 @@ export default function LearnMore() {
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Container maxWidth="xl" sx={{ py: 5, flex: 1 }}>
+      <Container maxWidth="2xl" sx={{ py: 5, flex: 1 }}>
         <Button
           startIcon={<ArrowBack />}
           onClick={() => navigate('/')}

@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
-      <Container maxWidth="xl" sx={{ py: { xs: 4, md: 4 } }}>
+      <Container maxWidth="2xl" sx={{ py: { xs: 4, md: 4 } }}>
         <Box
           sx={{
             position: "relative",

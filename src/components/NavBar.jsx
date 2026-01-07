@@ -160,7 +160,7 @@ export default function NavBar() {
             : "rgba(255, 255, 255, 0.7)",
       })}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="2xl">
         <Toolbar disableGutters>
           <Box
             sx={{

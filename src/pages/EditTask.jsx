@@ -173,7 +173,7 @@ export default function EditTask() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth="2xl" sx={{ py: 4 }}>
       <Typography variant="h4" sx={{ mb: 4 }}>
         Edit Task
       </Typography>
