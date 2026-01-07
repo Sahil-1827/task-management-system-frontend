@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '@mui/material';
 import BarChart from './BarChart';
 import api from '../../api';
-import { Skeleton, Box } from '@mui/material';
 import { useNotifications } from '../../context/NotificationContext';
 
 const UserTaskCompletionRate = () => {
@@ -85,16 +84,7 @@ const UserTaskCompletionRate = () => {
     };
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
     
-  if (loading && isInitialLoad) {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-          <Skeleton variant="rectangular" width="100%" height={200} />
-          <Skeleton variant="text" width="60%" sx={{ mt: 2 }} />
-      </Box>
-    );
-  }
-
-  return <BarChart data={chartData} title="User Task Completion Rate" />;
+  return <BarChart data={chartData} title="User Task Completion Rate" loading={loading} />;
 };
 
 export default UserTaskCompletionRate;
