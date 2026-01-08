@@ -83,6 +83,23 @@ export const getTheme = (mode) => createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        '*::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '*::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '*::-webkit-scrollbar-thumb': {
+          background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+          borderRadius: '3px',
+        },
+        '*::-webkit-scrollbar-thumb:hover': {
+          background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+        },
+      }),
+    },
     MuiButton: {
       styleOverrides: {
         root: {

@@ -106,10 +106,9 @@ export default function ClientLayout({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, sm: 4 },
+          p: showSidebar ? { xs: 2, sm: 4 } : 0,
           width: showSidebar ? { lg: `calc(100% - ${drawerWidth}px)` } : '100%',
-          mt: (showSidebar && !isDesktop) ? '64px' : 0, // content margin for mobile appbar
-          mt: showNavBar ? '64px' : undefined, // content margin for public navbar
+          mt: (showNavBar || (showSidebar && !isDesktop)) ? '64px' : 0,
 
           filter: navIsLoading ? 'blur(4px)' : 'none',
           visibility: authLoading ? 'hidden' : 'visible',
@@ -120,13 +119,9 @@ export default function ClientLayout({ children }) {
         }}
       >
         {children}
-        
-        {showNavBar && (
-          <Box sx={{ mt: 'auto', pt: 0 }}>
-            <Footer />
-          </Box>
-        )}
       </Box>
+
+      {showNavBar && <Footer />}
     </Box>
   );
 }
