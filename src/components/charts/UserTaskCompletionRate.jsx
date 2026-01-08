@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '@mui/material';
-import BarChart from './BarChart';
+import ComboChart from './ComboChart';
 import api from '../../api';
 import { useNotifications } from '../../context/NotificationContext';
 
@@ -60,25 +60,28 @@ const UserTaskCompletionRate = () => {
 
           const completedTasks = assignedTasks.filter(task => task.status === 'Done');
           const completionRate = assignedTasks.length > 0 ? Math.round((completedTasks.length / assignedTasks.length) * 100) : 0;
-          return { name: user.name, value: completionRate };
+          return {
+            name: user.name,
+            completionRate: completionRate,
+            assignedCount: assignedTasks.length
+          };
         });
 
-        const dataForChart = userTaskStats.map(stat => ({
-          name: stat.name,
-          value: stat.value,
-          color: theme.palette.success.main, // Changed color for better representation
-        }));
+        const dataForChart = {
+          labels: userTaskStats.map(stat => stat.name),
+          lineData: userTaskStats.map(stat => stat.completionRate),
+          barData: userTaskStats.map(stat => stat.assignedCount)
+        };
 
         setChartData(dataForChart);
       } catch (err) {
         console.error("Failed to fetch user task completion data", err);
         // Fallback static data
-        const staticData = [
-          { name: 'John Doe', value: 85, color: theme.palette.success.main },
-          { name: 'Jane Smith', value: 92, color: theme.palette.success.main },
-          { name: 'Mike Johnson', value: 78, color: theme.palette.success.main },
-          { name: 'Sarah Williams', value: 95, color: theme.palette.success.main },
-        ];
+        const staticData = {
+          labels: ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Williams'],
+          lineData: [85, 92, 78, 95],
+          barData: [12, 18, 8, 20]
+        };
         setChartData(staticData);
       } finally {
         setLoading(false);
@@ -92,7 +95,7 @@ const UserTaskCompletionRate = () => {
     };
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
-  return <BarChart data={chartData} title="User Task Completion Rate" loading={loading} />;
+  return <ComboChart data={chartData} title="User Task Completion & Workload" loading={loading} />;
 };
 
 export default UserTaskCompletionRate;

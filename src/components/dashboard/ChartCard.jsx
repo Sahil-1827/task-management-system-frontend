@@ -31,6 +31,49 @@ const ChartCard = ({ title, children, loading, action, chartType = 'bar' }) => {
             );
         }
 
+        if (chartType === 'combo') {
+            return (
+                <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', px: 2, pb: 2, position: 'relative' }}>
+                    {/* Fake Legend and Title */}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, gap: 3 }}>
+                        <Skeleton variant="text" width={80} />
+                        <Skeleton variant="text" width={80} />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'flex-end', justifyContent: 'space-around', position: 'relative' }}>
+                        {/* Bars */}
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <Box key={i} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '15%', height: '100%', justifyContent: 'flex-end' }}>
+                                <Skeleton
+                                    variant="rectangular"
+                                    width="100%"
+                                    height={`${Math.random() * (70 - 30) + 30}%`}
+                                    sx={{ borderRadius: 1 }}
+                                    animation="wave"
+                                />
+                            </Box>
+                        ))}
+                        {/* Fake data points for Line */}
+                        <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', pointerEvents: 'none' }}>
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <Skeleton
+                                    key={`dot-${i}`}
+                                    variant="circular"
+                                    width={12}
+                                    height={12}
+                                    sx={{
+                                        mb: `${Math.random() * (80 - 40) + 40}%`,
+                                        bgcolor: theme.palette.success.light,
+                                        opacity: 0.6
+                                    }}
+                                    animation="pulse"
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+                </Box>
+            );
+        }
+
         // Default to 'bar' skeleton
         return (
             <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', px: 2, pb: 4 }}>
