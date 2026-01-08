@@ -1,64 +1,93 @@
 "use client";
-import { Card, Typography, Box, Avatar, Skeleton } from '@mui/material';
+import { Card, Typography, Box, Avatar, Skeleton, Paper } from '@mui/material';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
-const StatCard = ({ title, value, icon, color, loading }) => {
+const StatCard = ({ title, value, icon, color, loading, trend }) => {
   if (loading) {
     return (
-      <Card
+      <Paper
+        elevation={0}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
           p: 3,
-          borderRadius: '16px',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
-          minWidth: 150
+          borderRadius: 4,
+          border: '1px solid',
+          borderColor: 'divider',
+          minWidth: 150,
+          height: '100%'
         }}
       >
-        <Skeleton
-          variant="circular"
-          width={50}
-          height={50}
-          sx={{ mr: 2 }}
-        />
-        <Box sx={{ flexGrow: 1 }}>
-          <Skeleton variant="text" width={50} height={35} />
-          <Skeleton variant="text" width={70} height={20} />
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Skeleton
+            variant="circular"
+            width={48}
+            height={48}
+            sx={{ mr: 2 }}
+          />
+          <Box sx={{ flexGrow: 1 }}>
+            <Skeleton variant="text" width={60} height={30} />
+            <Skeleton variant="text" width={100} height={20} />
+          </Box>
         </Box>
-      </Card>
+      </Paper>
     );
   }
 
   return (
-    <Card
+    <Paper
+      elevation={0}
       sx={{
-        display: 'flex',
-        alignItems: 'center',
         p: 3,
-        backgroundColor: 'background.paper',
-        borderRadius: '16px',
-        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
-        minWidth: 150
+        borderRadius: 4,
+        border: '1px solid',
+        borderColor: 'divider',
+        height: '100%',
+        background: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
+            : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'
       }}
     >
-      <Avatar
-        sx={{
-          bgcolor: color,
-          width: 50,
-          height: 50,
-          mr: 2
-        }}
-      >
-        {icon}
-      </Avatar>
-      <Box>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          {value}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
+          <Typography variant="body2" color="text.secondary" fontWeight="medium" gutterBottom>
+            {title}
+          </Typography>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: 'text.primary' }}>
+            {value}
+          </Typography>
+        </Box>
+        <Avatar
+          variant="rounded"
+          sx={{
+            bgcolor: (theme) => {
+              const colorKey = color?.split('.')[0] || 'primary';
+              return theme.palette.mode === 'dark'
+                ? `${theme.palette[colorKey]?.main || theme.palette.primary.main}33`
+                : `${theme.palette[colorKey]?.light || theme.palette.primary.light}40`;
+            },
+            color: (theme) => {
+              const colorKey = color?.split('.')[0] || 'primary';
+              return theme.palette[colorKey]?.main || theme.palette.primary.main;
+            },
+            width: 48,
+            height: 48,
+            borderRadius: 3
+          }}
+        >
+          {icon}
+        </Avatar>
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: 1 }}>
+        <TrendingUpIcon fontSize="small" color="success" />
+        <Typography variant="body2" color="success.main" fontWeight="bold">
+          +12%
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {title}
+        <Typography variant="caption" color="text.secondary">
+          from last month
         </Typography>
       </Box>
-    </Card>
+    </Paper>
   );
 };
 

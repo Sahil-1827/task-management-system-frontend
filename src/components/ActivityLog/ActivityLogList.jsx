@@ -226,7 +226,7 @@ const ActivityLogList = () => {
               key={log._id}
               sx={{
                 display: "flex",
-                mb: 3,
+                mb: 2,
                 position: "relative",
                 "&:last-of-type": { mb: 0 }
               }}
@@ -240,8 +240,6 @@ const ActivityLogList = () => {
                   position: "absolute",
                   left: "-23px",
                   top: "15px",
-                  // border: "4px solid",
-                  // borderColor: "background.paper",
 
                   animation: "pulse 1.8s infinite",
 
