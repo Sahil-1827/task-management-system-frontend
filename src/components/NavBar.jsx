@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { useGlobalLoader } from "../context/GlobalLoaderContext"; // Import the hook
+import { useGlobalLoader } from "../context/GlobalLoaderContext";
 import {
   Box,
   Typography,
@@ -28,13 +28,12 @@ export default function NavBar() {
   const pathname = location.pathname;
   const [mobileOpen, setMobileOpen] = useState(false);
   const { mode, toggleTheme } = useTheme();
-  const { setIsLoading } = useGlobalLoader(); // Use the loader context
+  const { setIsLoading } = useGlobalLoader();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Wrapper for navigation to set loading state
   const handleNavigation = (path) => {
     if (pathname !== path) {
       setIsLoading(true);
@@ -150,9 +149,6 @@ export default function NavBar() {
       sx={(theme) => ({
         borderBottom: 1,
         borderColor: "divider",
-        top: 0,
-        zIndex: 1200,
-        mb: 10,
         backdropFilter: "blur(8px)",
         backgroundColor:
           theme.palette.mode === "dark"
@@ -173,11 +169,7 @@ export default function NavBar() {
             onClick={() => handleNavigation("/")}
           >
             <img src="/logo.png" alt="Logo" width={32} height={32} />
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               TaskMaster
             </Typography>
           </Box>
@@ -210,16 +202,15 @@ export default function NavBar() {
                   onClick={() => handleNavigation("/profile")}
                   sx={{
                     color:
-                      pathname === "/profile" ? "primary.main" : "text.primary",
-                    fontWeight: pathname === "/profile" ? "bold" : "normal",
+                      pathname === "/profile"
+                        ? "primary.main"
+                        : "text.primary",
                   }}
                 >
                   {user?.name || "User"}
                 </Button>
                 <NotificationBell />
-                <IconButton onClick={toggleTheme} color="inherit">
-                  {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
+
                 <Button variant="outlined" onClick={handleLogout}>
                   Logout
                 </Button>
@@ -237,18 +228,19 @@ export default function NavBar() {
                 </Button>
               </>
             )}
+
+            <IconButton onClick={toggleTheme} color="inherit">
+              {mode === "dark" ? (
+                <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
+              )}
+            </IconButton>
           </Box>
 
-          <Box
-            sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
-          >
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
             {user && <NotificationBell />}
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="end"
-              onClick={handleDrawerToggle}
-            >
+            <IconButton onClick={handleDrawerToggle}>
               <MenuIcon />
             </IconButton>
           </Box>
@@ -258,7 +250,6 @@ export default function NavBar() {
         variant="temporary"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
         anchor="right"
         sx={{
           display: { xs: "block", md: "none" },
