@@ -16,17 +16,22 @@ const StatCard = ({ title, value, icon, color, loading, trend }) => {
           height: '100%'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box>
+            <Skeleton variant="text" width={80} height={24} sx={{ mb: 1 }} />
+            <Skeleton variant="text" width={20} height={40} />
+          </Box>
           <Skeleton
-            variant="circular"
+            variant="rounded"
             width={48}
             height={48}
-            sx={{ mr: 2 }}
+            sx={{ borderRadius: 3 }}
           />
-          <Box sx={{ flexGrow: 1 }}>
-            <Skeleton variant="text" width={60} height={30} />
-            <Skeleton variant="text" width={100} height={20} />
-          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: 1 }}>
+          <Skeleton variant="circular" width={16} height={16} />
+          <Skeleton variant="text" width={120} height={20} />
         </Box>
       </Paper>
     );

@@ -194,7 +194,7 @@ const DashboardPage = () => {
           <Grid item xs={12} sm={6} md={3}>
             <StatCard title="Completed" value={stats.completedTasks} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
           </Grid>
-          {(isAdmin || isManager || stats.teams > 0) && (
+          {(isAdmin || isManager || stats.teams > 0 || statsLoading) && (
             <Grid item xs={12} sm={6} md={3}>
               <StatCard title="Active Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
             </Grid>
