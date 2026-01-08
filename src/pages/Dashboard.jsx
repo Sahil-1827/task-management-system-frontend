@@ -23,8 +23,10 @@ import TeamTaskDistribution from '../components/charts/TeamTaskDistribution';
 import UserTaskCompletionRate from '../components/charts/UserTaskCompletionRate';
 import api from '../api';
 import { useNotifications } from '../context/NotificationContext';
+import { useTimeGreeting } from '../hooks/useTimeGreeting';
 
 const DashboardPage = () => {
+  const greeting = useTimeGreeting();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const { user, token, loading } = useAuth();
   const navigate = useNavigate();
@@ -152,7 +154,7 @@ const DashboardPage = () => {
 
           <Box sx={{ position: 'relative', zIndex: 1, textAlign: { xs: 'center', md: 'left' } }}>
             <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ m: 0 }}>
-              Welcome back, {user.name.split(' ')[0]}! 👋
+              {greeting}, {user.name.split(' ')[0]}! 👋
             </Typography>
             {user.role === 'user' && (
               <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400, fontSize: '1rem' }}>
