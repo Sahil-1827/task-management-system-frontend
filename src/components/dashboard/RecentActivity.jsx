@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useActivityLog } from '../../context/ActivityLogContext';
 import { useNotifications } from '../../context/NotificationContext';
+import EmptyState from '../common/EmptyState';
 import { Typography, Paper, Skeleton, Box, Avatar, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
@@ -181,10 +182,12 @@ const RecentActivity = () => {
             );
           })
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.5 }}>
-            <HistoryIcon sx={{ fontSize: 48, mb: 1 }} />
-            <Typography variant="body2">No recent activity</Typography>
-          </Box>
+          <EmptyState
+            title="No Recent Activity"
+            description="No recent activity to display."
+            icon={HistoryIcon}
+            height={275}
+          />
         )}
       </Box>
     </Paper>

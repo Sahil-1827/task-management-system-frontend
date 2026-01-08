@@ -7,6 +7,8 @@ import { useNotifications } from '../../context/NotificationContext';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EmptyState from '../common/EmptyState';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 const MyTasks = () => {
   const { user, token } = useAuth();
@@ -173,11 +175,11 @@ const MyTasks = () => {
           ))}
         </List>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexGrow: 1, py: 4 }}>
-          <Typography variant="body1" color="text.secondary" align="center">
-            You have no open tasks. Great job!
-          </Typography>
-        </Box>
+        <EmptyState
+          title="All Caught Up!"
+          description="You have no open tasks. Great job!"
+          icon={TaskAltIcon}
+        />
       )}
     </Paper>
   );

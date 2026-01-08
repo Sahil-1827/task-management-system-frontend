@@ -12,6 +12,8 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import ChartCard from '../dashboard/ChartCard';
+import EmptyState from '../common/EmptyState';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 ChartJS.register(
   CategoryScale,
@@ -98,14 +100,16 @@ const BarChart = ({ data, title, loading, xAxisLabel, horizontal }) => {
 
   return (
     <ChartCard title={title} loading={loading} chartType={horizontal ? 'horizontalBar' : 'bar'}>
-      {data && data.length > 0 ? (
+      {data && data.length > 0 && data.some(d => d.value > 0) ? (
         <Box sx={{ width: '100%', height: '100%', minHeight: 250 }}>
           <Bar options={options} data={chartData} />
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', opacity: 0.5 }}>
-          <Typography>No data available</Typography>
-        </Box>
+        <EmptyState
+          title="No Data Available"
+          description="No data to display at the moment."
+          icon={BarChartIcon}
+        />
       )}
     </ChartCard>
   );

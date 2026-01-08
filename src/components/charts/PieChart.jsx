@@ -3,6 +3,8 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import ChartCard from '../dashboard/ChartCard';
+import EmptyState from '../common/EmptyState';
+import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -80,9 +82,11 @@ const PieChart = ({ data, title, loading }) => {
                     </Box>
                 </Box>
             ) : (
-                <Box sx={{ textAlign: 'center', opacity: 0.5 }}>
-                    <Typography>No data available</Typography>
-                </Box>
+                <EmptyState
+                    title="No Data Available"
+                    description="No data to display at the moment."
+                    icon={DonutLargeIcon}
+                />
             )}
         </ChartCard>
     );
