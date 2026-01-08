@@ -89,7 +89,7 @@ export default function ClientLayout({ children }) {
                 <MenuIcon />
               </IconButton>
               <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
-                TaskMaster
+                Task Management System
               </Typography>
             </Toolbar>
           </AppBar>

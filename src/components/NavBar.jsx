@@ -60,7 +60,7 @@ export default function NavBar() {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center", p: 2 }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        TaskMaster
+        Task Management System
       </Typography>
       <List>
         {user ? (
@@ -170,7 +170,7 @@ export default function NavBar() {
           >
             <img src="/logo.png" alt="Logo" width={32} height={32} />
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              TaskMaster
+              Task Management System
             </Typography>
           </Box>
 

@@ -82,7 +82,7 @@ export default function Home() {
             variant="h2"
             sx={{ fontWeight: 900, mb: 2, color: theme.palette.primary.main }}
           >
-            Streamline Your Workflow with TaskMaster
+            Streamline Your Workflow with Task Management System
           </Typography>
           <Typography
             variant="body1"
@@ -129,7 +129,7 @@ export default function Home() {
           variant="body1"
           sx={{ mb: 5, textAlign: "center", maxWidth: "md", mx: "auto" }}
         >
-          TaskMaster offers a comprehensive suite of tools designed to enhance
+          Task Management System offers a comprehensive suite of tools designed to enhance
           team collaboration and productivity.
         </Typography>
 
@@ -192,7 +192,7 @@ export default function Home() {
           variant="body1"
           sx={{ mb: 4, maxWidth: "md", mx: "auto" }}
         >
-          Join thousands of teams already using TaskMaster to achieve their
+          Join thousands of teams already using Task Management System to achieve their
           goals more efficiently.
         </Typography>
         {user ? (

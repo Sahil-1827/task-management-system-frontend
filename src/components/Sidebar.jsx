@@ -93,7 +93,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }) {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <img src="/logo.png" alt="Logo" width={32} height={32} />
                     <Typography variant="h6" fontWeight="bold">
-                        TaskMaster
+                        Task Management System
                     </Typography>
                 </Box>
                 {isMobile && (

@@ -37,20 +37,20 @@ export default function LearnMore() {
         >
           Back to Home
         </Button>
-        
+
         {/* Key Features Section */}
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
           Key Features
         </Typography>
-        
+
         <Box sx={{ mb: 10 }}>
           <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold', maxWidth: 720 }}>
             Powerful Features to Boost Your Productivity
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, maxWidth: 720 }}>
-            TaskMaster offers a comprehensive suite of features designed to help you manage your tasks and projects effectively.
+            Task Management System offers a comprehensive suite of features designed to help you manage your tasks and projects effectively.
           </Typography>
-          
+
           <Grid container spacing={3}>
             {[
               { icon: <ListBullets />, title: 'Task Management', description: 'Create, assign, and organize tasks efficiently.' },
@@ -81,17 +81,17 @@ export default function LearnMore() {
 
         {/* Benefits Section */}
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-          Benefits of Using TaskMaster
+          Benefits of Using Task Management System
         </Typography>
-        
+
         <Box sx={{ mb: 10 }}>
           <Typography variant="h2" sx={{ mb: 2, fontWeight: 'bold', maxWidth: 720 }}>
-            Experience the Difference with TaskMaster
+            Experience the Difference with Task Management System
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, maxWidth: 720 }}>
-            TaskMaster empowers teams to work smarter, not harder, by providing the tools they need to succeed.
+            Task Management System empowers teams to work smarter, not harder, by providing the tools they need to succeed.
           </Typography>
-          
+
           <Grid container spacing={3}>
             {[
               { icon: <Clock />, title: 'Increased Efficiency', description: 'Streamline your workflow and save time on task management.' },
