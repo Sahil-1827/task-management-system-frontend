@@ -13,6 +13,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { toast } from 'react-toastify';
 import api from '../api';
 
@@ -57,6 +58,16 @@ export default function SignUp() {
 
   return (
     <Container sx={{ maxWidth: '500px !important', my: 'auto' }}>
+      <Box sx={{ textAlign: 'center' }}>
+        <Button
+          startIcon={<KeyboardBackspaceIcon />}
+          onClick={() => navigate('/')}
+          size="small"
+          sx={{ borderRadius: 2, mb: 4 }}
+        >
+          Back to Home
+        </Button>
+      </Box>
       <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
         Sign Up
       </Typography>
@@ -101,9 +112,14 @@ export default function SignUp() {
             <MenuItem value="admin">Admin</MenuItem>
           </Select>
         </FormControl>
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mb: 2 }}>
           Sign Up
         </Button>
+        <Box sx={{ textAlign: 'center' }}>
+          <Button color="primary" onClick={() => navigate('/login')}>
+            Already have an account? Login
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

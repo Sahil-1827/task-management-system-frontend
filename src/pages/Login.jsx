@@ -10,6 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { toast } from 'react-toastify';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 export default function Login() {
   const { user, login, loading } = useAuth();
@@ -47,6 +48,16 @@ export default function Login() {
 
   return (
     <Container sx={{ maxWidth: '500px !important', my: 'auto' }}>
+      <Box sx={{ textAlign: 'center' }}>
+        <Button
+          startIcon={<KeyboardBackspaceIcon />}
+          onClick={() => navigate('/')}
+          size="small"
+          sx={{ borderRadius: 2, mb: 4 }}
+        >
+          Back to Home
+        </Button>
+      </Box>
       <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
         Login
       </Typography>
@@ -69,9 +80,14 @@ export default function Login() {
           required
           sx={{ mb: 2 }}
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mb: 2 }}>
           Login
         </Button>
+        <Box sx={{ textAlign: 'center' }}>
+          <Button color="primary" onClick={() => navigate('/signup')}>
+            Don't have an account? Sign Up
+          </Button>
+        </Box>
       </Box>
     </Container>
   );
