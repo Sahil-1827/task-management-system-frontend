@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Typography, useTheme } from '@mui/material';
 import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
-import BarChart from './BarChart';
+import LineChart from './LineChart';
 import { useNotifications } from '../../context/NotificationContext';
 
 const TaskDueDateChart = () => {
@@ -88,7 +88,7 @@ const TaskDueDateChart = () => {
     }
 
     return (
-        <BarChart
+        <LineChart
             title="Tasks by Due Date"
             data={chartData}
             loading={loading}

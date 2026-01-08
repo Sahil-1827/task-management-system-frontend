@@ -185,81 +185,74 @@ const DashboardPage = () => {
           )}
         </Box>
 
-        {/* Stats Grid - Row 1 */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" loading={statsLoading} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Pending" value={stats.pendingTasks} icon={<AccessTimeIcon />} color="warning.main" loading={statsLoading} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Completed" value={stats.completedTasks} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
-          </Grid>
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: 3,
+          mb: 4
+        }}>
+          <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" loading={statsLoading} />
+          <StatCard title="Pending" value={stats.pendingTasks} icon={<AccessTimeIcon />} color="warning.main" loading={statsLoading} />
+          <StatCard title="Completed" value={stats.completedTasks} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
           {(isAdmin || isManager || stats.teams > 0 || statsLoading) && (
-            <Grid item xs={12} sm={6} md={3}>
-              <StatCard title="Active Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
-            </Grid>
+            <StatCard title="Active Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
           )}
-        </Grid>
+        </Box>
 
-        <Grid container spacing={3}>
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(2, 1fr)',
+            lg: 'repeat(3, 1fr)',
+            xl: 'repeat(4, 1fr)'
+          },
+          gap: 3
+        }}>
 
-          {/* ROW 1 */}
-          {/* Distribution */}
-          <Grid item xs={12} md={6} lg={4} xl={3}>
-            <Box sx={{ height: CHART_HEIGHT }}>
-              <TeamTaskDistribution />
-            </Box>
-          </Grid>
+          <Box sx={{ height: CHART_HEIGHT }}>
+            <TeamTaskDistribution />
+          </Box>
 
-          {/* Completion Rate */}
-          <Grid item xs={12} md={6} lg={4} xl={3}>
-            <Box sx={{ height: CHART_HEIGHT }}>
-              {isAdmin ? <UserTaskCompletionRate /> : <TaskStatusChart />}
-            </Box>
-          </Grid>
+          <Box sx={{
+            height: CHART_HEIGHT,
+            gridColumn: {
+              md: isAdmin ? 'span 2' : 'span 1',
+              lg: isAdmin ? 'span 2' : 'span 1'
+            }
+          }}>
+            {isAdmin ? <UserTaskCompletionRate /> : <TaskStatusChart />}
+          </Box>
 
-          {/* My Tasks */}
-          <Grid item xs={12} lg={4} xl={3}>
-            <Box sx={{ height: CHART_HEIGHT }}>
-              <MyTasks /> {/* Handles scrolling internally */}
-            </Box>
-          </Grid>
+          <Box sx={{ height: CHART_HEIGHT }}>
+            <MyTasks />
+          </Box>
 
+          <Box sx={{ height: CHART_HEIGHT }}>
+            <TaskDueDateChart />
+          </Box>
 
-          {/* ROW 2 */}
-          {/* Due Date */}
-          <Grid item xs={12} md={6} lg={4} xl={3}>
-            <Box sx={{ height: CHART_HEIGHT }}>
-              <TaskDueDateChart />
-            </Box>
-          </Grid>
+          <Box sx={{ height: CHART_HEIGHT }}>
+            {isAdmin ? <UserRoleChart /> : <TaskPriorityChart />}
+          </Box>
 
-          {/* Roles or Priority */}
-          <Grid item xs={12} md={6} lg={4} xl={3}>
-            <Box sx={{ height: CHART_HEIGHT }}>
-              {isAdmin ? <UserRoleChart /> : <TaskPriorityChart />}
-            </Box>
-          </Grid>
-
-          {/* Extra Widget or Priority for Admin */}
           {isAdmin && (
-            <Grid item xs={12} lg={4} xl={3}>
-              <Box sx={{ height: CHART_HEIGHT }}>
-                <TaskPriorityChart />
-              </Box>
-            </Grid>
+            <Box sx={{ height: CHART_HEIGHT }}>
+              <TaskPriorityChart />
+            </Box>
           )}
 
-          {/* ROW 3: Recent Activity */}
-          <Grid sx={isAdmin ? { maxWidth: 'sm' } : { maxWidth: 'xl' }}>
-            <Box sx={{ height: isAdmin ? CHART_HEIGHT : 400 }}>
-              <RecentActivity />
-            </Box>
-          </Grid>
+          <Box sx={{
+            height: isAdmin ? CHART_HEIGHT : 400,
+            gridColumn: {
+              md: 'span 2',
+              lg: 'span 2'
+            }
+          }}>
+            <RecentActivity />
+          </Box>
 
-        </Grid>
+        </Box>
       </Container>
     </Fade>
   );

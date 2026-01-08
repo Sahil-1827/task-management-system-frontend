@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '@mui/material';
-import PieChart from './PieChart';
+import PolarAreaChart from './PolarAreaChart';
 import api from '../../api';
 import { useNotifications } from '../../context/NotificationContext';
 
@@ -97,7 +97,7 @@ const TeamTaskDistribution = () => {
   }, [token, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
   return (
-    <PieChart
+    <PolarAreaChart
       title="Team Task Distribution"
       data={chartData}
       loading={loading}

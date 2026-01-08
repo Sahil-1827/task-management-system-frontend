@@ -4,10 +4,33 @@ const ChartCard = ({ title, children, loading, action, chartType = 'bar' }) => {
     const theme = useTheme();
 
     const renderSkeleton = () => {
-        if (chartType === 'doughnut' || chartType === 'pie') {
+        if (chartType === 'doughnut' || chartType === 'pie' || chartType === 'polarArea') {
             return (
                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                     <Skeleton variant="circular" width={220} height={220} animation="wave" />
+                </Box>
+            );
+        }
+
+        if (chartType === 'line') {
+            return (
+                <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', px: 2, pb: 2, justifyContent: 'flex-end', position: 'relative' }}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: 0,
+                        right: 0,
+                        transform: 'translateY(-50%)',
+                        px: 2
+                    }}>
+                        <Skeleton variant="rectangular" height={2} width="100%" sx={{ mb: 4 }} />
+                        <Skeleton variant="rectangular" height={2} width="100%" sx={{ mb: 4 }} />
+                        <Skeleton variant="rectangular" height={2} width="100%" sx={{ mb: 4 }} />
+                    </Box>
+                    <Skeleton variant="rectangular" height={100} width="100%" sx={{ clipPath: 'polygon(0 100%, 20% 60%, 40% 80%, 60% 40%, 80% 70%, 100% 20%, 100% 100%)', opacity: 0.2 }} animation="wave" />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                        {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} variant="text" width={40} />)}
+                    </Box>
                 </Box>
             );
         }

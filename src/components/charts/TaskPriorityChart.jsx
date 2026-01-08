@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { Typography, useTheme } from '@mui/material';
 import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
-import BarChart from './BarChart';
+import PieChart from './PieChart';
 import { useNotifications } from '../../context/NotificationContext';
 
 const TaskPriorityChart = () => {
     const { token } = useAuth();
     const { registerUpdateCallback, unregisterUpdateCallback } = useNotifications();
     const theme = useTheme();
-    
+
     // Initialize state to null. We will conditionally render based on this.
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -61,7 +61,7 @@ const TaskPriorityChart = () => {
     }
 
     return (
-        <BarChart
+        <PieChart
             title="All Tasks by Priority"
             data={chartData}
             loading={loading}
