@@ -4,7 +4,7 @@ const ChartCard = ({ title, children, loading, action, chartType = 'bar' }) => {
     const theme = useTheme();
 
     const renderSkeleton = () => {
-        if (chartType === 'doughnut' || chartType === 'pie') {
+        if (chartType === 'doughnut' || chartType === 'pie' || chartType === 'polarArea') {
             return (
                 <Box>
                     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -20,46 +20,6 @@ const ChartCard = ({ title, children, loading, action, chartType = 'bar' }) => {
                                 <Skeleton variant="text" width={40}/>
                             </Box>
                         ))}
-                    </Box>
-                </Box>
-            );
-        }
-
-        if (chartType === 'polarArea') {
-            return (
-                <Box
-                    sx={{
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 3,
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <Skeleton
-                            variant="circular"
-                            width={260}
-                            height={260}
-                            animation="wave"
-                        />
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            {[1, 2].map((item) => (
-                                <Box
-                                    key={item}
-                                    sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
-                                >
-                                    <Skeleton variant="circular" width={12} height={12} />
-                                    <Skeleton variant="text" width={120} />
-                                </Box>
-                            ))}
-                        </Box>
                     </Box>
                 </Box>
             );

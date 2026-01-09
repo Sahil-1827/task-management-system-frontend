@@ -27,7 +27,7 @@ const PolarAreaChart = ({ data, title, loading }) => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'right', // Legend on the right for Polar Area looks better usually
+                position: 'bottom', // Legend on the right for Polar Area looks better usually
                 labels: {
                     color: theme.palette.text.secondary,
                     font: {
