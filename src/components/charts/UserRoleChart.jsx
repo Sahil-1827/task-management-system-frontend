@@ -33,7 +33,6 @@ const UserRoleChart = () => {
                 setLoading(false);
                 return;
             }
-            if (isInitialLoad) setLoading(true);
 
             try {
                 const res = await api.get('/users');
@@ -60,7 +59,6 @@ const UserRoleChart = () => {
                 setError("Failed to fetch user data");
             } finally {
                 setLoading(false);
-                setIsInitialLoad(false);
             }
         };
 
@@ -69,34 +67,9 @@ const UserRoleChart = () => {
         return () => unregisterUpdateCallback(callbackId);
     }, [token, user, theme, refetchTrigger, registerUpdateCallback, unregisterUpdateCallback]);
 
-    // --- Skeleton while loading ---
-    if (loading && isInitialLoad) {
-        return (
-            <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', height: 260 }}>
-                {/* Title Skeleton */}
-                <Skeleton variant="text" width="60%" height={28} sx={{ mb: 2 }} />
-
-                {/* Pie skeleton */}
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Skeleton variant="circular" width={150} height={150} />
-                </Box>
-
-                {/* Legend skeleton */}
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
-                    {[1, 2, 3].map(i => (
-                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Skeleton variant="circular" width={12} height={12} />
-                            <Skeleton variant="text" width={60} height={16} />
-                        </Box>
-                    ))}
-                </Box>
-            </Paper>
-        );
-    }
-
     if (error) return <Typography color="error">{error}</Typography>;
 
-    return <PieChart data={chartData} title="Users by Role" />;
+    return <PieChart data={chartData} title="Users by Role" loading={loading} />;
 };
 
 export default UserRoleChart;
