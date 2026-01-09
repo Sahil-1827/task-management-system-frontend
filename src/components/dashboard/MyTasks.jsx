@@ -70,6 +70,8 @@ const MyTasks = () => {
     }
   };
 
+  const isAdmin = user.role === 'admin';
+
   const LoadingSkeleton = () => (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 4, height: '100%', border: '1px solid', borderColor: 'divider' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -115,7 +117,7 @@ const MyTasks = () => {
           <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', width: 32, height: 32 }}>
             <AssignmentIcon fontSize="small" />
           </Avatar>
-          <Typography variant="h6" fontWeight="bold">My Tasks</Typography>
+          <Typography variant="h6" fontWeight="bold">{(isAdmin ? "All Tasks" : "My Tasks")}</Typography>
         </Box>
         <Button
           endIcon={<ArrowForwardIcon />}
