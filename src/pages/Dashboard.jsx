@@ -121,7 +121,7 @@ const DashboardPage = () => {
 
   return (
     <Fade in={true}>
-      <Container maxWidth="2xl" sx={{ py: 3 }}>
+      <Container maxWidth="2xl" sx={{ py: 3, overflowX: 'hidden' }}>
         {/* Welcome Banner */}
         <Box
           sx={{
@@ -210,12 +210,13 @@ const DashboardPage = () => {
           gap: 3
         }}>
 
-          <Box sx={{ height: CHART_HEIGHT }}>
+          <Box sx={{ height: CHART_HEIGHT, minWidth: 0 }}>
             <TeamTaskDistribution />
           </Box>
 
           <Box sx={{
             height: CHART_HEIGHT,
+            minWidth: 0,
             gridColumn: {
               md: isAdmin ? 'span 2' : 'span 1',
               lg: isAdmin ? 'span 2' : 'span 1'
@@ -224,26 +225,27 @@ const DashboardPage = () => {
             {isAdmin ? <UserTaskCompletionRate /> : <TaskStatusChart />}
           </Box>
 
-          <Box sx={{ height: CHART_HEIGHT }}>
+          <Box sx={{ height: CHART_HEIGHT, minWidth: 0 }}>
             <MyTasks />
           </Box>
 
-          <Box sx={{ height: CHART_HEIGHT }}>
+          <Box sx={{ height: CHART_HEIGHT, minWidth: 0 }}>
             <TaskDueDateChart />
           </Box>
 
-          <Box sx={{ height: CHART_HEIGHT }}>
+          <Box sx={{ height: CHART_HEIGHT, minWidth: 0 }}>
             {isAdmin ? <UserRoleChart /> : <TaskPriorityChart />}
           </Box>
 
           {isAdmin && (
-            <Box sx={{ height: CHART_HEIGHT }}>
+            <Box sx={{ height: CHART_HEIGHT, minWidth: 0 }}>
               <TaskPriorityChart />
             </Box>
           )}
 
           <Box sx={{
             height: isAdmin ? CHART_HEIGHT : 400,
+            minWidth: 0,
             gridColumn: {
               md: 'span 2',
               lg: 'span 2'
