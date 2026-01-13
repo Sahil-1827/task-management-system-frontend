@@ -36,6 +36,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../api";
 import { useActivityLog } from "../context/ActivityLogContext";
 import { useNotifications } from "../context/NotificationContext";
+import StatusBadge from "../components/common/StatusBadge";
 
 export default function Tasks() {
   const { user, token, loading } = useAuth();
@@ -94,32 +95,32 @@ export default function Tasks() {
     if (loading || !user) return;
 
     const fetchData = async () => {
-        setLoadingTasks(true);
-        try {
-            const queryParams = new URLSearchParams({
-                page,
-                limit: tasksPerPage
-            });
+      setLoadingTasks(true);
+      try {
+        const queryParams = new URLSearchParams({
+          page,
+          limit: tasksPerPage
+        });
 
-            const [tasksRes, usersRes, teamsRes] = await Promise.all([
-                api.get(
-                    `/tasks?${queryParams.toString()}`
-                ),
-                api.get("/users"),
-                api.get("/teams")
-            ]);
+        const [tasksRes, usersRes, teamsRes] = await Promise.all([
+          api.get(
+            `/tasks?${queryParams.toString()}`
+          ),
+          api.get("/users"),
+          api.get("/teams")
+        ]);
 
-            setTasks(tasksRes.data.tasks);
-            setDisplayTasks(tasksRes.data.tasks);
-            setTotalTasks(tasksRes.data.totalTasks);
-            setTotalPages(tasksRes.data.totalPages);
-            setUsers(usersRes.data);
-            setTeams(teamsRes.data.teams || teamsRes.data);
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to fetch page data");
-        } finally {
-            setLoadingTasks(false);
-        }
+        setTasks(tasksRes.data.tasks);
+        setDisplayTasks(tasksRes.data.tasks);
+        setTotalTasks(tasksRes.data.totalTasks);
+        setTotalPages(tasksRes.data.totalPages);
+        setUsers(usersRes.data);
+        setTeams(teamsRes.data.teams || teamsRes.data);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to fetch page data");
+      } finally {
+        setLoadingTasks(false);
+      }
     };
 
     fetchData();
@@ -138,7 +139,7 @@ export default function Tasks() {
       navigate("/");
     }
   }, [user, loading, navigate]);
-  
+
   const isUserAssigned = (task, currentUser, allTeams) => {
     if (!task || !currentUser || !allTeams) return false;
 
@@ -146,14 +147,14 @@ export default function Tasks() {
     if (!currentUserId) return false;
 
     if (task.assignee && task.assignee._id === currentUserId) {
-        return true;
+      return true;
     }
 
     if (task.team && task.team._id) {
-        const assignedTeam = allTeams.find(t => t._id === task.team._id);
-        if (assignedTeam && assignedTeam.members) {
-            return assignedTeam.members.some(member => member._id === currentUserId);
-        }
+      const assignedTeam = allTeams.find(t => t._id === task.team._id);
+      if (assignedTeam && assignedTeam.members) {
+        return assignedTeam.members.some(member => member._id === currentUserId);
+      }
     }
 
     return false;
@@ -290,15 +291,15 @@ export default function Tasks() {
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
-        await api.put(
-            `/tasks/${taskId}`,
-            { status: newStatus }
-        );
-        toast.success("Task status updated successfully!");
-        setRefetchTrigger((prev) => prev + 1);
-        fetchLogs();
+      await api.put(
+        `/tasks/${taskId}`,
+        { status: newStatus }
+      );
+      toast.success("Task status updated successfully!");
+      setRefetchTrigger((prev) => prev + 1);
+      fetchLogs();
     } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to update task status");
+      toast.error(error.response?.data?.message || "Failed to update task status");
     }
   };
 
@@ -383,22 +384,22 @@ export default function Tasks() {
                   </TableCell>
                   <TableCell>{task.description || "-"}</TableCell>
                   <TableCell>
-                  {(user.role === 'user' && isUserAssigned(task, user, teams)) ? (
+                    {(user.role === 'user' && isUserAssigned(task, user, teams)) ? (
                       <FormControl fullWidth size="small">
-                          <Select
-                              value={task.status}
-                              onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                          >
-                              <MenuItem value="To Do">To Do</MenuItem>
-                              <MenuItem value="In Progress">In Progress</MenuItem>
-                              <MenuItem value="Done">Done</MenuItem>
-                          </Select>
+                        <Select
+                          value={task.status}
+                          onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                        >
+                          <MenuItem value="To Do">To Do</MenuItem>
+                          <MenuItem value="In Progress">In Progress</MenuItem>
+                          <MenuItem value="Done">Done</MenuItem>
+                        </Select>
                       </FormControl>
-                  ) : (
-                      task.status
-                  )}
+                    ) : (
+                      <StatusBadge status={task.status} size="small" />
+                    )}
                   </TableCell>
-                  <TableCell>{task.priority}</TableCell>
+                  <TableCell><StatusBadge status={task.priority} size="small" /></TableCell>
                   <TableCell>
                     {task.dueDate
                       ? new Date(task.dueDate).toLocaleDateString()

@@ -9,6 +9,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EmptyState from '../common/EmptyState';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import StatusBadge from '../common/StatusBadge';
 
 const MyTasks = () => {
   const { user, token } = useAuth();
@@ -141,12 +142,7 @@ const MyTasks = () => {
                 }}
               >
                 <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
-                  <Chip
-                    label={task.priority?.charAt(0)}
-                    size="small"
-                    color={task.priority === 'High' ? 'error' : task.priority === 'Medium' ? 'warning' : 'default'}
-                    sx={{ width: 24, height: 24, fontSize: '0.75rem', '& .MuiChip-label': { px: 0 } }}
-                  />
+                  <StatusBadge status={task.priority} size="small" />
                 </Box>
                 <ListItemText
                   primary={
@@ -164,13 +160,7 @@ const MyTasks = () => {
                   }
                   secondaryTypographyProps={{ component: 'div' }}
                 />
-                <Chip
-                  label={task.status}
-                  size="small"
-                  color={getStatusColor(task.status)}
-                  variant="outlined"
-                  sx={{ ml: 1, height: 24, fontSize: '0.75rem' }}
-                />
+                <StatusBadge status={task.status} size="small" />
               </ListItem>
               {index < tasks.length - 1 && <Divider component="li" />}
             </Box>

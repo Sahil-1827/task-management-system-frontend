@@ -41,7 +41,7 @@ export default function NotificationBell() {
     const now = new Date();
     const notifTime = new Date(timestamp);
     const diffInMinutes = Math.floor((now - notifTime) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
@@ -54,7 +54,7 @@ export default function NotificationBell() {
     <>
       <IconButton
         onClick={handleClick}
-        sx={{ 
+        sx={{
           color: 'text.primary',
           '&:hover': {
             backgroundColor: 'action.hover'
@@ -87,50 +87,49 @@ export default function NotificationBell() {
         }}
       >
         <Box sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Notifications
             </Typography>
             {unreadCount > 0 && (
-              <Chip 
-                label={`${unreadCount} new`} 
-                size="small" 
-                color="primary" 
+              <Chip
+                label={`${unreadCount} new`}
+                size="small"
+                color="primary"
               />
+            )}
+            {notifications.length > 0 && (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  size="small"
+                  onClick={markAllAsRead}
+                  disabled={unreadCount === 0}
+                >
+                  Mark all read
+                </Button>
+                <Button
+                  size="small"
+                  onClick={clearAllNotifications}
+                  color="error"
+                >
+                  Clear all
+                </Button>
+              </Box>
             )}
           </Box>
 
-          <Button 
+          {/* <Button 
             size="small" 
             onClick={addTestNotification}
             variant="outlined"
             sx={{ mb: 1 }}
           >
             Add Test Notification
-          </Button>
-          
-          {notifications.length > 0 && (
-            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-              <Button 
-                size="small" 
-                onClick={markAllAsRead}
-                disabled={unreadCount === 0}
-              >
-                Mark all read
-              </Button>
-              <Button 
-                size="small" 
-                onClick={clearAllNotifications}
-                color="error"
-              >
-                Clear all
-              </Button>
-            </Box>
-          )}
+          </Button> */}
         </Box>
-        
+
         <Divider />
-        
+
         {notifications.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
