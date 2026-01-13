@@ -344,6 +344,7 @@ export default function Teams() {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="sm"
+        style={{backdropFilter: "blur(3px)"}}
       >
         <DialogTitle>
           {editTeam ? "Edit Team" : "Add Team"}

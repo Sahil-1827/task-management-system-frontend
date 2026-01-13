@@ -151,7 +151,7 @@ export default function Profile() {
         </Button>
       </Paper>
 
-      <Dialog open={openDialog} onClose={handleClose}>
+      <Dialog open={openDialog} onClose={handleClose} style={{backdropFilter: "blur(3px)"}}>
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
           <TextField

@@ -140,7 +140,7 @@ export default function Users() {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} style={{backdropFilter: "blur(3px)"}}>
         <DialogTitle>User Profile</DialogTitle>
         <DialogContent>
           {selectedUser && (

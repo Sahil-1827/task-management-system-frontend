@@ -442,6 +442,7 @@ export default function Tasks() {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="sm"
+        style={{backdropFilter: "blur(3px)"}}
       >
         <DialogTitle>
           {editTask ? "Edit Task" : "Add Task"}
