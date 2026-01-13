@@ -2,7 +2,7 @@
 import { Card, Typography, Box, Avatar, Skeleton, Paper } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
-const StatCard = ({ title, value, icon, color, loading, trend }) => {
+const StatCard = ({ title, value, icon, color, loading, trend, trendLabel }) => {
   if (loading) {
     return (
       <Paper
@@ -84,12 +84,20 @@ const StatCard = ({ title, value, icon, color, loading, trend }) => {
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: 1 }}>
-        <TrendingUpIcon fontSize="small" color="success" />
-        <Typography variant="body2" color="success.main" fontWeight="bold">
-          +12%
-        </Typography>
+        {trend !== undefined && (
+          <>
+            <TrendingUpIcon
+              fontSize="small"
+              color={trend >= 0 ? "success" : "error"}
+              sx={{ transform: trend >= 0 ? 'none' : 'rotate(180deg)' }}
+            />
+            <Typography variant="body2" color={trend >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+              {trend >= 0 ? '+' : ''}{trend}%
+            </Typography>
+          </>
+        )}
         <Typography variant="caption" color="text.secondary">
-          from last month
+          {trendLabel || "from last month"}
         </Typography>
       </Box>
     </Paper>

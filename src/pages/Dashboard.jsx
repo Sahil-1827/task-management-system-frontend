@@ -70,36 +70,19 @@ const DashboardPage = () => {
     const fetchStats = async () => {
       if (isInitialLoad) setStatsLoading(true);
       try {
-        const promises = [
-          api.get('/tasks'),
-          api.get('/teams'),
-        ];
-        if (user.role === 'admin' || user.role === 'manager') {
-          promises.push(api.get('/users'));
-        }
-
-        const results = await Promise.allSettled(promises);
-        const tasksRes = results[0].status === 'fulfilled' ? results[0].value : { data: { tasks: [], totalTasks: 0 } };
-        const teamsRes = results[1].status === 'fulfilled' ? results[1].value : { data: { teams: [] } };
-        const usersRes = results[2]?.status === 'fulfilled' ? results[2].value : { data: [] };
-
-        const allTasks = tasksRes.data?.tasks || [];
-        const allTeams = teamsRes.data?.teams || [];
-        const allUsers = Array.isArray(usersRes.data) ? usersRes.data : [];
-
-        const completedTasks = allTasks.filter(task => task.status === 'Done').length;
-        const pendingTasks = allTasks.filter(task => task.status === 'To Do' || task.status === 'In Progress').length;
-        const highPriorityTasks = allTasks.filter(task => task.priority === 'High').length;
-        const teamsWithTasks = new Set(allTasks.filter(task => task.team).map(task => task.team._id)).size;
+        const { data } = await api.get('/dashboard/stats');
 
         setStats({
-          users: allUsers.length || 0,
-          tasks: tasksRes.data?.totalTasks || allTasks.length || 0,
-          teams: allTeams.length || 0,
-          completedTasks,
-          pendingTasks,
-          highPriorityTasks,
-          teamsWithTasks,
+          users: data.totalUsers || 0,
+          tasks: data.totalTasks.value,
+          tasksTrend: data.totalTasks.trend,
+          teams: data.activeTeams.value,
+          teamsTrend: data.activeTeams.trend,
+          completedTasks: data.completedTasks.value,
+          completedTasksTrend: data.completedTasks.trend,
+          pendingTasks: data.pendingTasks.value,
+          pendingTasksTrend: data.pendingTasks.trend,
+          highPriorityTasks: data.highPriorityTasks || 0,
         });
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);
@@ -191,11 +174,11 @@ const DashboardPage = () => {
           gap: 3,
           mb: 4
         }}>
-          <StatCard title="Total Tasks" value={stats.tasks} icon={<TaskIcon />} color="primary.main" loading={statsLoading} />
-          <StatCard title="Pending" value={stats.pendingTasks} icon={<AccessTimeIcon />} color="warning.main" loading={statsLoading} />
-          <StatCard title="Completed" value={stats.completedTasks} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
+          <StatCard title="Total Tasks" value={stats.tasks} trend={stats.tasksTrend} icon={<TaskIcon />} color="primary.main" loading={statsLoading} />
+          <StatCard title="Pending" value={stats.pendingTasks} trend={stats.pendingTasksTrend} icon={<AccessTimeIcon />} color="warning.main" loading={statsLoading} />
+          <StatCard title="Completed" value={stats.completedTasks} trend={stats.completedTasksTrend} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
           {(isAdmin || isManager || stats.teams > 0 || statsLoading) && (
-            <StatCard title="Active Teams" value={stats.teams} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
+            <StatCard title="Active Teams" value={stats.teams} trend={stats.teamsTrend} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
           )}
         </Box>
 
