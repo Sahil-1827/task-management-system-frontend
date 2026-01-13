@@ -27,8 +27,10 @@ import {
   MenuItem,
   Pagination,
   Grid,
-  Skeleton
+  Skeleton,
+  Tooltip
 } from "@mui/material";
+import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import EditIcon from "@mui/icons-material/Edit";
@@ -288,8 +290,8 @@ export default function Teams() {
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
                       <Box sx={{ display: 'flex' }}>
-                      <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
-                      <Skeleton variant="circular" width={30} height={30} />
+                        <Skeleton variant="circular" width={30} height={30} sx={{ mr: 1 }} />
+                        <Skeleton variant="circular" width={30} height={30} />
                       </Box>
                     </TableCell>
                   )}
@@ -312,12 +314,16 @@ export default function Teams() {
                   <TableCell>{team.createdBy?.name || "-"}</TableCell>
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
-                      <IconButton onClick={() => handleEditTeam(team)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteTeam(team._id)}>
-                        <DeleteIcon />
-                      </IconButton>
+                      <Tooltip title="Edit" placement="top" arrow>
+                        <IconButton onClick={() => handleEditTeam(team)}>
+                          <EditIcon color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete" placement="top" arrow>
+                        <IconButton onClick={() => handleDeleteTeam(team._id)}>
+                          <DeleteForeverTwoToneIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   )}
                 </TableRow>
@@ -344,7 +350,7 @@ export default function Teams() {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="sm"
-        style={{backdropFilter: "blur(3px)"}}
+        style={{ backdropFilter: "blur(3px)" }}
       >
         <DialogTitle>
           {editTeam ? "Edit Team" : "Add Team"}

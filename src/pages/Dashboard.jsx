@@ -24,6 +24,9 @@ import UserTaskCompletionRate from '../components/charts/UserTaskCompletionRate'
 import api from '../api';
 import { useNotifications } from '../context/NotificationContext';
 import { useTimeGreeting } from '../hooks/useTimeGreeting';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 const DashboardPage = () => {
   const greeting = useTimeGreeting();
@@ -151,7 +154,7 @@ const DashboardPage = () => {
               <Button
                 variant="contained"
                 size="large"
-                startIcon={<AddIcon />}
+                startIcon={<AddTaskIcon />}
                 onClick={() => navigate('/tasks')}
                 sx={{
                   bgcolor: 'white',
@@ -174,9 +177,9 @@ const DashboardPage = () => {
           gap: 3,
           mb: 4
         }}>
-          <StatCard title="Total Tasks" value={stats.tasks} trend={stats.tasksTrend} icon={<TaskIcon />} color="primary.main" loading={statsLoading} />
+          <StatCard title="Total Tasks" value={stats.tasks} trend={stats.tasksTrend} icon={<AssignmentIcon />} color="primary.main" loading={statsLoading} />
           <StatCard title="Pending" value={stats.pendingTasks} trend={stats.pendingTasksTrend} icon={<AccessTimeIcon />} color="warning.main" loading={statsLoading} />
-          <StatCard title="Completed" value={stats.completedTasks} trend={stats.completedTasksTrend} icon={<CheckCircleIcon />} color="success.main" loading={statsLoading} />
+          <StatCard title="Completed" value={stats.completedTasks} trend={stats.completedTasksTrend} icon={<VerifiedIcon />} color="success.main" loading={statsLoading} />
           {(isAdmin || isManager || stats.teams > 0 || statsLoading) && (
             <StatCard title="Active Teams" value={stats.teams} trend={stats.teamsTrend} icon={<GroupWorkIcon />} color="info.main" loading={statsLoading} />
           )}

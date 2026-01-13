@@ -31,6 +31,9 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import NotificationBell from "./NotificationBell";
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 const drawerWidth = 280;
 
@@ -60,9 +63,9 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }) {
     };
 
     const navItems = [
-        { label: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
-        { label: "Tasks", path: "/tasks", icon: <TaskIcon /> },
-        { label: "Teams", path: "/teams", icon: <GroupIcon /> },
+        { label: "Dashboard", path: "/dashboard", icon: <DashboardRoundedIcon /> },
+        { label: "Tasks", path: "/tasks", icon: <AssignmentIcon /> },
+        { label: "Teams", path: "/teams", icon: <GroupsIcon /> },
         { label: "Activity Log", path: "/activity-log", icon: <HistoryIcon /> },
     ];
 

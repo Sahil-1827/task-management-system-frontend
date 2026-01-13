@@ -27,8 +27,10 @@ import {
   MenuItem,
   Pagination,
   Grid,
-  Skeleton
+  Skeleton,
+  Tooltip
 } from "@mui/material";
+import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import EditIcon from "@mui/icons-material/Edit";
@@ -410,12 +412,16 @@ export default function Tasks() {
                   </TableCell>
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
-                      <IconButton onClick={() => handleEditTask(task)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteTask(task._id)}>
-                        <DeleteIcon />
-                      </IconButton>
+                      <Tooltip title="Edit" placement="top" arrow>
+                        <IconButton onClick={() => handleEditTask(task)}>
+                          <EditIcon color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete" placement="top" arrow>
+                        <IconButton onClick={() => handleDeleteTask(task._id)}>
+                          <DeleteForeverTwoToneIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   )}
                 </TableRow>
@@ -442,7 +448,7 @@ export default function Tasks() {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="sm"
-        style={{backdropFilter: "blur(3px)"}}
+        style={{ backdropFilter: "blur(3px)" }}
       >
         <DialogTitle>
           {editTask ? "Edit Task" : "Add Task"}
