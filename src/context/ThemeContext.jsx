@@ -12,7 +12,7 @@ export function ThemeProviderWrapper({ children }) {
 
   useEffect(() => {
     const savedMode = localStorage.getItem('themeMode');
-    if (savedMode) {
+    if (savedMode && (savedMode === 'light' || savedMode === 'dark')) {
       setMode(savedMode);
     } else {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
