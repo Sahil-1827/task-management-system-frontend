@@ -166,7 +166,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }) {
                         sx={{ borderRadius: 2, mb: 1, px: 1 }}
                     >
                         <ListItemIcon sx={{ minWidth: 36 }}>
-                            <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem', mr: 2 }} src={user?.avatar}>
+                            <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem', mr: 2 }} src={user?.profilePicture}>
                                 {!user?.avatar && <AccountCircleIcon fontSize="small" />}
                             </Avatar>
                         </ListItemIcon>

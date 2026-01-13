@@ -20,6 +20,7 @@ import {
   DialogActions,
   Skeleton,
   Alert,
+  Avatar,
 } from "@mui/material";
 import api from "../api";
 import { toast } from 'react-toastify';
@@ -83,10 +84,11 @@ export default function Users() {
         User Management
       </Typography>
 
-      <TableContainer component={Paper} sx={{overflowX: 'auto'}}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
+              <TableCell>Profile</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Role</TableCell>
@@ -98,6 +100,9 @@ export default function Users() {
               // Skeleton rows
               Array.from(new Array(usersPerPage)).map((_, index) => (
                 <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    <Skeleton variant="text" />
+                  </TableCell>
                   <TableCell component="th" scope="row">
                     <Skeleton variant="text" />
                   </TableCell>
@@ -121,6 +126,20 @@ export default function Users() {
             ) : (
               users.map((u) => (
                 <TableRow key={u._id}>
+                  <TableCell sx={{ width: "100px" }}>
+                    <Avatar
+                      src={u?.profilePicture || undefined}
+                      alt={u?.name || 'User avatar'}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        fontSize: 16,
+                        bgcolor: 'primary.main',
+                      }}
+                    >
+                      {u?.name?.[0]?.toUpperCase() || '?'}
+                    </Avatar>
+                  </TableCell>
                   <TableCell>{u.name}</TableCell>
                   <TableCell>{u.email}</TableCell>
                   <TableCell sx={{ textTransform: 'capitalize' }}>{u.role}</TableCell>
@@ -140,11 +159,25 @@ export default function Users() {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} style={{backdropFilter: "blur(3px)"}}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} style={{ backdropFilter: "blur(3px)" }}>
         <DialogTitle>User Profile</DialogTitle>
         <DialogContent>
           {selectedUser && (
             <Box sx={{ pt: 2 }}>
+              <Typography gutterBottom sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <Avatar
+                  src={selectedUser?.profilePicture || undefined}
+                  alt={selectedUser?.name || 'User avatar'}
+                  sx={{
+                    width: 70,
+                    height: 70,
+                    fontSize: 16,
+                    bgcolor: 'primary.main',
+                  }}
+                >
+                  {selectedUser?.name?.[0]?.toUpperCase() || '?'}
+                </Avatar>
+              </Typography>
               <Typography gutterBottom><strong>Name:</strong> {selectedUser.name}</Typography>
               <Typography gutterBottom><strong>Email:</strong> {selectedUser.email}</Typography>
               <Typography gutterBottom sx={{ textTransform: 'capitalize' }}><strong>Role:</strong> {selectedUser.role}</Typography>

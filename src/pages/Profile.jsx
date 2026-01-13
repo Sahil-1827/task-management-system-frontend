@@ -28,6 +28,9 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
   const validate = () => {
     let tempErrors = {};
     if (!formData.name) tempErrors.name = "Name is required";
@@ -46,6 +49,7 @@ export default function Profile() {
     }
     if (user) {
       setFormData({ name: user.name, email: user.email });
+      setPreviewUrl(user.profilePicture || null);
     }
   }, [user, loading, navigate]);
 
@@ -66,6 +70,8 @@ export default function Profile() {
   const handleClose = () => {
     setOpenDialog(false);
     setErrors({});
+    setSelectedImage(null);
+    setPreviewUrl(user?.profilePicture || null);
   };
 
   const handleInputChange = (e) => {
@@ -76,19 +82,40 @@ export default function Profile() {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       if (!validate()) return;
 
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      if (selectedImage) {
+        data.append("profilePicture", selectedImage);
+      }
+
       const response = await api.put(
         "/users/profile",
-        formData
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       setUser(response.data);
       localStorage.setItem("user", JSON.stringify(response.data));
       toast.success("Profile updated successfully");
       setOpenDialog(false);
+      setSelectedImage(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     }
@@ -132,6 +159,8 @@ export default function Profile() {
       <Paper sx={{ p: { xs: 2, md: 4 } }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Avatar
+            src={user.profilePicture}
+            alt={user.name}
             sx={{
               width: 80,
               height: 80,
@@ -139,7 +168,7 @@ export default function Profile() {
               fontSize: "1.5rem",
             }}
           >
-            {getInitials(user.name)}
+            {!user.profilePicture && getInitials(user.name)}
           </Avatar>
           <Box>
             <Typography variant="h6">{user.name}</Typography>
@@ -169,6 +198,26 @@ export default function Profile() {
       <Dialog open={openDialog} onClose={handleClose} style={{ backdropFilter: "blur(3px)" }}>
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
+            <Avatar
+              src={previewUrl}
+              sx={{ width: 100, height: 100, mb: 2 }}
+            >
+              {!previewUrl && getInitials(formData.name)}
+            </Avatar>
+            <Button
+              variant="outlined"
+              component="label"
+            >
+              Upload Picture
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </Button>
+          </Box>
           <TextField
             autoFocus
             margin="dense"

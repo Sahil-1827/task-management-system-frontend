@@ -58,6 +58,7 @@ export default function Teams() {
   const [editTeam, setEditTeam] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [errors, setErrors] = useState({});
+  const [actionLoading, setActionLoading] = useState(false);
 
   const validate = () => {
     let tempErrors = {};
@@ -184,6 +185,7 @@ export default function Teams() {
   const handleSubmitTeam = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    setActionLoading(true);
 
     try {
       if (editTeam) {
@@ -202,6 +204,8 @@ export default function Teams() {
       fetchLogs();
     } catch (error) {
       toast.error(error.response?.data?.message || (editTeam ? "Failed to update team" : "Failed to create team"));
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -432,6 +436,8 @@ export default function Teams() {
             type="submit"
             form="team-form"
             variant="contained"
+            loading={actionLoading}
+            loadingPosition="end"
           >
             {editTeam ? "Update" : "Create"}
           </Button>

@@ -71,6 +71,7 @@ export default function Tasks() {
   });
   const [editTask, setEditTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -210,6 +211,7 @@ export default function Tasks() {
       team: newTask.team || null
     };
 
+    setActionLoading(true);
     try {
       if (editTask) {
         // Update
@@ -235,6 +237,8 @@ export default function Tasks() {
       fetchLogs();
     } catch (error) {
       toast.error(error.response?.data?.message || (editTask ? "Failed to update task" : "Failed to create task"));
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -606,6 +610,8 @@ export default function Tasks() {
             type="submit"
             form="task-form"
             variant="contained"
+            loading={actionLoading}
+            loadingPosition="end"
           >
             {editTask ? "Update" : "Create"}
           </Button>
