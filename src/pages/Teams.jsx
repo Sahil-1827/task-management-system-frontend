@@ -57,6 +57,15 @@ export default function Teams() {
   });
   const [editTeam, setEditTeam] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let tempErrors = {};
+    if (!newTeam.name) tempErrors.name = "Team name is required";
+    if (!newTeam.description) tempErrors.description = "Description is required";
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -145,7 +154,11 @@ export default function Teams() {
   }
 
   const handleInputChange = (e) => {
-    setNewTeam({ ...newTeam, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewTeam({ ...newTeam, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   const handleMembersChange = (event) => {
@@ -170,11 +183,7 @@ export default function Teams() {
 
   const handleSubmitTeam = async (e) => {
     e.preventDefault();
-
-    if (!newTeam.name) {
-      toast.error("Team name is required");
-      return;
-    }
+    if (!validate()) return;
 
     try {
       if (editTeam) {
@@ -231,6 +240,7 @@ export default function Teams() {
     setOpenDialog(false);
     setNewTeam({ name: "", description: "", members: [] });
     setEditTeam(null);
+    setErrors({});
   };
 
   const handlePageChange = (event, value) => {
@@ -256,6 +266,7 @@ export default function Teams() {
                 description: "",
                 members: []
               });
+              setErrors({});
               setOpenDialog(true);
             }}
           >
@@ -375,7 +386,9 @@ export default function Teams() {
               value={newTeam.name}
               onChange={handleInputChange}
               fullWidth
-              required
+              // required
+              error={!!errors.name}
+              helperText={errors.name}
             />
 
             {/* Description */}
@@ -387,6 +400,8 @@ export default function Teams() {
               fullWidth
               multiline
               rows={3}
+              error={!!errors.description}
+              helperText={errors.description}
             />
 
             {/* Members */}

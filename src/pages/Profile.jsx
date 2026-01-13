@@ -24,9 +24,21 @@ export default function Profile() {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
+
+  const validate = () => {
+    let tempErrors = {};
+    if (!formData.name) tempErrors.name = "Name is required";
+    if (!formData.email) {
+      tempErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      tempErrors.email = "Email is invalid";
+    }
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   useEffect(() => {
     if (!loading && !user) {
@@ -47,23 +59,26 @@ export default function Profile() {
   };
 
   const handleEditProfile = () => {
+    setErrors({});
     setOpenDialog(true);
   };
 
   const handleClose = () => {
     setOpenDialog(false);
+    setErrors({});
   };
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   const handleSubmit = async () => {
     try {
-      if (!formData.name || !formData.email) {
-        toast.error("Name and email are required");
-        return;
-      }
+      if (!validate()) return;
 
       const response = await api.put(
         "/users/profile",
@@ -128,7 +143,7 @@ export default function Profile() {
           </Avatar>
           <Box>
             <Typography variant="h6">{user.name}</Typography>
-            <Typography color="textSecondary" sx={{textTransform: 'capitalize'}}>{user.role}</Typography>
+            <Typography color="textSecondary" sx={{ textTransform: 'capitalize' }}>{user.role}</Typography>
           </Box>
         </Box>
 
@@ -151,7 +166,7 @@ export default function Profile() {
         </Button>
       </Paper>
 
-      <Dialog open={openDialog} onClose={handleClose} style={{backdropFilter: "blur(3px)"}}>
+      <Dialog open={openDialog} onClose={handleClose} style={{ backdropFilter: "blur(3px)" }}>
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
           <TextField
@@ -163,6 +178,8 @@ export default function Profile() {
             fullWidth
             value={formData.name}
             onChange={handleInputChange}
+            error={!!errors.name}
+            helperText={errors.name}
           />
           <TextField
             margin="dense"
@@ -172,8 +189,10 @@ export default function Profile() {
             fullWidth
             value={formData.email}
             onChange={handleInputChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
-          </DialogContent>
+        </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained">Save</Button>

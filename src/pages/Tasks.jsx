@@ -48,6 +48,14 @@ export default function Tasks() {
   const { registerUpdateCallback, unregisterUpdateCallback } =
     useNotifications();
 
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [tasks, setTasks] = useState([]);
   const [displayTasks, setDisplayTasks] = useState([]);
   const [users, setUsers] = useState([]);
@@ -57,12 +65,21 @@ export default function Tasks() {
     description: "",
     status: "To Do",
     priority: "Medium",
-    dueDate: "",
+    dueDate: getTodayDate(),
     assignee: "",
     team: ""
   });
   const [editTask, setEditTask] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let tempErrors = {};
+    if (!newTask.title) tempErrors.title = "Title is required";
+    if (!newTask.description) tempErrors.description = "Description is required";
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -72,13 +89,6 @@ export default function Tasks() {
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [loadingTasks, setLoadingTasks] = useState(true); // New state for task loading
 
-  const getTodayDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   useEffect(() => {
     const callbackId = "tasks-page";
@@ -171,7 +181,11 @@ export default function Tasks() {
   }
 
   const handleInputChange = (e) => {
-    setNewTask({ ...newTask, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewTask({ ...newTask, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   const validateTeamMembers = (teamId) => {
@@ -183,10 +197,7 @@ export default function Tasks() {
 
   const handleSubmitTask = async (e) => {
     e.preventDefault();
-    if (!newTask.title) {
-      toast.error("Task title is required");
-      return;
-    }
+    if (!validate()) return;
 
     if (newTask.team && !validateTeamMembers(newTask.team)) {
       toast.error("Cannot assign task to a team with no members");
@@ -215,7 +226,7 @@ export default function Tasks() {
         description: "",
         status: "To Do",
         priority: "Medium",
-        dueDate: "",
+        dueDate: getTodayDate(),
         assignee: "",
         team: ""
       });
@@ -265,11 +276,12 @@ export default function Tasks() {
       description: "",
       status: "To Do",
       priority: "Medium",
-      dueDate: "",
+      dueDate: getTodayDate(),
       assignee: "",
       team: ""
     });
     setEditTask(null);
+    setErrors({});
   };
 
   const handleEditTask = (task) => {
@@ -323,10 +335,11 @@ export default function Tasks() {
                 description: "",
                 status: "To Do",
                 priority: "Medium",
-                dueDate: "",
+                dueDate: getTodayDate(),
                 assignee: "",
                 team: ""
               });
+              setErrors({});
               setOpenDialog(true);
             }}
           >
@@ -473,7 +486,9 @@ export default function Tasks() {
               value={newTask.title}
               onChange={handleInputChange}
               fullWidth
-              required
+              // required
+              error={!!errors.title}
+              helperText={errors.title}
             />
 
             {/* Description */}
@@ -485,6 +500,8 @@ export default function Tasks() {
               fullWidth
               multiline
               rows={3}
+              error={!!errors.description}
+              helperText={errors.description}
             />
 
             {/* Status */}
