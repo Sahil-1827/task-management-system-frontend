@@ -299,9 +299,11 @@ export default function Users() {
                       onChange={handleFileChange}
                     />
                     <label htmlFor="icon-button-file">
-                      <IconButton color="primary" aria-label="upload picture" component="span" sx={{ position: 'absolute', bottom: 0, right: 0, bgcolor: 'background.paper' }}>
-                        <EditIcon />
-                      </IconButton>
+                      <Tooltip title={isEditMode ? 'Edit Image' : 'Upload Image'} placement="right" arrow>
+                        <IconButton color="primary" aria-label="upload picture" component="span" sx={{ position: 'absolute', bottom: -5, right: 0, bgcolor: 'background.paper' }}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
                     </label>
                   </Box>
                 </Grid>
@@ -367,10 +369,11 @@ export default function Users() {
                       src={selectedUser?.profilePicture || undefined}
                       alt={selectedUser?.name || 'User avatar'}
                       sx={{
-                        width: 70,
-                        height: 70,
+                        width: "100px",
+                        height: "100px",
                         fontSize: 16,
                         bgcolor: 'primary.main',
+                        marginBottom: "10px",
                       }}
                     >
                       {selectedUser?.name?.[0]?.toUpperCase() || '?'}

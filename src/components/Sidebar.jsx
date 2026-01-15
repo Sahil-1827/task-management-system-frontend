@@ -190,7 +190,7 @@ export default function Sidebar({
                                                     "&.Mui-selected": {
                                                         bgcolor: "primary.light",
                                                         color: "primary.main",
-                                                        "&:hover": { bgcolor: "primary.light" }, 
+                                                        "&:hover": { bgcolor: "primary.light" },
                                                         backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(24, 144, 255, 0.12)' : '#e6f7ff',
                                                     },
                                                     "&:hover": {
@@ -234,7 +234,6 @@ export default function Sidebar({
                     alignItems: 'center',
                     justifyContent: desktopOpen ? 'flex-start' : 'center',
                     gap: 1,
-                    mb: 2,
                     flexDirection: desktopOpen ? 'row' : 'column',
                 }}>
                     <Tooltip title="Toggle Theme">
@@ -255,57 +254,12 @@ export default function Sidebar({
                         </IconButton>
                     </Tooltip>
                 </Box>
-
-                <Box
-                    sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        justifyContent: desktopOpen ? 'flex-start' : 'center',
-                        '&:hover': {
-                            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                        }
-                    }}
-                    onClick={() => handleNavigation("/profile")}
-                >
-                    <Avatar
-                        src={user?.profilePicture}
-                        sx={{ width: 36, height: 36, bgcolor: 'primary.main' }}
-                    >
-                        {user?.name?.[0] || <AccountCircleIcon />}
-                    </Avatar>
-
-                    {(desktopOpen || isMobile) && (
-                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                            <Typography variant="subtitle2" noWrap fontWeight="bold">
-                                {user?.name || "User"}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                {user?.role || "Member"}
-                            </Typography>
-                        </Box>
-                    )}
-
-                    {(desktopOpen || isMobile) && (
-                        <IconButton size="small" onClick={(e) => {
-                            e.stopPropagation();
-                            handleLogout();
-                        }}>
-                            <LogoutIcon fontSize="small" color="action" />
-                        </IconButton>
-                    )}
-                </Box>
             </Box>
         </>
     );
 
     const renderNotificationsContent = () => (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'hidden' }}>
             <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton onClick={handleBackToMenu} size="small">
                     <ArrowBackIosNewIcon fontSize="small" />
@@ -410,12 +364,6 @@ export default function Sidebar({
                     ))
                 )}
             </List>
-
-            <Box sx={{ p: 2, borderTop: '1px dashed', borderColor: 'divider', mt: 'auto' }}>
-                <Button fullWidth onClick={handleBackToMenu} sx={{ justifyContent: 'flex-start', color: 'text.secondary' }}>
-                    Back to Dashboard
-                </Button>
-            </Box>
         </Box>
     );
 
@@ -460,6 +408,53 @@ export default function Sidebar({
             )}
 
             {view === 'menu' ? renderMenuContent() : renderNotificationsContent()}
+
+            <Box sx={{ p: 2, borderTop: '1px dashed', borderColor: 'divider', mt: 'auto' }}>
+                <Box
+                    sx={{
+                        p: 1.5,
+                        borderRadius: 2,
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        justifyContent: desktopOpen ? 'flex-start' : 'center',
+                        '&:hover': {
+                            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                        }
+                    }}
+                    onClick={() => handleNavigation("/profile")}
+                >
+                    <Avatar
+                        src={user?.profilePicture}
+                        sx={{ width: 36, height: 36, bgcolor: 'primary.main' }}
+                    >
+                        {user?.name?.[0] || <AccountCircleIcon />}
+                    </Avatar>
+
+                    {(desktopOpen || isMobile) && (
+                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                            <Typography variant="subtitle2" noWrap fontWeight="bold">
+                                {user?.name || "User"}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                {user?.role || "Member"}
+                            </Typography>
+                        </Box>
+                    )}
+
+                    {(desktopOpen || isMobile) && (
+                        <IconButton size="small" onClick={(e) => {
+                            e.stopPropagation();
+                            handleLogout();
+                        }}>
+                            <LogoutIcon fontSize="small" color="action" />
+                        </IconButton>
+                    )}
+                </Box>
+            </Box>
         </Box>
     );
 
