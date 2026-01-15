@@ -132,8 +132,7 @@ export default function Sidebar({
             id: "dashboard",
             title: "Dashboard",
             items: [
-                { label: "Dashboard", path: "/dashboard", icon: <DashboardRoundedIcon /> },
-                { label: "Activity Log", path: "/activity-log", icon: <HistoryIcon /> },
+                { label: "Dashboard", path: "/dashboard", icon: <DashboardRoundedIcon /> },                
             ],
         },
         {
@@ -142,6 +141,13 @@ export default function Sidebar({
             items: [
                 { label: "Tasks", path: "/tasks", icon: <AssignmentIcon /> },
                 { label: "Teams", path: "/teams", icon: <GroupsIcon /> },
+            ],
+        },
+        {
+            id: "activity",
+            title: "Activity Log",
+            items: [
+                { label: "Activity Log", path: "/activity-log", icon: <HistoryIcon /> },                
             ],
         },
     ];
@@ -236,13 +242,13 @@ export default function Sidebar({
                     gap: 1,
                     flexDirection: desktopOpen ? 'row' : 'column',
                 }}>
-                    <Tooltip title="Toggle Theme">
+                    <Tooltip title="Toggle Theme" placement={!desktopOpen ? 'right' : 'bottom'} arrow>
                         <IconButton onClick={toggleTheme} size="small" sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider' }}>
                             {mode === "dark" ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip title="Notifications">
+                    <Tooltip title="Notifications" placement={!desktopOpen ? 'right' : 'bottom'} arrow>
                         <IconButton
                             onClick={handleSwitchToNotifications}
                             size="small"
@@ -253,6 +259,17 @@ export default function Sidebar({
                             </Badge>
                         </IconButton>
                     </Tooltip>
+                    {(!desktopOpen && !isMobile) && (
+                        <Tooltip title="Logout" placement="right" arrow>
+                            <IconButton
+                                onClick={handleLogout}
+                                size="small"
+                                sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider' }}
+                            >
+                                <LogoutIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                 </Box>
             </Box>
         </>
@@ -446,12 +463,14 @@ export default function Sidebar({
                     )}
 
                     {(desktopOpen || isMobile) && (
-                        <IconButton size="small" onClick={(e) => {
-                            e.stopPropagation();
-                            handleLogout();
-                        }}>
-                            <LogoutIcon fontSize="small" color="action" />
-                        </IconButton>
+                        <Tooltip title="Logout" placement="right" arrow>
+                            <IconButton size="small" onClick={(e) => {
+                                e.stopPropagation();
+                                handleLogout();
+                            }}>
+                                <LogoutIcon fontSize="small" color="action" />
+                            </IconButton>
+                        </Tooltip>
                     )}
                 </Box>
             </Box>
