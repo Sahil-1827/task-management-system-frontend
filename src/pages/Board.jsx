@@ -15,7 +15,8 @@ import {
     Divider,
     useTheme,
     alpha,
-    AvatarGroup
+    AvatarGroup,
+    Tooltip
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -652,12 +653,16 @@ const Board = () => {
                                                     </Typography>
                                                 </Box>
                                                 <Box className="actions" sx={{ opacity: 0, transition: 'opacity 0.2s', display: 'flex' }}>
-                                                    <IconButton size="small" href={link.url} target="_blank" color="primary">
-                                                        <LaunchIcon fontSize="small" sx={{ fontSize: 14 }} />
-                                                    </IconButton>
-                                                    <IconButton size="small" onClick={() => handleDeleteLink(link)} color="error">
-                                                        <DeleteIcon fontSize="small" sx={{ fontSize: 14 }} />
-                                                    </IconButton>
+                                                    <Tooltip title="Open Link" placement="top" arrow>
+                                                        <IconButton size="small" href={link.url} target="_blank" color="primary">
+                                                            <LaunchIcon fontSize="small" sx={{ fontSize: 14 }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Delete Link" placement="top" arrow>
+                                                        <IconButton size="small" onClick={() => handleDeleteLink(link)} color="error">
+                                                            <DeleteIcon fontSize="small" sx={{ fontSize: 14 }} />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Box>
                                             </Box>
                                         ))
