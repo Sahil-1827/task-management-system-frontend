@@ -12,7 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 const drawerWidth = 280;
 
 export default function ClientLayout({ children }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, verifyUserStatus } = useAuth();
   const { isLoading: navIsLoading, setIsLoading: setNavIsLoading } = useGlobalLoader();
   const location = useLocation();
   const pathname = location.pathname;
@@ -23,6 +23,10 @@ export default function ClientLayout({ children }) {
   useEffect(() => {
     if (navIsLoading) {
       setNavIsLoading(false);
+    }
+    // Check user status on every route change if user is logged in
+    if (user) {
+      verifyUserStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);

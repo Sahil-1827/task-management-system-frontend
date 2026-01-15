@@ -15,11 +15,39 @@ export function AuthProvider({ children }) {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (storedToken && storedUser) {
+    if (storedToken) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+
+      api.get("/auth/me")
+        .then(({ data }) => {
+          if (data && data.isActive === false) {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            toast.error("You are deactivated by admin");
+            navigate("/");
+          } else {
+            setUser(data);
+            localStorage.setItem("user", JSON.stringify(data));
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch user profile:", err);
+          if (err.response?.status === 401) {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (email, password) => {
@@ -32,9 +60,28 @@ export function AuthProvider({ children }) {
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/tasks");
     } catch (error) {
-      // The centralized error handler in api.js will show the toast.
       console.error("Login failed:", error);
-      throw error; // Re-throw to allow components to handle it if needed
+      throw error;
+    }
+  };
+
+  const verifyUserStatus = async () => {
+    if (!token) return;
+    try {
+      const { data } = await api.get("/auth/me");
+      if (data && data.isActive === false) {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        toast.error("You are deactivated by admin");
+        navigate("/");
+      }
+    } catch (error) {
+      // if token invalid (401), we also logout
+      if (error.response?.status === 401) {
+        logout();
+      }
     }
   };
 
@@ -47,7 +94,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, setUser, verifyUserStatus }}>
       {children}
     </AuthContext.Provider>
   );

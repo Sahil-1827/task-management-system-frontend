@@ -24,15 +24,33 @@ import {
 } from "@mui/material";
 import api from "../api";
 import { toast } from 'react-toastify';
+import {
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Switch,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function Users() {
   const { user, token, loading } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [usersPerPage, setUsersPerPage] = useState(5); // Added for skeleton loading
+  const [usersPerPage, setUsersPerPage] = useState(5);
   const [selectedUser, setSelectedUser] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [isAddMode, setIsAddMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [userFormData, setUserFormData] = useState({ name: '', email: '', password: '', role: 'user', profilePicture: null });
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -47,7 +65,7 @@ export default function Users() {
       if (!token) return;
       try {
         setIsLoading(true);
-        setUsers([]); // Clear users to show skeletons immediately
+        setUsers([]);
         const response = await api.get("/users");
         setUsers(response.data);
       } catch (err) {
@@ -62,12 +80,91 @@ export default function Users() {
 
   const handleViewProfile = (userToView) => {
     setSelectedUser(userToView);
+    setIsAddMode(false);
+    setIsEditMode(false);
+    setOpenDialog(true);
+  };
+
+  const handleAddUser = () => {
+    setUserFormData({ name: '', email: '', password: '', role: 'user', profilePicture: null });
+    setPreviewImage(null);
+    setIsAddMode(true);
+    setIsEditMode(false);
+    setOpenDialog(true);
+  };
+
+  const handleEditUser = (userToEdit) => {
+    setUserFormData({
+      name: userToEdit.name,
+      email: userToEdit.email,
+      password: '',
+      role: userToEdit.role,
+      profilePicture: null
+    });
+    setPreviewImage(userToEdit.profilePicture);
+    setSelectedUser(userToEdit);
+    setIsEditMode(true);
+    setIsAddMode(false);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedUser(null);
+    setIsAddMode(false);
+    setIsEditMode(false);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUserFormData({ ...userFormData, profilePicture: file });
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmitUser = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('name', userFormData.name);
+      formData.append('email', userFormData.email);
+      formData.append('role', userFormData.role);
+      if (userFormData.password) {
+        formData.append('password', userFormData.password);
+      }
+      if (userFormData.profilePicture) {
+        formData.append('profilePicture', userFormData.profilePicture);
+      }
+
+      if (isAddMode) {
+        await api.post('/users', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        toast.success('User created successfully');
+      } else if (isEditMode) {
+        await api.put(`/users/${selectedUser._id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        toast.success('User updated successfully');
+      }
+
+      setOpenDialog(false);
+      const response = await api.get("/users");
+      setUsers(response.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Operation failed");
+    }
+  };
+
+  const handleToggleStatus = async (userId, currentStatus) => {
+    try {
+      await api.patch(`/users/${userId}/status`);
+      setUsers(users.map(u => u._id === userId ? { ...u, isActive: !currentStatus } : u));
+      toast.success(`User ${!currentStatus ? 'activated' : 'deactivated'} successfully`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to toggle status");
+    }
   };
 
   if (user?.role !== "admin" && user?.role !== "manager") {
@@ -80,8 +177,11 @@ export default function Users() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4 }}>
+      <Typography variant="h4" sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         User Management
+        <Button variant="contained" startIcon={<PersonAddIcon />} onClick={handleAddUser}>
+          Add User
+        </Button>
       </Typography>
 
       <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
@@ -92,6 +192,7 @@ export default function Users() {
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Role</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -144,13 +245,32 @@ export default function Users() {
                   <TableCell>{u.email}</TableCell>
                   <TableCell sx={{ textTransform: 'capitalize' }}>{u.role}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleViewProfile(u)}
-                    >
-                      View Profile
-                    </Button>
+                    <Switch
+                      checked={u.isActive}
+                      onChange={() => handleToggleStatus(u._id, u.isActive)}
+                      color="primary"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleViewProfile(u)}
+                        startIcon={<VisibilityIcon />}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color="secondary"
+                        onClick={() => handleEditUser(u)}
+                        startIcon={<EditIcon />}
+                      >
+                        Edit
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -159,39 +279,119 @@ export default function Users() {
         </Table>
       </TableContainer>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} style={{ backdropFilter: "blur(3px)" }}>
-        <DialogTitle>User Profile</DialogTitle>
-        <DialogContent>
-          {selectedUser && (
-            <Box sx={{ pt: 2 }}>
-              <Typography gutterBottom sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <Avatar
-                  src={selectedUser?.profilePicture || undefined}
-                  alt={selectedUser?.name || 'User avatar'}
-                  sx={{
-                    width: 70,
-                    height: 70,
-                    fontSize: 16,
-                    bgcolor: 'primary.main',
-                  }}
-                >
-                  {selectedUser?.name?.[0]?.toUpperCase() || '?'}
-                </Avatar>
-              </Typography>
-              <Typography gutterBottom><strong>Name:</strong> {selectedUser.name}</Typography>
-              <Typography gutterBottom><strong>Email:</strong> {selectedUser.email}</Typography>
-              <Typography gutterBottom sx={{ textTransform: 'capitalize' }}><strong>Role:</strong> {selectedUser.role}</Typography>
-              <Typography>
-                <strong>Member Since:</strong>{" "}
-                {new Date(selectedUser.createdAt).toLocaleDateString()}
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Close</Button>
-        </DialogActions>
+      <Dialog open={openDialog} onClose={handleCloseDialog} style={{ backdropFilter: "blur(3px)" }} maxWidth="sm" fullWidth>
+        {isAddMode || isEditMode ? (
+          <form onSubmit={handleSubmitUser}>
+            <DialogTitle>{isAddMode ? 'Add New User' : 'Edit User'}</DialogTitle>
+            <DialogContent>
+              <Grid container spacing={2} sx={{ mt: 1, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Box sx={{ position: 'relative' }}>
+                    <Avatar
+                      src={previewImage || undefined}
+                      sx={{ width: 100, height: 100 }}
+                    />
+                    <input
+                      accept="image/*"
+                      type="file"
+                      id="icon-button-file"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                    />
+                    <label htmlFor="icon-button-file">
+                      <IconButton color="primary" aria-label="upload picture" component="span" sx={{ position: 'absolute', bottom: 0, right: 0, bgcolor: 'background.paper' }}>
+                        <EditIcon />
+                      </IconButton>
+                    </label>
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Name"
+                    fullWidth
+                    required
+                    value={userFormData.name}
+                    onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    required
+                    value={userFormData.email}
+                    onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
+                  />
+                </Grid>
+                {isAddMode && (
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Password"
+                      type="password"
+                      fullWidth
+                      required={isAddMode}
+                      value={userFormData.password}
+                      onChange={(e) => setUserFormData({ ...userFormData, password: e.target.value })}
+                    />
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                      value={userFormData.role}
+                      label="Role"
+                      onChange={(e) => setUserFormData({ ...userFormData, role: e.target.value })}
+                    >
+                      <MenuItem value="user">User</MenuItem>
+                      <MenuItem value="manager">Manager</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button type="submit" variant="contained">{isAddMode ? 'Create' : 'Update'}</Button>
+            </DialogActions>
+          </form>
+        ) : (
+          <>
+            <DialogTitle>User Profile</DialogTitle>
+            <DialogContent>
+              {selectedUser && (
+                <Box sx={{ pt: 2, display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                  <Typography gutterBottom sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <Avatar
+                      src={selectedUser?.profilePicture || undefined}
+                      alt={selectedUser?.name || 'User avatar'}
+                      sx={{
+                        width: 70,
+                        height: 70,
+                        fontSize: 16,
+                        bgcolor: 'primary.main',
+                      }}
+                    >
+                      {selectedUser?.name?.[0]?.toUpperCase() || '?'}
+                    </Avatar>
+                  </Typography>
+                  <Typography gutterBottom><strong>Name:</strong> {selectedUser.name}</Typography>
+                  <Typography gutterBottom><strong>Email:</strong> {selectedUser.email}</Typography>
+                  <Typography gutterBottom sx={{ textTransform: 'capitalize' }}><strong>Role:</strong> {selectedUser.role}</Typography>
+                  <Typography>
+                    <strong>Member Since:</strong>{" "}
+                    {new Date(selectedUser.createdAt).toLocaleDateString()}
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Close</Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
-    </Container>
+    </Container >
   );
 }

@@ -70,7 +70,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }) {
     ];
 
     if (user?.role === "admin" || user?.role === "manager") {
-        navItems.splice(3, 0, { label: "Users", path: "/users", icon: <PeopleIcon /> });
+        navItems.splice(3, 0, { label: "Manage Users", path: "/users", icon: <PeopleIcon /> });
     }
 
     const drawerContent = (

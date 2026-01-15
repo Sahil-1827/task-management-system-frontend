@@ -8,10 +8,6 @@ import {
   Button,
   Box,
   CircularProgress,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { toast } from 'react-toastify';
@@ -23,23 +19,20 @@ export default function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
 
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard'); // Redirect to dashboard if already logged in
+      navigate('/dashboard');
     }
   }, [user, loading, navigate]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/auth/register', { name, email, password, role });
+      await api.post('/auth/register', { name, email, password });
       toast.success('Registration successful! Please log in.');
       navigate('/login');
     } catch (error) {
-      // The centralized error handler in api.js will show the toast.
-      // No need to duplicate toast.error here unless for specific logic.
       console.error("Registration failed:", error); 
     }
   };
@@ -53,7 +46,7 @@ export default function SignUp() {
   }
 
   if (user) {
-    return null; // Will redirect to dashboard
+    return null;
   }
 
   return (
@@ -99,19 +92,6 @@ export default function SignUp() {
           required
           sx={{ mb: 2 }}
         />
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel id="role-label">Role</InputLabel>
-          <Select
-            labelId="role-label"
-            value={role}
-            label="Role"
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-          </Select>
-        </FormControl>
         <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mb: 2 }}>
           Sign Up
         </Button>
