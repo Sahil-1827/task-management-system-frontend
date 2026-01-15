@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
     Box,
@@ -54,6 +54,7 @@ const Board = () => {
     const [newComment, setNewComment] = useState('');
     const [newLinkTitle, setNewLinkTitle] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
+    const chatEndRef = useRef(null);
 
     useEffect(() => {
         socket = io(ENDPOINT);
@@ -63,6 +64,10 @@ const Board = () => {
             socket.disconnect();
         };
     }, [user]);
+
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [comments, selectedTask]);
 
     useEffect(() => {
         if (!selectedTask) {
@@ -88,11 +93,17 @@ const Board = () => {
                     if (prev.some(c => c._id === newComment._id)) return prev;
                     return [...prev, newComment];
                 });
+                const updatedTask = { ...selectedTask, commentCount: (selectedTask.commentCount || 0) + 1 };
+                updateLocalTask(updatedTask);
             }
         };
 
         const handleCommentDeleted = (commentId) => {
             setComments(prev => prev.filter(c => c._id !== commentId));
+            if (selectedTask) {
+                const updatedTask = { ...selectedTask, commentCount: Math.max(0, (selectedTask.commentCount || 1) - 1) };
+                updateLocalTask(updatedTask);
+            }
         };
 
         socket.on("commentAdded", handleCommentAdded);
@@ -191,6 +202,8 @@ const Board = () => {
             });
 
             setNewComment('');
+            const updatedTask = { ...selectedTask, commentCount: (selectedTask.commentCount || 0) + 1 };
+            updateLocalTask(updatedTask);
         } catch (error) {
             console.error(error);
             toast.error("Failed to add comment");
@@ -445,7 +458,7 @@ const Board = () => {
                                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                                             <CommentIcon sx={{ fontSize: 14 }} />
                                                                             <Typography variant="caption">
-                                                                                {task.comments?.length || 0}
+                                                                                {task.commentCount || 0}
                                                                             </Typography>
                                                                         </Box>
 
@@ -566,6 +579,7 @@ const Board = () => {
                                             </Box>
                                         ))
                                     )}
+                                    <div ref={chatEndRef} />
                                 </Box>
 
                                 <Box component="form" onSubmit={handleAddComment} sx={{ p: 1.5, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
