@@ -16,13 +16,14 @@ import EditTask from './pages/EditTask';
 import Teams from './pages/Teams';
 import Terms from './pages/Terms';
 import Users from './pages/Users';
+import Board from './pages/Board';
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProviderWrapper } from "./context/ThemeContext";
 import { ActivityLogProvider } from "./context/ActivityLogContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { GlobalLoaderProvider } from "./context/GlobalLoaderContext";
 import ThemedToastContainer from './components/ThemedToastContainer';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
                     <Route path="profile" element={<Profile />} />
                     <Route path="signup" element={<Signup />} />
                     <Route path="tasks" element={<Tasks />} />
+                    <Route path="board" element={<Board />} />
                     <Route path="tasks/edit/:id" element={<EditTask />} />
                     <Route path="teams" element={<Teams />} />
                     <Route path="terms" element={<Terms />} />

@@ -39,6 +39,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import CircleIcon from '@mui/icons-material/Circle';
+import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 
 const OpenedMixin = (theme, drawerWidth) => ({
     width: drawerWidth,
@@ -140,6 +141,7 @@ export default function Sidebar({
             title: "Pages",
             items: [
                 { label: "Tasks", path: "/tasks", icon: <AssignmentIcon /> },
+                { label: "Board", path: "/board", icon: <ViewKanbanIcon /> },
                 { label: "Teams", path: "/teams", icon: <GroupsIcon /> },
             ],
         },
