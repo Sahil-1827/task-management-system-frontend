@@ -66,7 +66,7 @@ export default function Tasks() {
     status: "To Do",
     priority: "Medium",
     dueDate: getTodayDate(),
-    assignee: "",
+    assignees: [],
     team: ""
   });
   const [editTask, setEditTask] = useState(null);
@@ -159,7 +159,7 @@ export default function Tasks() {
     const currentUserId = currentUser._id || currentUser.id;
     if (!currentUserId) return false;
 
-    if (task.assignee && task.assignee._id === currentUserId) {
+    if (task.assignees && task.assignees.some(a => a._id === currentUserId)) {
       return true;
     }
 
@@ -207,7 +207,7 @@ export default function Tasks() {
 
     const taskData = {
       ...newTask,
-      assignee: newTask.assignee || null,
+      assignees: newTask.assignees || [], // Send assignees array
       team: newTask.team || null
     };
 
@@ -229,7 +229,7 @@ export default function Tasks() {
         status: "To Do",
         priority: "Medium",
         dueDate: getTodayDate(),
-        assignee: "",
+        assignees: [], // Reset to empty array
         team: ""
       });
       setEditTask(null);
@@ -281,7 +281,7 @@ export default function Tasks() {
       status: "To Do",
       priority: "Medium",
       dueDate: getTodayDate(),
-      assignee: "",
+      assignees: [],
       team: ""
     });
     setEditTask(null);
@@ -296,7 +296,7 @@ export default function Tasks() {
       status: task.status,
       priority: task.priority,
       dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
-      assignee: task.assignee?._id || "",
+      assignees: task.assignees ? task.assignees.map(a => a._id) : [], // Map to IDs
       team: task.team?._id || ""
     });
     setOpenDialog(true);
@@ -340,7 +340,7 @@ export default function Tasks() {
                 status: "To Do",
                 priority: "Medium",
                 dueDate: getTodayDate(),
-                assignee: "",
+                assignees: [],
                 team: ""
               });
               setErrors({});
@@ -362,7 +362,7 @@ export default function Tasks() {
               <TableCell>Status</TableCell>
               <TableCell>Priority</TableCell>
               <TableCell>Due Date</TableCell>
-              <TableCell>Assignee/Team</TableCell>
+              <TableCell>Assignees/Team</TableCell>
               {(user.role === "admin" || user.role === "manager") && (
                 <TableCell>Actions</TableCell>
               )}
@@ -425,7 +425,9 @@ export default function Tasks() {
                       : "-"}
                   </TableCell>
                   <TableCell>
-                    {task.assignee?.name || task.team?.name || "-"}
+                    {task.assignees && task.assignees.length > 0
+                      ? task.assignees.map(a => a.name).join(", ")
+                      : task.team?.name || "-"}
                   </TableCell>
                   {(user.role === "admin" || user.role === "manager") && (
                     <TableCell>
@@ -552,22 +554,23 @@ export default function Tasks() {
               }}
             />
 
-            {/* Assignee */}
+            {/* Assignees */}
             <FormControl fullWidth disabled={!!newTask.team}>
-              <InputLabel>Assignee</InputLabel>
+              <InputLabel>Assignees</InputLabel>
               <Select
-                name="assignee"
-                value={newTask.assignee}
-                onChange={(e) =>
+                name="assignees"
+                multiple // Enable multiple selection
+                value={newTask.assignees}
+                onChange={(e) => {
+                  const { value } = e.target;
                   setNewTask({
                     ...newTask,
-                    assignee: e.target.value,
+                    assignees: typeof value === 'string' ? value.split(',') : value,
                     team: "",
-                  })
-                }
-                label="Assignee"
+                  });
+                }}
+                label="Assignees"
               >
-                <MenuItem value="">None</MenuItem>
                 {users.map((u) => (
                   <MenuItem key={u._id} value={u._id}>
                     {u.name}
@@ -577,7 +580,7 @@ export default function Tasks() {
             </FormControl>
 
             {/* Team */}
-            <FormControl fullWidth disabled={!!newTask.assignee}>
+            <FormControl fullWidth disabled={newTask.assignees && newTask.assignees.length > 0}>
               <InputLabel>Team</InputLabel>
               <Select
                 name="team"
@@ -586,7 +589,7 @@ export default function Tasks() {
                   setNewTask({
                     ...newTask,
                     team: e.target.value,
-                    assignee: "",
+                    assignees: [], // Clear assignees if team is selected
                   })
                 }
                 label="Team"

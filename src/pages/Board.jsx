@@ -383,27 +383,29 @@ const Board = () => {
                                                                     color="text.secondary"
                                                                     sx={{ display: 'block', mb: 1, fontWeight: 500 }}
                                                                 >
-                                                                    Assignees to {Array.isArray(task.assignee)
-                                                                        ? task.assignee.map((a) => a.name).join(', ')
-                                                                        : (task.assignee?.name || task.team?.name || 'Unassigned')} :
+                                                                    Assignees to {task.assignees && task.assignees.length > 0
+                                                                        ? task.assignees.map((a) => a.name).join(', ')
+                                                                        : (task.team?.name || 'Unassigned')} :
                                                                 </Typography>
 
                                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                    {task.assignee || task.team ? (
+                                                                    {(task.assignees && task.assignees.length > 0) || task.team ? (
                                                                         <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
-                                                                            {Array.isArray(task.assignee) ? (
-                                                                                task.assignee.map((user, index) => (
+                                                                            {task.assignees && task.assignees.length > 0 ? (
+                                                                                task.assignees.map((user, index) => (
                                                                                     <Avatar key={index} src={user.profilePicture} alt={user.name}>
                                                                                         {user.name?.[0]?.toUpperCase()}
                                                                                     </Avatar>
                                                                                 ))
                                                                             ) : (
-                                                                                <Avatar
-                                                                                    src={task.assignee?.profilePicture || task.team?.profilePicture}
-                                                                                    alt={task.assignee?.name || task.team?.name}
-                                                                                >
-                                                                                    {(task.assignee?.name || task.team?.name)?.[0]?.toUpperCase()}
-                                                                                </Avatar>
+                                                                                task.team && (
+                                                                                    <Avatar
+                                                                                        src={task.team.profilePicture || task.team?.profilePicture}
+                                                                                        alt={task.team.name}
+                                                                                    >
+                                                                                        {task.team.name?.[0]?.toUpperCase()}
+                                                                                    </Avatar>
+                                                                                )
                                                                             )}
                                                                         </AvatarGroup>
                                                                     ) : (

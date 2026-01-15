@@ -31,7 +31,7 @@ export default function EditTask() {
     status: "todo",
     priority: "medium",
     dueDate: "",
-    assignedTo: [],
+    assignees: [],
     tags: [],
   });
   const [task, setTask] = useState(null);
@@ -65,7 +65,7 @@ export default function EditTask() {
           status: taskData.status,
           priority: taskData.priority,
           dueDate: taskData.dueDate ? taskData.dueDate.split("T")[0] : "",
-          assignedTo: taskData.assignedTo.map((user) => user._id),
+          assignees: taskData.assignees ? taskData.assignees.map((user) => user._id) : [],
           tags: taskData.tags || [],
         });
         setTagInput("");
@@ -112,8 +112,8 @@ export default function EditTask() {
     });
   };
 
-  const handleAssignedToChange = (e) => {
-    setFormData({ ...formData, assignedTo: e.target.value });
+  const handleAssigneesChange = (e) => {
+    setFormData({ ...formData, assignees: e.target.value });
   };
 
   const handleTagsChange = (e) => {
@@ -154,7 +154,7 @@ export default function EditTask() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.assignedTo.length === 0) {
+    if (formData.assignees.length === 0) {
       toast.error("Please assign the task to at least one user");
       return;
     }
@@ -234,13 +234,13 @@ export default function EditTask() {
           slotProps={{ htmlInput: { min: getTodayDate() }, inputLabel: { shrink: true } }}
         />
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Assigned To</InputLabel>
+          <InputLabel>Assignees</InputLabel>
           <Select
             multiple
-            name="assignedTo"
-            value={formData.assignedTo}
-            onChange={handleAssignedToChange}
-            label="Assigned To"
+            name="assignees"
+            value={formData.assignees}
+            onChange={handleAssigneesChange}
+            label="Assignees"
           >
             {users.map((user) => (
               <MenuItem key={user._id} value={user._id}>
