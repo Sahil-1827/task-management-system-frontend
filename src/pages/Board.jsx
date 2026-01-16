@@ -45,6 +45,7 @@ import {
     Block as BlockIcon
 } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
+import Offcanvas, { OffcanvasHeader, OffcanvasBody, OffcanvasFooter } from '../components/common/Offcanvas';
 import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
@@ -329,6 +330,19 @@ const Board = () => {
         }
     };
 
+    const handleDeleteLink = async (link) => {
+        if (!selectedTask || !link) return;
+        try {
+            const res = await api.delete(`/tasks/${selectedTask._id}/links/${link._id}`);
+            const updatedTask = { ...selectedTask, links: res.data };
+            updateLocalTask(updatedTask);
+            toast.success("Link deleted");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete link");
+        }
+    };
+
 
 
     const handleMenuClick = (event, comment) => {
@@ -419,7 +433,7 @@ const Board = () => {
             </Box>
 
             <Grid container spacing={3} sx={{ height: 'calc(100% - 64px)' }}>
-                <Grid size={{ xs: 12, lg: selectedTask ? 9 : 12 }} sx={{ height: '100%', overflow: 'hidden' }}>
+                <Grid size={{ xs: 12 }} sx={{ height: '100%', overflow: 'hidden' }}>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Box sx={{
                             display: 'flex',
@@ -505,7 +519,7 @@ const Board = () => {
                                                                     mb: 2,
                                                                     borderRadius: 3,
                                                                     border: '2px solid',
-                                                                    borderColor: selectedTask?._id === task._id ? 'primary.main' : 'divider',
+                                                                    borderColor: 'divider',
                                                                     bgcolor: 'background.paper',
                                                                     cursor: 'pointer',
                                                                     transition: 'all 0.2s',
@@ -629,31 +643,86 @@ const Board = () => {
                         </Box>
                     </DragDropContext>
                 </Grid>
+            </Grid>
 
+            <Offcanvas
+                open={!!selectedTask}
+                onClose={() => setSelectedTask(null)}
+                anchor="right"
+                width={{ xs: '100%', sm: '80%', md: '50%', lg: '30%' }}
+            >
                 {selectedTask && (
-                    <Grid size={{ xs: 12, lg: 3 }} sx={{ height: '100%', overflow: 'hidden' }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <Box>
-                                    <Typography variant="h6" fontWeight="bold" color="text.primary" sx={{ lineHeight: 1.2, mb: 0.5 }}>
-                                        {selectedTask.title}
+                    <>
+                        <OffcanvasHeader onClose={() => setSelectedTask(null)}>
+                            <Box>
+                                <Typography variant="h6" fontWeight="bold" color="text.primary" sx={{ lineHeight: 1.2, mb: 0.5 }}>
+                                    {selectedTask.title}
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Chip
+                                        label={selectedTask.status}
+                                        size="small"
+                                        sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }}
+                                    />
+                                    <Typography variant="caption" color="text.secondary">
+                                        {selectedTask.priority} Priority
                                     </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Chip
-                                            label={selectedTask.status}
-                                            size="small"
-                                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }}
-                                        />
-                                        <Typography variant="caption" color="text.secondary">
-                                            {selectedTask.priority} Priority
-                                        </Typography>
-                                    </Box>
                                 </Box>
-                                <IconButton size="small" onClick={() => setSelectedTask(null)}>
-                                    <CloseIcon />
-                                </IconButton>
                             </Box>
+                        </OffcanvasHeader>
+                        <OffcanvasBody sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            {/* Task Description & Meta */}
+                            <Paper elevation={0} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                                <Typography variant="body2" color="text.secondary" paragraph>
+                                    {selectedTask.description || 'No description provided.'}
+                                </Typography>
 
+                                <Divider sx={{ my: 1.5 }} />
+
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <Typography variant="caption" color="text.secondary" display="block" gutterBottom fontWeight={600}>
+                                            Assignees
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            {(selectedTask.assignees?.length > 0 || selectedTask.team) ? (
+                                                <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
+                                                    {selectedTask.assignees?.length > 0 ? (
+                                                        selectedTask.assignees.map((user, index) => (
+                                                            <Avatar key={index} src={user.profilePicture} alt={user.name}>
+                                                                {user.name?.[0]?.toUpperCase()}
+                                                            </Avatar>
+                                                        ))
+                                                    ) : (
+                                                        selectedTask.team && (
+                                                            <Avatar src={selectedTask.team.profilePicture || selectedTask.team?.profilePicture} alt={selectedTask.team.name}>
+                                                                {selectedTask.team.name?.[0]?.toUpperCase()}
+                                                            </Avatar>
+                                                        )
+                                                    )}
+                                                </AvatarGroup>
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary">-</Typography>
+                                            )}
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Typography variant="caption" color="text.secondary" display="block" gutterBottom fontWeight={600}>
+                                            Due Date
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                            <FlagIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                            <Typography variant="body2">
+                                                {selectedTask.dueDate
+                                                    ? new Date(selectedTask.dueDate).toLocaleDateString('en-GB')
+                                                    : 'No Date'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+
+                            {/* Comments Section */}
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -665,7 +734,7 @@ const Board = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     overflow: 'hidden',
-                                    minHeight: '40%'
+                                    minHeight: '600px'
                                 }}
                             >
                                 <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: "column", gap: 1 }}>
@@ -739,8 +808,7 @@ const Board = () => {
                                     </Box>
                                 )}
 
-
-                                <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, minHeight: '200px' }}>
                                     {comments.length === 0 ? (
                                         <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ mt: 2 }}>
                                             No comments yet.
@@ -811,12 +879,7 @@ const Board = () => {
                                                                 <IconButton
                                                                     className="reply-btn"
                                                                     size="small"
-                                                                    sx={{
-                                                                        padding: 0.2,
-                                                                        opacity: 0,
-                                                                        transition: 'opacity 0.2s',
-                                                                        color: 'inherit'
-                                                                    }}
+                                                                    sx={{ padding: 0.2, opacity: 0, transition: 'opacity 0.2s', color: 'inherit' }}
                                                                     onClick={(e) => handleMenuClick(e, comment)}
                                                                 >
                                                                     <MoreHorizIcon sx={{ fontSize: 14 }} />
@@ -842,15 +905,9 @@ const Board = () => {
                                                     anchorEl={anchorEl}
                                                     open={Boolean(anchorEl) && selectedComment?._id === comment._id}
                                                     onClose={handleMenuClose}
-                                                    PaperProps={{
-                                                        elevation: 3,
-                                                        sx: { borderRadius: 2, minWidth: 120 }
-                                                    }}
+                                                    PaperProps={{ elevation: 3, sx: { borderRadius: 2, minWidth: 120 } }}
                                                 >
-                                                    <MenuItem onClick={() => {
-                                                        setReplyingTo(selectedComment);
-                                                        handleMenuClose();
-                                                    }} dense>
+                                                    <MenuItem onClick={() => { setReplyingTo(selectedComment); handleMenuClose(); }} dense>
                                                         <ReplyIcon sx={{ fontSize: 16, mr: 1, color: 'text.secondary' }} />
                                                         <Typography variant="caption">Reply</Typography>
                                                     </MenuItem>
@@ -957,6 +1014,7 @@ const Board = () => {
                                 </Box>
                             </Paper>
 
+                            {/* Resources Section */}
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -967,7 +1025,7 @@ const Board = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     overflow: 'hidden',
-                                    maxHeight: '40%'
+                                    flexShrink: 0
                                 }}
                             >
                                 <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -1052,10 +1110,10 @@ const Board = () => {
                                     </Box>
                                 </Box>
                             </Paper>
-                        </Box>
-                    </Grid>
+                        </OffcanvasBody>
+                    </>
                 )}
-            </Grid>
+            </Offcanvas>
         </Container>
     );
 };
