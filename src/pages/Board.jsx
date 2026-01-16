@@ -406,8 +406,8 @@ const Board = () => {
     };
 
     return (
-        <Container maxWidth="2xl" sx={{ py: 3, height: 'calc(100vh - 64px)' }}>
-            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Container maxWidth="2xl" sx={{ pb: 3, height: 'calc(100vh - 64px)' }}>
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                     <Typography variant="h4" fontWeight="900" sx={{ letterSpacing: '-0.5px', color: 'text.primary' }}>
                         Board
@@ -695,18 +695,34 @@ const Board = () => {
                                         }}
                                     >
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, py: 0.5 }}>
-                                            {comments.filter(c => c.isPinned).map((_, idx) => (
+                                            {comments.filter(c => c.isPinned).length > 4 ? (
                                                 <Box
-                                                    key={idx}
                                                     sx={{
                                                         width: 3,
-                                                        height: comments.filter(c => c.isPinned).length > 1 ? 12 : 24,
-                                                        bgcolor: idx === (comments.filter(c => c.isPinned).length > 0 ? (activePinIndex % comments.filter(c => c.isPinned).length) : 0) ? 'primary.main' : alpha(theme.palette.primary.main, 0.2),
+                                                        height: 24,
+                                                        bgcolor: 'primary.main',
                                                         borderRadius: 1,
-                                                        transition: 'all 0.3s'
                                                     }}
                                                 />
-                                            ))}
+                                            ) : (
+                                                comments.filter(c => c.isPinned).map((_, idx) => {
+                                                    const count = comments.filter(c => c.isPinned).length;
+                                                    const height = count > 0 ? (24 - (count - 1) * 4) / count : 24;
+
+                                                    return (
+                                                        <Box
+                                                            key={idx}
+                                                            sx={{
+                                                                width: 3,
+                                                                height: height,
+                                                                bgcolor: count === 1 ? 'transparent' : (idx === (count > 0 ? (activePinIndex % count) : 0) ? 'primary.main' : alpha(theme.palette.primary.main, 0.2)),
+                                                                borderRadius: 1,
+                                                                transition: 'all 0.3s'
+                                                            }}
+                                                        />
+                                                    )
+                                                })
+                                            )}
                                         </Box>
 
                                         <Box sx={{ flex: 1, overflow: 'hidden' }}>
@@ -720,8 +736,6 @@ const Board = () => {
                                                 {comments.filter(c => c.isPinned).length > 0 ? comments.filter(c => c.isPinned)[activePinIndex % comments.filter(c => c.isPinned).length]?.text : ''}
                                             </Typography>
                                         </Box>
-
-                                        <ArrowDownIcon sx={{ fontSize: 20, color: 'action.active' }} />
                                     </Box>
                                 )}
 
