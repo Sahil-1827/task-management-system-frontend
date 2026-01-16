@@ -141,12 +141,9 @@ const MyTasks = () => {
                   py: 1.5
                 }}
               >
-                <Box sx={{ mr: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
-                  <StatusBadge status={task.priority} size="small" />
-                </Box>
                 <ListItemText
                   primary={
-                    <Typography variant="subtitle2" fontWeight="medium" noWrap>
+                    <Typography variant="subtitle2" fontWeight="medium" noWrap sx={{ pr: 2 }}>
                       {task.title}
                     </Typography>
                   }

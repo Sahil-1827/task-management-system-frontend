@@ -107,7 +107,7 @@ const DashboardPage = () => {
 
   return (
     <Fade in={true}>
-      <Container maxWidth="2xl" sx={{ py: 3, overflowX: 'hidden' }}>
+      <Container maxWidth="2xl" sx={{ pt: 3, overflowX: 'hidden' }}>
         {/* Welcome Banner */}
         <Box
           sx={{

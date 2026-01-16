@@ -176,7 +176,7 @@ export default function Users() {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth="2xl" sx={{ pt: 3 }}>
       <Typography variant="h4" sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         User Management
         <Button variant="contained" startIcon={<PersonAddIcon />} onClick={handleAddUser}>
@@ -220,7 +220,7 @@ export default function Users() {
               ))
             ) : users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} sx={{ textAlign: "center" }}>
+                <TableCell colSpan={6} sx={{ textAlign: "center" }}>
                   No users found.
                 </TableCell>
               </TableRow>

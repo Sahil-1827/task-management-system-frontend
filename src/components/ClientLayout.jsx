@@ -50,7 +50,7 @@ export default function ClientLayout({ children }) {
   const currentSidebarWidth = desktopOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH;
   const mainContentStyle = {
     flexGrow: 1,
-    p: showSidebar ? { xs: 2, sm: 4 } : 0,
+    p: showSidebar ? { xs: 2, sm: 0 } : 0,
     // On desktop, margin left is the sidebar width
     // On mobile, width is 100%
     width: showSidebar

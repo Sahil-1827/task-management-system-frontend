@@ -425,8 +425,8 @@ const Board = () => {
     };
 
     return (
-        <Container maxWidth="2xl" sx={{ pb: 3, height: 'calc(100vh - 64px)' }}>
-            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Container maxWidth="2xl" sx={{ pt: 3, height: 'calc(100vh - 64px)' }}>
+            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                     <Typography variant="h4" fontWeight="900" sx={{ letterSpacing: '-0.5px', color: 'text.primary' }}>
                         Board
