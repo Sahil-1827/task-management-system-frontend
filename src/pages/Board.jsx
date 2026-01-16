@@ -48,7 +48,7 @@ import {
     Block as BlockIcon,
     Groups as GroupsIcon,
 } from '@mui/icons-material';
-import { Menu, MenuItem, CircularProgress } from '@mui/material';
+import { Menu, MenuItem, CircularProgress, Skeleton } from '@mui/material';
 import Offcanvas, { OffcanvasHeader, OffcanvasBody, OffcanvasFooter } from '../components/common/Offcanvas';
 import EmptyState from '../components/common/EmptyState';
 import api from '../api';
@@ -86,6 +86,7 @@ const Board = () => {
     const [activeMenuTask, setActiveMenuTask] = useState(null);
     const [isCommentLoading, setIsCommentLoading] = useState(false);
     const [isLinkLoading, setIsLinkLoading] = useState(false);
+    const [isLoadingTasks, setIsLoadingTasks] = useState(true);
     const inputRef = useRef(null);
     const chatContainerRef = useRef(null);
 
@@ -180,6 +181,7 @@ const Board = () => {
     };
 
     const fetchTasks = async () => {
+        setIsLoadingTasks(true);
         try {
             const response = await api.get('/tasks?limit=100');
             setAllTasksList(response.data.tasks);
@@ -190,6 +192,8 @@ const Board = () => {
             setTasks(newTasks);
         } catch (error) {
             toast.error('Failed to load tasks');
+        } finally {
+            setIsLoadingTasks(false);
         }
     };
 
@@ -584,7 +588,43 @@ const Board = () => {
                                                         minHeight: '200px'
                                                     }}
                                                 >
-                                                    {tasks[columnId]?.length === 0 ? (
+                                                    {isLoadingTasks ? (
+                                                        [1, 2].map((item) => (
+                                                            <Paper
+                                                                key={item}
+                                                                elevation={0}
+                                                                sx={{
+                                                                    p: 2,
+                                                                    mb: 2,
+                                                                    borderRadius: 3,
+                                                                    border: '2px solid',
+                                                                    borderColor: 'divider',
+                                                                    bgcolor: 'background.paper',
+                                                                }}
+                                                            >
+                                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                                                                    <Skeleton variant="rounded" width={60} height={22} sx={{ borderRadius: 1 }} />
+                                                                    <Skeleton variant="circular" width={24} height={24} />
+                                                                </Box>
+                                                                <Skeleton variant="text" width="80%" height={24} sx={{ mb: 1 }} />
+                                                                <Skeleton variant="text" width="100%" height={16} />
+                                                                <Skeleton variant="text" width="90%" height={16} sx={{ mb: 2 }} />
+                                                                <Skeleton variant="text" width="40%" height={16} sx={{ mb: 1 }} />
+                                                                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                                                                    <Skeleton variant="circular" width={24} height={24} />
+                                                                    <Skeleton variant="circular" width={24} height={24} />
+                                                                </Box>
+                                                                <Divider sx={{ my: 1.5 }} />
+                                                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                    <Skeleton variant="text" width={80} height={16} />
+                                                                    <Box sx={{ display: 'flex', gap: 2 }}>
+                                                                        <Skeleton variant="text" width={30} height={16} />
+                                                                        <Skeleton variant="text" width={30} height={16} />
+                                                                    </Box>
+                                                                </Box>
+                                                            </Paper>
+                                                        ))
+                                                    ) : tasks[columnId]?.length === 0 ? (
                                                         <Box sx={{ mt: 4 }}>
                                                             <EmptyState
                                                                 title="No Tasks"
