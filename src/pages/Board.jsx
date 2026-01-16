@@ -87,6 +87,7 @@ const Board = () => {
     const [isCommentLoading, setIsCommentLoading] = useState(false);
     const [isLinkLoading, setIsLinkLoading] = useState(false);
     const [isLoadingTasks, setIsLoadingTasks] = useState(true);
+    const [isLoadingComments, setIsLoadingComments] = useState(false);
     const inputRef = useRef(null);
     const chatContainerRef = useRef(null);
 
@@ -115,13 +116,18 @@ const Board = () => {
         }
 
         const fetchComments = async () => {
+            if (!selectedTask) return;
+            setIsLoadingComments(true);
             try {
                 const res = await api.get(`/comments/task/${selectedTask._id}`);
                 setComments(res.data);
             } catch (error) {
-                console.error("Failed to load comments", error);
+                console.error("Failed to fetch comments", error);
+            } finally {
+                setIsLoadingComments(false);
             }
         };
+
         fetchComments();
 
         socket.emit("joinTask", selectedTask._id);
@@ -953,7 +959,31 @@ const Board = () => {
                                 )}
 
                                 <Box ref={chatContainerRef} sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, minHeight: '200px' }}>
-                                    {comments.length === 0 ? (
+                                    {isLoadingComments ? (
+                                        [1, 2, 3, 4, 5].map((item) => (
+                                            <Box key={item} sx={{
+                                                display: 'flex',
+                                                gap: 1.5,
+                                                flexDirection: item % 2 === 0 ? 'row-reverse' : 'row',
+                                            }}>
+                                                <Skeleton variant="circular" width={28} height={28} />
+                                                <Box sx={{
+                                                    width: '25%',
+                                                    bgcolor: alpha(theme.palette.background.default, 0.4),
+                                                    p: 1.5,
+                                                    borderRadius: 2,
+                                                    borderRadiusTopLeft: item % 2 === 0 ? 2 : 0,
+                                                    borderRadiusTopRight: item % 2 === 0 ? 0 : 2,
+                                                }}>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                        <Skeleton variant="text" width={40} height={16} />
+                                                        <Skeleton variant="text" width={20} height={12} />
+                                                    </Box>
+                                                    <Skeleton variant="text" width="100%" height={16} />
+                                                </Box>
+                                            </Box>
+                                        ))
+                                    ) : comments.length === 0 ? (
                                         <EmptyState
                                             title="No comments"
                                             description="No comments have been added to this task yet."
