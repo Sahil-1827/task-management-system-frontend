@@ -46,9 +46,9 @@ import {
     PushPinOutlined as PushPinOutlinedIcon,
     KeyboardArrowDown as ArrowDownIcon,
     Block as BlockIcon,
-    Groups as GroupsIcon
+    Groups as GroupsIcon,
 } from '@mui/icons-material';
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, CircularProgress } from '@mui/material';
 import Offcanvas, { OffcanvasHeader, OffcanvasBody, OffcanvasFooter } from '../components/common/Offcanvas';
 import EmptyState from '../components/common/EmptyState';
 import api from '../api';
@@ -84,6 +84,8 @@ const Board = () => {
     const [mentionCursorPos, setMentionCursorPos] = useState(null);
     const [taskMenuAnchorEl, setTaskMenuAnchorEl] = useState(null);
     const [activeMenuTask, setActiveMenuTask] = useState(null);
+    const [isCommentLoading, setIsCommentLoading] = useState(false);
+    const [isLinkLoading, setIsLinkLoading] = useState(false);
     const inputRef = useRef(null);
     const chatContainerRef = useRef(null);
 
@@ -250,6 +252,7 @@ const Board = () => {
         e.preventDefault();
         if (!newComment.trim() || !selectedTask) return;
 
+        setIsCommentLoading(true);
         try {
             const res = await api.post('/comments', {
                 text: newComment,
@@ -270,6 +273,8 @@ const Board = () => {
         } catch (error) {
             console.error(error);
             toast.error("Failed to add comment");
+        } finally {
+            setIsCommentLoading(false);
         }
     };
 
@@ -341,6 +346,7 @@ const Board = () => {
         e.preventDefault();
         if (!newLinkTitle.trim() || !newLinkUrl.trim() || !selectedTask) return;
 
+        setIsLinkLoading(true);
         try {
             let url = newLinkUrl;
             if (!url.startsWith('http')) url = `https://${url}`;
@@ -352,6 +358,8 @@ const Board = () => {
             setNewLinkUrl('');
         } catch (error) {
             toast.error("Failed to add link");
+        } finally {
+            setIsLinkLoading(false);
         }
     };
 
@@ -1132,8 +1140,8 @@ const Board = () => {
                                             sx: { borderRadius: 2, fontSize: '0.85rem', bgcolor: 'background.default', '& fieldset': { border: 'none' } },
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <IconButton size="small" type="submit" color="primary" disabled={!newComment.trim()}>
-                                                        <SendIcon fontSize="small" />
+                                                    <IconButton size="small" type="submit" color="primary" disabled={!newComment.trim() || isCommentLoading}>
+                                                        {isCommentLoading ? <CircularProgress size={20} /> : <SendIcon fontSize="small" />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             )
@@ -1233,10 +1241,10 @@ const Board = () => {
                                             type="submit"
                                             variant="outlined"
                                             color="secondary"
-                                            disabled={!newLinkTitle || !newLinkUrl}
+                                            disabled={!newLinkTitle || !newLinkUrl || isLinkLoading}
                                             sx={{ borderRadius: 2, minWidth: 'auto', px: 2 }}
                                         >
-                                            <AddIcon fontSize="small" />
+                                            {isLinkLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon fontSize="small" />}
                                         </Button>
                                     </Box>
                                 </Box>
