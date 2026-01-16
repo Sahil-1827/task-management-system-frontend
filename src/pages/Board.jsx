@@ -38,8 +38,12 @@ import {
     Close as CloseIcon,
     FlagOutlined as FlagIcon,
     MoreHoriz as MoreHorizIcon,
-    Reply as ReplyIcon
+    Reply as ReplyIcon,
+    PushPin as PushPinIcon,
+    PushPinOutlined as PushPinOutlinedIcon,
+    KeyboardArrowDown as ArrowDownIcon
 } from '@mui/icons-material';
+import { Menu, MenuItem } from '@mui/material';
 import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
@@ -59,6 +63,10 @@ const Board = () => {
     const [allTasksList, setAllTasksList] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [comments, setComments] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedComment, setSelectedComment] = useState(null);
+    const [highlightedCommentId, setHighlightedCommentId] = useState(null);
+    const [activePinIndex, setActivePinIndex] = useState(0);
     const [newComment, setNewComment] = useState('');
     const [newLinkTitle, setNewLinkTitle] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
@@ -118,16 +126,40 @@ const Board = () => {
             }
         };
 
+        const handleCommentUpdated = (updatedComment) => {
+            setComments(prev => prev.map(c => c._id === updatedComment._id ? updatedComment : c));
+        };
+
         socket.on("commentAdded", handleCommentAdded);
         socket.on("commentDeleted", handleCommentDeleted);
+        socket.on("commentUpdated", handleCommentUpdated);
 
         return () => {
             socket.emit("leaveTask", selectedTask._id);
             socket.off("commentAdded", handleCommentAdded);
             socket.off("commentDeleted", handleCommentDeleted);
+            socket.off("commentUpdated", handleCommentUpdated);
         };
 
     }, [selectedTask]);
+
+    const scrollToMessage = (commentId) => {
+        const element = document.getElementById(`comment-${commentId}`);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setHighlightedCommentId(commentId);
+            setTimeout(() => setHighlightedCommentId(null), 2000);
+        }
+    };
+
+    const handlePinHeaderClick = () => {
+        const pinnedComments = comments.filter(c => c.isPinned);
+        if (pinnedComments.length === 0) return;
+
+        const nextIndex = (activePinIndex + 1) % pinnedComments.length;
+        setActivePinIndex(nextIndex);
+        scrollToMessage(pinnedComments[nextIndex]._id);
+    };
 
     const fetchTasks = async () => {
         try {
@@ -296,14 +328,35 @@ const Board = () => {
         }
     };
 
-    const handleDeleteLink = async (linkToDelete) => {
-        if (!selectedTask) return;
+
+
+    const handleMenuClick = (event, comment) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedComment(comment);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setSelectedComment(null);
+    };
+
+    const handlePinComment = async () => {
+        if (!selectedComment) return;
         try {
-            const res = await api.delete(`/tasks/${selectedTask._id}/links/${linkToDelete._id}`);
-            const updatedTask = { ...selectedTask, links: res.data };
-            updateLocalTask(updatedTask);
+            await api.put(`/comments/${selectedComment._id}/pin`);
+            handleMenuClose();
         } catch (error) {
-            toast.error("Failed to delete link");
+            toast.error("Failed to update pin status");
+        }
+    };
+
+    const handleDeleteComment = async () => {
+        if (!selectedComment) return;
+        try {
+            await api.delete(`/comments/${selectedComment._id}`);
+            handleMenuClose();
+        } catch (error) {
+            toast.error("Failed to delete comment");
         }
     };
 
@@ -624,6 +677,54 @@ const Board = () => {
                                     </Typography>
                                 </Box>
 
+                                {comments.filter(c => c.isPinned).length > 0 && (
+                                    <Box
+                                        onClick={handlePinHeaderClick}
+                                        sx={{
+                                            p: 1,
+                                            bgcolor: alpha(theme.palette.primary.main, 0.04),
+                                            borderBottom: '1px solid',
+                                            borderColor: 'divider',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1.5,
+                                            transition: 'background-color 0.2s',
+                                            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.08) }
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, py: 0.5 }}>
+                                            {comments.filter(c => c.isPinned).map((_, idx) => (
+                                                <Box
+                                                    key={idx}
+                                                    sx={{
+                                                        width: 3,
+                                                        height: comments.filter(c => c.isPinned).length > 1 ? 12 : 24,
+                                                        bgcolor: idx === (comments.filter(c => c.isPinned).length > 0 ? (activePinIndex % comments.filter(c => c.isPinned).length) : 0) ? 'primary.main' : alpha(theme.palette.primary.main, 0.2),
+                                                        borderRadius: 1,
+                                                        transition: 'all 0.3s'
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
+
+                                        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <PushPinIcon sx={{ fontSize: 14, color: 'primary.main', transform: 'rotate(45deg)' }} />
+                                                <Typography variant="caption" fontWeight="bold" color="primary.main">
+                                                    Pinned Message
+                                                </Typography>
+                                            </Box>
+                                            <Typography variant="body2" sx={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                {comments.filter(c => c.isPinned).length > 0 ? comments.filter(c => c.isPinned)[activePinIndex % comments.filter(c => c.isPinned).length]?.text : ''}
+                                            </Typography>
+                                        </Box>
+
+                                        <ArrowDownIcon sx={{ fontSize: 20, color: 'action.active' }} />
+                                    </Box>
+                                )}
+
+
                                 <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
                                     {comments.length === 0 ? (
                                         <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ mt: 2 }}>
@@ -631,11 +732,17 @@ const Board = () => {
                                         </Typography>
                                     ) : (
                                         comments.map((comment, idx) => (
-                                            <Box key={idx} sx={{
-                                                display: 'flex',
-                                                gap: 1.5,
-                                                flexDirection: comment.user?._id === user?._id ? 'row-reverse' : 'row'
-                                            }}>
+                                            <Box key={idx}
+                                                id={`comment-${comment._id}`}
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 1.5,
+                                                    flexDirection: comment.user?._id === user?._id ? 'row-reverse' : 'row',
+                                                    transition: 'background-color 0.5s',
+                                                    bgcolor: highlightedCommentId === comment._id ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
+                                                    p: 1,
+                                                    borderRadius: 2
+                                                }}>
                                                 <Avatar
                                                     src={comment.user?.profilePicture}
                                                     alt={comment.user?.name}
@@ -682,27 +789,56 @@ const Board = () => {
                                                             <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.7 }}>
                                                                 {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </Typography>
-                                                            <Tooltip title="Reply">
-                                                                <IconButton
-                                                                    className="reply-btn"
-                                                                    size="small"
-                                                                    sx={{
-                                                                        padding: 0.2,
-                                                                        opacity: 0,
-                                                                        transition: 'opacity 0.2s',
-                                                                        color: 'inherit'
-                                                                    }}
-                                                                    onClick={() => setReplyingTo(comment)}
-                                                                >
-                                                                    <ReplyIcon sx={{ fontSize: 14 }} />
-                                                                </IconButton>
-                                                            </Tooltip>
+                                                            {comment.isPinned && (
+                                                                <PushPinIcon sx={{ fontSize: 12, transform: 'rotate(45deg)', color: 'text.secondary' }} />
+                                                            )}
+                                                            <IconButton
+                                                                className="reply-btn"
+                                                                size="small"
+                                                                sx={{
+                                                                    padding: 0.2,
+                                                                    opacity: 0,
+                                                                    transition: 'opacity 0.2s',
+                                                                    color: 'inherit'
+                                                                }}
+                                                                onClick={(e) => handleMenuClick(e, comment)}
+                                                            >
+                                                                <MoreHorizIcon sx={{ fontSize: 14 }} />
+                                                            </IconButton>
                                                         </Box>
                                                     </Box>
                                                     <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                                                         {renderCommentText(comment.text)}
                                                     </Typography>
                                                 </Box>
+
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl) && selectedComment?._id === comment._id}
+                                                    onClose={handleMenuClose}
+                                                    PaperProps={{
+                                                        elevation: 3,
+                                                        sx: { borderRadius: 2, minWidth: 120 }
+                                                    }}
+                                                >
+                                                    <MenuItem onClick={() => {
+                                                        setReplyingTo(selectedComment);
+                                                        handleMenuClose();
+                                                    }} dense>
+                                                        <ReplyIcon sx={{ fontSize: 16, mr: 1, color: 'text.secondary' }} />
+                                                        <Typography variant="caption">Reply</Typography>
+                                                    </MenuItem>
+                                                    <MenuItem onClick={handlePinComment} dense>
+                                                        {selectedComment?.isPinned ? <PushPinOutlinedIcon sx={{ fontSize: 16, mr: 1, color: 'text.secondary' }} /> : <PushPinIcon sx={{ fontSize: 16, mr: 1, color: 'text.secondary' }} />}
+                                                        <Typography variant="caption">{selectedComment?.isPinned ? 'Unpin' : 'Pin'}</Typography>
+                                                    </MenuItem>
+                                                    {selectedComment?.user?._id === user?._id && (
+                                                        <MenuItem onClick={handleDeleteComment} dense>
+                                                            <DeleteIcon sx={{ fontSize: 16, mr: 1, color: 'error.main' }} />
+                                                            <Typography variant="caption" color="error">Delete</Typography>
+                                                        </MenuItem>
+                                                    )}
+                                                </Menu>
                                             </Box>
                                         ))
                                     )}
