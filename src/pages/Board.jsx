@@ -41,7 +41,8 @@ import {
     Reply as ReplyIcon,
     PushPin as PushPinIcon,
     PushPinOutlined as PushPinOutlinedIcon,
-    KeyboardArrowDown as ArrowDownIcon
+    KeyboardArrowDown as ArrowDownIcon,
+    Block as BlockIcon
 } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
 import api from '../api';
@@ -789,27 +790,38 @@ const Board = () => {
                                                             <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.7 }}>
                                                                 {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                             </Typography>
-                                                            {comment.isPinned && (
+                                                            {comment.isPinned && !comment.isDeleted && (
                                                                 <PushPinIcon sx={{ fontSize: 12, transform: 'rotate(45deg)', color: 'text.secondary' }} />
                                                             )}
-                                                            <IconButton
-                                                                className="reply-btn"
-                                                                size="small"
-                                                                sx={{
-                                                                    padding: 0.2,
-                                                                    opacity: 0,
-                                                                    transition: 'opacity 0.2s',
-                                                                    color: 'inherit'
-                                                                }}
-                                                                onClick={(e) => handleMenuClick(e, comment)}
-                                                            >
-                                                                <MoreHorizIcon sx={{ fontSize: 14 }} />
-                                                            </IconButton>
+                                                            {!comment.isDeleted && (
+                                                                <IconButton
+                                                                    className="reply-btn"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        padding: 0.2,
+                                                                        opacity: 0,
+                                                                        transition: 'opacity 0.2s',
+                                                                        color: 'inherit'
+                                                                    }}
+                                                                    onClick={(e) => handleMenuClick(e, comment)}
+                                                                >
+                                                                    <MoreHorizIcon sx={{ fontSize: 14 }} />
+                                                                </IconButton>
+                                                            )}
                                                         </Box>
                                                     </Box>
-                                                    <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                                                        {renderCommentText(comment.text)}
-                                                    </Typography>
+                                                    {comment.isDeleted ? (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontStyle: 'italic', color: 'text.secondary', opacity: 0.7 }}>
+                                                            <BlockIcon sx={{ fontSize: 14 }} />
+                                                            <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
+                                                                {comment.user?._id === user?._id ? "You deleted this message" : "This message was deleted"}
+                                                            </Typography>
+                                                        </Box>
+                                                    ) : (
+                                                        <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                                                            {renderCommentText(comment.text)}
+                                                        </Typography>
+                                                    )}
                                                 </Box>
 
                                                 <Menu
