@@ -16,7 +16,13 @@ import {
     useTheme,
     alpha,
     AvatarGroup,
-    Tooltip
+    Tooltip,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemAvatar,
+    ListItemText,
+    ClickAwayListener
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -55,6 +61,9 @@ const Board = () => {
     const [newComment, setNewComment] = useState('');
     const [newLinkTitle, setNewLinkTitle] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
+    const [mentionQuery, setMentionQuery] = useState(null);
+    const [mentionCursorPos, setMentionCursorPos] = useState(null);
+    const inputRef = useRef(null);
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -211,6 +220,59 @@ const Board = () => {
         }
     };
 
+    const handleCommentChange = (e) => {
+        const value = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        setNewComment(value);
+
+        const lastAtPos = value.lastIndexOf('@', cursorPos - 1);
+        if (lastAtPos !== -1) {
+            const query = value.substring(lastAtPos + 1, cursorPos);
+            const isValid = (lastAtPos === 0 || value[lastAtPos - 1] === ' ') && !query.includes(' ');
+
+            if (isValid) {
+                setMentionQuery(query);
+                setMentionCursorPos(lastAtPos);
+                return;
+            }
+        }
+        setMentionQuery(null);
+        setMentionCursorPos(null);
+    };
+
+    const getMentionableUsers = () => {
+        if (!selectedTask) return [];
+        const users = new Map();
+
+        selectedTask.assignees?.forEach(u => users.set(u._id, { ...u, type: 'Assignee' }));
+
+        selectedTask.team?.members?.forEach(m => {
+            if (!users.has(m._id)) users.set(m._id, { ...m, type: 'Team Member' });
+        });
+
+        return Array.from(users.values());
+    };
+
+    const insertMention = (user) => {
+        if (mentionCursorPos === null) return;
+
+        const before = newComment.substring(0, mentionCursorPos);
+        const after = newComment.substring(inputRef.current?.selectionStart || newComment.length);
+        const newValue = `${before}@${user.name} ${after}`;
+
+        setNewComment(newValue);
+        setMentionQuery(null);
+        setMentionCursorPos(null);
+
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 0);
+    };
+
+    const filteredUsers = mentionQuery !== null
+        ? getMentionableUsers().filter(u => u.name.toLowerCase().includes(mentionQuery.toLowerCase()))
+        : [];
+
     const handleAddLink = async (e) => {
         e.preventDefault();
         if (!newLinkTitle.trim() || !newLinkUrl.trim() || !selectedTask) return;
@@ -258,6 +320,32 @@ const Board = () => {
         }
     };
 
+    const renderCommentText = (text) => {
+        if (!text) return null;
+        if (typeof text !== 'string') return text;
+
+        const parts = text.split(/(@\S+)/g);
+
+        return parts.map((part, index) => {
+            if (part.match(/^@\S+/)) {
+                return (
+                    <Box
+                        component="span"
+                        key={index}
+                        sx={{
+                            color: 'primary.main',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        {part}
+                    </Box>
+                );
+            }
+            return <span key={index}>{part}</span>;
+        });
+    };
+
     return (
         <Container maxWidth="2xl" sx={{ py: 3, height: 'calc(100vh - 64px)' }}>
             <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -271,9 +359,8 @@ const Board = () => {
                 </Box>
             </Box>
 
-            <Grid container spacing={3} sx={{ height: 'calc(100% - 100px)' }}>
-                {/* Kanban Board Area */}
-                <Grid size={{ xs: 12, lg: selectedTask ? 9 : 12 }} sx={{ transition: 'all 0.3s ease', height: '100%', overflow: 'hidden' }}>
+            <Grid container spacing={3} sx={{ height: 'calc(100% - 64px)' }}>
+                <Grid size={{ xs: 12, lg: selectedTask ? 9 : 12 }} sx={{ height: '100%', overflow: 'hidden' }}>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Box sx={{
                             display: 'flex',
@@ -281,10 +368,9 @@ const Board = () => {
                             height: '100%',
                             overflowX: 'auto',
                             pb: 1,
-                            // Ensure columns share space equally
                             '& > div': {
                                 flex: 1,
-                                minWidth: '320px', // Ensure readability on smaller screens
+                                minWidth: '280px',
                             }
                         }}>
                             {['To Do', 'In Progress', 'Done'].map(columnId => (
@@ -327,7 +413,7 @@ const Board = () => {
                                     </Box>
 
                                     <Droppable droppableId={columnId}>
-                                        {(provided, snapshot) => (
+                                        {(provided) => (
                                             <Box
                                                 {...provided.droppableProps}
                                                 ref={provided.innerRef}
@@ -337,7 +423,8 @@ const Board = () => {
                                                     pr: 1,
                                                     bgcolor: alpha(theme.palette.background.default, 0.4),
                                                     borderRadius: 2,
-                                                    p: 1
+                                                    p: 1,
+                                                    border: '1px solid', borderColor: 'divider'
                                                 }}
                                             >
                                                 {tasks[columnId]?.map((task, index) => (
@@ -347,7 +434,7 @@ const Board = () => {
                                                         index={index}
                                                         isDragDisabled={user?.role === 'admin'}
                                                     >
-                                                        {(provided, snapshot) => (
+                                                        {(provided) => (
                                                             <Paper
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
@@ -358,7 +445,7 @@ const Board = () => {
                                                                     p: 2,
                                                                     mb: 2,
                                                                     borderRadius: 3,
-                                                                    border: '1px solid',
+                                                                    border: '2px solid',
                                                                     borderColor: selectedTask?._id === task._id ? 'primary.main' : 'divider',
                                                                     bgcolor: 'background.paper',
                                                                     cursor: 'pointer',
@@ -440,7 +527,6 @@ const Board = () => {
                                                                         width: '100%',
                                                                     }}
                                                                 >
-                                                                    {/* Left : Due Date */}
                                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                                                                         <FlagIcon sx={{ fontSize: 16 }} />
                                                                         <Typography variant="caption" fontWeight={500}>
@@ -454,7 +540,6 @@ const Board = () => {
                                                                         </Typography>
                                                                     </Box>
 
-                                                                    {/* Right : Comments & Links */}
                                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                                             <CommentIcon sx={{ fontSize: 14 }} />
@@ -510,7 +595,6 @@ const Board = () => {
                                 </IconButton>
                             </Box>
 
-                            {/* Comments Section */}
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -555,7 +639,7 @@ const Board = () => {
                                                     {comment.user?.name?.[0] || <PersonIcon fontSize="inherit" />}
                                                 </Avatar>
                                                 <Box sx={{
-                                                    bgcolor: comment.user?._id === user?._id ? 'primary.light' : alpha(theme.palette.background.default, 0.5),
+                                                    bgcolor: comment.user?._id === user?._id ? alpha(theme.palette.primary.light, 0.4) : alpha(theme.palette.background.default, 0.4),
                                                     color: comment.user?._id === user?._id ? 'black' : 'text.primary',
                                                     p: 1.5,
                                                     borderRadius: 2,
@@ -574,7 +658,7 @@ const Board = () => {
                                                         </Typography>
                                                     </Box>
                                                     <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                                                        {comment.text}
+                                                        {renderCommentText(comment.text)}
                                                     </Typography>
                                                 </Box>
                                             </Box>
@@ -583,14 +667,53 @@ const Board = () => {
                                     <div ref={chatEndRef} />
                                 </Box>
 
-                                <Box component="form" onSubmit={handleAddComment} sx={{ p: 1.5, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
+                                <Box component="form" onSubmit={handleAddComment} sx={{ p: 1.5, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider', position: 'relative' }}>
+                                    {mentionQuery !== null && filteredUsers.length > 0 && (
+                                        <ClickAwayListener onClickAway={() => setMentionQuery(null)}>
+                                            <Paper sx={{
+                                                position: 'absolute',
+                                                bottom: '100%',
+                                                left: 10,
+                                                width: 250,
+                                                maxHeight: 200,
+                                                overflowY: 'auto',
+                                                mb: 1,
+                                                zIndex: 10,
+                                                boxShadow: theme.shadows[4]
+                                            }}>
+                                                <List dense>
+                                                    {filteredUsers.map(user => (
+                                                        <ListItem key={user._id} disablePadding>
+                                                            <ListItemButton
+                                                                onClick={() => insertMention(user)}
+                                                                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
+                                                            >
+                                                                <ListItemAvatar>
+                                                                    <Avatar src={user.profilePicture} alt={user.name} sx={{ width: 24, height: 24 }}>
+                                                                        {user.name?.[0]}
+                                                                    </Avatar>
+                                                                </ListItemAvatar>
+                                                                <ListItemText
+                                                                    primary={user.name}
+                                                                    secondary={user.type}
+                                                                    primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
+                                                                    secondaryTypographyProps={{ variant: 'caption' }}
+                                                                />
+                                                            </ListItemButton>
+                                                        </ListItem>
+                                                    ))}
+                                                </List>
+                                            </Paper>
+                                        </ClickAwayListener>
+                                    )}
                                     <TextField
                                         fullWidth
+                                        inputRef={inputRef}
                                         placeholder="Type a message..."
                                         variant="outlined"
                                         size="small"
                                         value={newComment}
-                                        onChange={(e) => setNewComment(e.target.value)}
+                                        onChange={handleCommentChange}
                                         InputProps={{
                                             sx: { borderRadius: 2, fontSize: '0.85rem', bgcolor: 'background.default', '& fieldset': { border: 'none' } },
                                             endAdornment: (
@@ -605,7 +728,6 @@ const Board = () => {
                                 </Box>
                             </Paper>
 
-                            {/* Links Section */}
                             <Paper
                                 elevation={0}
                                 sx={{
@@ -624,7 +746,7 @@ const Board = () => {
                                     <Typography variant="subtitle2" fontWeight="bold" color="text.primary">Resources</Typography>
                                 </Box>
 
-                                <Box sx={{ p: 2, overflowY: 'auto', maxHeight: 200 }}>
+                                <Box sx={{ p: 1, overflowY: 'auto', maxHeight: 200 }}>
                                     {selectedTask.links?.length === 0 ? (
                                         <Typography variant="caption" color="text.secondary" textAlign="center" display="block">
                                             No links added.
@@ -638,7 +760,7 @@ const Board = () => {
                                                     alignItems: 'center',
                                                     justifyContent: 'space-between',
                                                     p: 1.5,
-                                                    mb: 1,
+                                                    m: 0.5,
                                                     bgcolor: 'background.default',
                                                     borderRadius: 2,
                                                     border: '1px solid',
@@ -691,7 +813,7 @@ const Board = () => {
                                         />
                                         <Button
                                             type="submit"
-                                            variant="contained"
+                                            variant="outlined"
                                             color="secondary"
                                             disabled={!newLinkTitle || !newLinkUrl}
                                             sx={{ borderRadius: 2, minWidth: 'auto', px: 2 }}
