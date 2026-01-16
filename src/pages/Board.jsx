@@ -76,7 +76,7 @@ const Board = () => {
     const [mentionQuery, setMentionQuery] = useState(null);
     const [mentionCursorPos, setMentionCursorPos] = useState(null);
     const inputRef = useRef(null);
-    const chatEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     useEffect(() => {
         socket = io(ENDPOINT);
@@ -88,7 +88,12 @@ const Board = () => {
     }, [user]);
 
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }
     }, [comments, selectedTask]);
 
     useEffect(() => {
@@ -808,7 +813,7 @@ const Board = () => {
                                     </Box>
                                 )}
 
-                                <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, minHeight: '200px' }}>
+                                <Box ref={chatContainerRef} sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, minHeight: '200px' }}>
                                     {comments.length === 0 ? (
                                         <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ mt: 2 }}>
                                             No comments yet.
@@ -925,7 +930,6 @@ const Board = () => {
                                             </Box>
                                         ))
                                     )}
-                                    <div ref={chatEndRef} />
                                 </Box>
 
                                 <Box component="form" onSubmit={handleAddComment} sx={{ p: 1.5, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider', position: 'relative' }}>
