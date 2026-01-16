@@ -740,7 +740,7 @@ const Board = () => {
                                                     gap: 1.5,
                                                     flexDirection: comment.user?._id === user?._id ? 'row-reverse' : 'row',
                                                     transition: 'background-color 0.5s',
-                                                    bgcolor: highlightedCommentId === comment._id ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
+                                                    bgcolor: highlightedCommentId === comment._id ? alpha(theme.palette.primary.main, 0.05) : 'transparent',
                                                     p: 1,
                                                     borderRadius: 2
                                                 }}>
