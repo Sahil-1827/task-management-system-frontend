@@ -22,7 +22,10 @@ import {
     ListItemButton,
     ListItemAvatar,
     ListItemText,
-    ClickAwayListener
+    ClickAwayListener,
+    useMediaQuery,
+    Tabs,
+    Tab
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -57,11 +60,13 @@ var socket;
 const Board = () => {
     const { user } = useAuth();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [tasks, setTasks] = useState({
         'To Do': [],
         'In Progress': [],
         'Done': []
     });
+    const [activeTab, setActiveTab] = useState('To Do');
     const [allTasksList, setAllTasksList] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [comments, setComments] = useState([]);
@@ -75,6 +80,8 @@ const Board = () => {
     const [replyingTo, setReplyingTo] = useState(null);
     const [mentionQuery, setMentionQuery] = useState(null);
     const [mentionCursorPos, setMentionCursorPos] = useState(null);
+    const [taskMenuAnchorEl, setTaskMenuAnchorEl] = useState(null);
+    const [activeMenuTask, setActiveMenuTask] = useState(null);
     const inputRef = useRef(null);
     const chatContainerRef = useRef(null);
 
@@ -348,6 +355,33 @@ const Board = () => {
         }
     };
 
+    const handleTaskMenuOpen = (event, task) => {
+        event.stopPropagation();
+        setTaskMenuAnchorEl(event.currentTarget);
+        setActiveMenuTask(task);
+    };
+
+    const handleTaskMenuClose = () => {
+        setTaskMenuAnchorEl(null);
+        setActiveMenuTask(null);
+    };
+
+    const handleMoveTask = async (newStatus) => {
+        if (!activeMenuTask) return;
+
+        const updatedTask = { ...activeMenuTask, status: newStatus };
+
+        try {
+            updateLocalTask(updatedTask);
+            handleTaskMenuClose();
+            await api.put(`/tasks/${activeMenuTask._id}`, { status: newStatus });
+            toast.success(`Moved to ${newStatus}`);
+        } catch (error) {
+            toast.error('Failed to update status');
+            fetchTasks();
+        }
+    };
+
 
 
     const handleMenuClick = (event, comment) => {
@@ -442,209 +476,241 @@ const Board = () => {
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Box sx={{
                             display: 'flex',
-                            gap: 3,
+                            flexDirection: 'column',
                             height: '100%',
-                            overflowX: 'auto',
-                            pb: 1,
-                            '& > div': {
-                                flex: 1,
-                                minWidth: '280px',
-                            }
+                            overflow: 'hidden'
                         }}>
-                            {['To Do', 'In Progress', 'Done'].map(columnId => (
-                                <Box
-                                    key={columnId}
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                    }}
-                                >
-                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Box sx={{
-                                                width: 8, height: 8, borderRadius: '50%', bgcolor:
-                                                    columnId === 'To Do' ? '#fbbf24' :
-                                                        columnId === 'In Progress' ? '#3b82f6' :
-                                                            '#a855f7'
-                                            }} />
-                                            <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
-                                                {columnId}
-                                            </Typography>
-                                            <Box
-                                                sx={{
-                                                    bgcolor: alpha(theme.palette.text.primary, 0.1),
-                                                    color: 'text.secondary',
-                                                    borderRadius: '50%',
-                                                    width: 20,
-                                                    height: 20,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: 'bold'
-                                                }}
-                                            >
-                                                {tasks[columnId]?.length || 0}
+                            {isMobile && (
+                                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                                    <Tabs
+                                        value={activeTab}
+                                        onChange={(e, newValue) => setActiveTab(newValue)}
+                                        variant="fullWidth"
+                                        textColor="primary"
+                                        indicatorColor="primary"
+                                    >
+                                        <Tab label="To Do" value="To Do" />
+                                        <Tab label="In Progress" value="In Progress" />
+                                        <Tab label="Done" value="Done" />
+                                    </Tabs>
+                                </Box>
+                            )}
+
+                            <Box sx={{
+                                display: 'flex',
+                                gap: 3,
+                                height: '100%',
+                                overflowX: isMobile ? 'hidden' : 'auto',
+                                pb: 1,
+                                '& > div': {
+                                    flex: 1,
+                                    minWidth: isMobile ? '100%' : '280px',
+                                }
+                            }}>
+                                {['To Do', 'In Progress', 'Done'].filter(id => !isMobile || id === activeTab).map(columnId => (
+                                    <Box
+                                        key={columnId}
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            height: '100%',
+                                            width: isMobile ? '100%' : 'auto'
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Box sx={{
+                                                    width: 8, height: 8, borderRadius: '50%', bgcolor:
+                                                        columnId === 'To Do' ? '#fbbf24' :
+                                                            columnId === 'In Progress' ? '#3b82f6' :
+                                                                '#a855f7'
+                                                }} />
+                                                <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
+                                                    {columnId}
+                                                </Typography>
+                                                <Box
+                                                    sx={{
+                                                        bgcolor: alpha(theme.palette.text.primary, 0.1),
+                                                        color: 'text.secondary',
+                                                        borderRadius: '50%',
+                                                        width: 20,
+                                                        height: 20,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                    {tasks[columnId]?.length || 0}
+                                                </Box>
                                             </Box>
                                         </Box>
-                                    </Box>
 
-                                    <Droppable droppableId={columnId}>
-                                        {(provided) => (
-                                            <Box
-                                                {...provided.droppableProps}
-                                                ref={provided.innerRef}
-                                                sx={{
-                                                    flexGrow: 1,
-                                                    overflowY: 'auto',
-                                                    pr: 1,
-                                                    bgcolor: alpha(theme.palette.background.default, 0.4),
-                                                    borderRadius: 2,
-                                                    p: 1,
-                                                    border: '1px solid', borderColor: 'divider'
-                                                }}
-                                            >
-                                                {tasks[columnId]?.map((task, index) => (
-                                                    <Draggable
-                                                        key={task._id}
-                                                        draggableId={task._id}
-                                                        index={index}
-                                                        isDragDisabled={user?.role === 'admin'}
-                                                    >
-                                                        {(provided) => (
-                                                            <Paper
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                onClick={() => setSelectedTask(task)}
-                                                                elevation={0}
-                                                                sx={{
-                                                                    p: 2,
-                                                                    mb: 2,
-                                                                    borderRadius: 3,
-                                                                    border: '2px solid',
-                                                                    borderColor: 'divider',
-                                                                    bgcolor: 'background.paper',
-                                                                    cursor: 'pointer',
-                                                                    transition: 'all 0.2s',
-                                                                    '&:hover': {
-                                                                        borderColor: 'primary.light',
-                                                                        boxShadow: theme.shadows[2]
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                                                                    <Chip
-                                                                        label={task.priority}
-                                                                        size="small"
-                                                                        sx={{
-                                                                            height: 22,
-                                                                            fontSize: '0.7rem',
-                                                                            fontWeight: 600,
-                                                                            bgcolor: alpha(getPriorityColor(task.priority), 0.5),
-                                                                            color: getPriorityTextColor(task.priority),
-                                                                        }}
-                                                                    />
-                                                                    <MoreHorizIcon fontSize="small" color="action" />
-                                                                </Box>
-
-                                                                <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, lineHeight: 1.3, color: 'text.primary' }}>
-                                                                    {task.title}
-                                                                </Typography>
-
-                                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.8rem' }}>
-                                                                    {task.description || 'No description provided.'}
-                                                                </Typography>
-
-                                                                <Typography
-                                                                    variant="caption"
-                                                                    color="text.secondary"
-                                                                    sx={{ display: 'block', mb: 1, fontWeight: 500 }}
-                                                                >
-                                                                    Assignees to {task.assignees && task.assignees.length > 0
-                                                                        ? task.assignees.map((a) => a.name).join(', ')
-                                                                        : (task.team?.name || 'Unassigned')} :
-                                                                </Typography>
-
-                                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                    {(task.assignees && task.assignees.length > 0) || task.team ? (
-                                                                        <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
-                                                                            {task.assignees && task.assignees.length > 0 ? (
-                                                                                task.assignees.map((user, index) => (
-                                                                                    <Avatar key={index} src={user.profilePicture} alt={user.name}>
-                                                                                        {user.name?.[0]?.toUpperCase()}
-                                                                                    </Avatar>
-                                                                                ))
-                                                                            ) : (
-                                                                                task.team && (
-                                                                                    <Avatar
-                                                                                        src={task.team.profilePicture || task.team?.profilePicture}
-                                                                                        alt={task.team.name}
-                                                                                    >
-                                                                                        {task.team.name?.[0]?.toUpperCase()}
-                                                                                    </Avatar>
-                                                                                )
-                                                                            )}
-                                                                        </AvatarGroup>
-                                                                    ) : (
-                                                                        <Typography variant="body2" color="text.secondary">
-                                                                            -
-                                                                        </Typography>
-                                                                    )}
-                                                                </Box>
-
-                                                                <Divider sx={{ my: 1.5 }} />
-
-                                                                <Box
+                                        <Droppable droppableId={columnId}>
+                                            {(provided) => (
+                                                <Box
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                    sx={{
+                                                        flexGrow: 1,
+                                                        overflowY: 'auto',
+                                                        pr: 1,
+                                                        bgcolor: alpha(theme.palette.background.default, 0.4),
+                                                        borderRadius: 2,
+                                                        p: 1,
+                                                        border: '1px solid', borderColor: 'divider'
+                                                    }}
+                                                >
+                                                    {tasks[columnId]?.map((task, index) => (
+                                                        <Draggable
+                                                            key={task._id}
+                                                            draggableId={task._id}
+                                                            index={index}
+                                                            isDragDisabled={user?.role === 'admin'}
+                                                        >
+                                                            {(provided) => (
+                                                                <Paper
+                                                                    ref={provided.innerRef}
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps}
+                                                                    onClick={() => setSelectedTask(task)}
+                                                                    elevation={0}
                                                                     sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        color: 'text.secondary',
-                                                                        width: '100%',
+                                                                        p: 2,
+                                                                        mb: 2,
+                                                                        borderRadius: 3,
+                                                                        border: '2px solid',
+                                                                        borderColor: 'divider',
+                                                                        bgcolor: 'background.paper',
+                                                                        cursor: 'pointer',
+                                                                        transition: 'all 0.2s',
+                                                                        '&:hover': {
+                                                                            borderColor: 'primary.light',
+                                                                            boxShadow: theme.shadows[2]
+                                                                        }
                                                                     }}
                                                                 >
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                                                                        <FlagIcon sx={{ fontSize: 16 }} />
-                                                                        <Typography variant="caption" fontWeight={500}>
-                                                                            {task.dueDate
-                                                                                ? new Date(task.dueDate).toLocaleDateString('en-GB', {
-                                                                                    day: '2-digit',
-                                                                                    month: 'short',
-                                                                                    year: 'numeric',
-                                                                                })
-                                                                                : 'No Date'}
-                                                                        </Typography>
+                                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                                                        <Chip
+                                                                            label={task.priority}
+                                                                            size="small"
+                                                                            sx={{
+                                                                                height: 22,
+                                                                                fontSize: '0.7rem',
+                                                                                fontWeight: 600,
+                                                                                bgcolor: alpha(getPriorityColor(task.priority), 0.5),
+                                                                                color: getPriorityTextColor(task.priority),
+                                                                            }}
+                                                                        />
+                                                                        {isMobile && (
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={(e) => handleTaskMenuOpen(e, task)}
+                                                                                sx={{ p: 0.5, mt: -0.5, mr: -0.5 }}
+                                                                            >
+                                                                                <MoreHorizIcon fontSize="small" color="action" />
+                                                                            </IconButton>
+                                                                        )}
                                                                     </Box>
 
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                                            <CommentIcon sx={{ fontSize: 14 }} />
-                                                                            <Typography variant="caption">
-                                                                                {task.commentCount || 0}
+                                                                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, lineHeight: 1.3, color: 'text.primary' }}>
+                                                                        {task.title}
+                                                                    </Typography>
+
+                                                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.8rem' }}>
+                                                                        {task.description || 'No description provided.'}
+                                                                    </Typography>
+
+                                                                    <Typography
+                                                                        variant="caption"
+                                                                        color="text.secondary"
+                                                                        sx={{ display: 'block', mb: 1, fontWeight: 500 }}
+                                                                    >
+                                                                        Assignees to {task.assignees && task.assignees.length > 0
+                                                                            ? task.assignees.map((a) => a.name).join(', ')
+                                                                            : (task.team?.name || 'Unassigned')} :
+                                                                    </Typography>
+
+                                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                        {(task.assignees && task.assignees.length > 0) || task.team ? (
+                                                                            <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
+                                                                                {task.assignees && task.assignees.length > 0 ? (
+                                                                                    task.assignees.map((user, index) => (
+                                                                                        <Avatar key={index} src={user.profilePicture} alt={user.name}>
+                                                                                            {user.name?.[0]?.toUpperCase()}
+                                                                                        </Avatar>
+                                                                                    ))
+                                                                                ) : (
+                                                                                    task.team && (
+                                                                                        <Avatar
+                                                                                            src={task.team.profilePicture || task.team?.profilePicture}
+                                                                                            alt={task.team.name}
+                                                                                        >
+                                                                                            {task.team.name?.[0]?.toUpperCase()}
+                                                                                        </Avatar>
+                                                                                    )
+                                                                                )}
+                                                                            </AvatarGroup>
+                                                                        ) : (
+                                                                            <Typography variant="body2" color="text.secondary">
+                                                                                -
+                                                                            </Typography>
+                                                                        )}
+                                                                    </Box>
+
+                                                                    <Divider sx={{ my: 1.5 }} />
+
+                                                                    <Box
+                                                                        sx={{
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'space-between',
+                                                                            color: 'text.secondary',
+                                                                            width: '100%',
+                                                                        }}
+                                                                    >
+                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                                                                            <FlagIcon sx={{ fontSize: 16 }} />
+                                                                            <Typography variant="caption" fontWeight={500}>
+                                                                                {task.dueDate
+                                                                                    ? new Date(task.dueDate).toLocaleDateString('en-GB', {
+                                                                                        day: '2-digit',
+                                                                                        month: 'short',
+                                                                                        year: 'numeric',
+                                                                                    })
+                                                                                    : 'No Date'}
                                                                             </Typography>
                                                                         </Box>
 
-                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                                            <LinkIcon sx={{ fontSize: 14 }} />
-                                                                            <Typography variant="caption">
-                                                                                {task.links?.length || 0}
-                                                                            </Typography>
+                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                                                <CommentIcon sx={{ fontSize: 14 }} />
+                                                                                <Typography variant="caption">
+                                                                                    {task.commentCount || 0}
+                                                                                </Typography>
+                                                                            </Box>
+
+                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                                                <LinkIcon sx={{ fontSize: 14 }} />
+                                                                                <Typography variant="caption">
+                                                                                    {task.links?.length || 0}
+                                                                                </Typography>
+                                                                            </Box>
                                                                         </Box>
                                                                     </Box>
-                                                                </Box>
 
-                                                            </Paper>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </Box>
-                                        )}
-                                    </Droppable>
-                                </Box>
-                            ))}
+                                                                </Paper>
+                                                            )}
+                                                        </Draggable>
+                                                    ))}
+                                                    {provided.placeholder}
+                                                </Box>
+                                            )}
+                                        </Droppable>
+                                    </Box>
+                                ))}
+                            </Box>
                         </Box>
                     </DragDropContext>
                 </Grid>
@@ -1118,6 +1184,25 @@ const Board = () => {
                     </>
                 )}
             </Offcanvas>
+
+            <Menu
+                anchorEl={taskMenuAnchorEl}
+                open={Boolean(taskMenuAnchorEl)}
+                onClose={handleTaskMenuClose}
+                PaperProps={{ elevation: 3, sx: { borderRadius: 2, minWidth: 150 } }}
+            >
+                <MenuItem disabled dense>
+                    <Typography variant="caption" fontWeight="bold">Move to...</Typography>
+                </MenuItem>
+                {['To Do', 'In Progress', 'Done']
+                    .filter(status => status !== activeMenuTask?.status)
+                    .map(status => (
+                        <MenuItem key={status} onClick={() => handleMoveTask(status)} dense>
+                            <Typography variant="body2">{status}</Typography>
+                        </MenuItem>
+                    ))
+                }
+            </Menu>
         </Container>
     );
 };
