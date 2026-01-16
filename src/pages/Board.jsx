@@ -37,7 +37,8 @@ import {
     ListAlt as ListIcon,
     Close as CloseIcon,
     FlagOutlined as FlagIcon,
-    MoreHoriz as MoreHorizIcon
+    MoreHoriz as MoreHorizIcon,
+    Reply as ReplyIcon
 } from '@mui/icons-material';
 import api from '../api';
 import { toast } from 'react-toastify';
@@ -61,6 +62,7 @@ const Board = () => {
     const [newComment, setNewComment] = useState('');
     const [newLinkTitle, setNewLinkTitle] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
+    const [replyingTo, setReplyingTo] = useState(null);
     const [mentionQuery, setMentionQuery] = useState(null);
     const [mentionCursorPos, setMentionCursorPos] = useState(null);
     const inputRef = useRef(null);
@@ -203,8 +205,11 @@ const Board = () => {
         try {
             const res = await api.post('/comments', {
                 text: newComment,
-                taskId: selectedTask._id
+                taskId: selectedTask._id,
+                replyTo: replyingTo?._id
             });
+
+            setReplyingTo(null);
 
             setComments(prev => {
                 if (prev.some(c => c._id === res.data._id)) return prev;
@@ -647,15 +652,52 @@ const Board = () => {
                                                     borderRadiusTopRight: comment.user?._id === user?._id ? 0 : 2,
                                                     border: '1px solid',
                                                     borderColor: 'divider',
-                                                    maxWidth: '85%'
+                                                    maxWidth: '85%',
+                                                    position: 'relative',
+                                                    '&:hover .reply-btn': { opacity: 1 }
                                                 }}>
+                                                    {comment.replyTo && (
+                                                        <Box sx={{
+                                                            mb: 1,
+                                                            p: 0.5,
+                                                            px: 1,
+                                                            bgcolor: alpha(theme.palette.background.paper, 0.5),
+                                                            borderLeft: '3px solid',
+                                                            borderColor: 'primary.main',
+                                                            borderRadius: 1
+                                                        }}>
+                                                            <Typography variant="caption" fontWeight="bold" color="primary">
+                                                                {comment.replyTo.user?.name}
+                                                            </Typography>
+                                                            <Typography variant="body2" sx={{ fontSize: '0.7rem', opacity: 0.8, maxHeight: 40, overflow: 'hidden' }}>
+                                                                {comment.replyTo.text}
+                                                            </Typography>
+                                                        </Box>
+                                                    )}
                                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5, gap: 1 }}>
                                                         <Typography variant="subtitle2" sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}>
                                                             {comment.user?.name || 'User'}
                                                         </Typography>
-                                                        <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.7 }}>
-                                                            {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                            <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.7 }}>
+                                                                {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </Typography>
+                                                            <Tooltip title="Reply">
+                                                                <IconButton
+                                                                    className="reply-btn"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        padding: 0.2,
+                                                                        opacity: 0,
+                                                                        transition: 'opacity 0.2s',
+                                                                        color: 'inherit'
+                                                                    }}
+                                                                    onClick={() => setReplyingTo(comment)}
+                                                                >
+                                                                    <ReplyIcon sx={{ fontSize: 14 }} />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Box>
                                                     </Box>
                                                     <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                                                         {renderCommentText(comment.text)}
@@ -668,6 +710,31 @@ const Board = () => {
                                 </Box>
 
                                 <Box component="form" onSubmit={handleAddComment} sx={{ p: 1.5, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider', position: 'relative' }}>
+                                    {replyingTo && (
+                                        <Box sx={{
+                                            p: 1,
+                                            mb: 1,
+                                            bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                            borderLeft: '3px solid',
+                                            borderColor: 'primary.main',
+                                            borderRadius: 1,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Box>
+                                                <Typography variant="caption" color="primary.main" fontWeight="bold">
+                                                    Replying to {replyingTo.user?.name}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ fontSize: '0.75rem', color: 'text.secondary', maxHeight: 40, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                    {replyingTo.text}
+                                                </Typography>
+                                            </Box>
+                                            <IconButton size="small" onClick={() => setReplyingTo(null)}>
+                                                <CloseIcon fontSize="small" />
+                                            </IconButton>
+                                        </Box>
+                                    )}
                                     {mentionQuery !== null && filteredUsers.length > 0 && (
                                         <ClickAwayListener onClickAway={() => setMentionQuery(null)}>
                                             <Paper sx={{
