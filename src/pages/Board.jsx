@@ -45,10 +45,12 @@ import {
     PushPin as PushPinIcon,
     PushPinOutlined as PushPinOutlinedIcon,
     KeyboardArrowDown as ArrowDownIcon,
-    Block as BlockIcon
+    Block as BlockIcon,
+    Groups as GroupsIcon
 } from '@mui/icons-material';
 import { Menu, MenuItem } from '@mui/material';
 import Offcanvas, { OffcanvasHeader, OffcanvasBody, OffcanvasFooter } from '../components/common/Offcanvas';
+import EmptyState from '../components/common/EmptyState';
 import api from '../api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
@@ -301,7 +303,18 @@ const Board = () => {
             if (!users.has(m._id)) users.set(m._id, { ...m, type: 'Team Member' });
         });
 
-        return Array.from(users.values());
+        const userArray = Array.from(users.values());
+
+        if (userArray.length > 1) {
+            userArray.unshift({
+                _id: 'everyone',
+                name: 'Everyone',
+                type: 'Notify everyone in the chat',
+                isSpecial: true
+            });
+        }
+
+        return userArray;
     };
 
     const insertMention = (user) => {
@@ -559,151 +572,163 @@ const Board = () => {
                                                         bgcolor: alpha(theme.palette.background.default, 0.4),
                                                         borderRadius: 2,
                                                         p: 1,
-                                                        border: '1px solid', borderColor: 'divider'
+                                                        border: '1px solid', borderColor: 'divider',
+                                                        minHeight: '200px'
                                                     }}
                                                 >
-                                                    {tasks[columnId]?.map((task, index) => (
-                                                        <Draggable
-                                                            key={task._id}
-                                                            draggableId={task._id}
-                                                            index={index}
-                                                            isDragDisabled={user?.role === 'admin'}
-                                                        >
-                                                            {(provided) => (
-                                                                <Paper
-                                                                    ref={provided.innerRef}
-                                                                    {...provided.draggableProps}
-                                                                    {...provided.dragHandleProps}
-                                                                    onClick={() => setSelectedTask(task)}
-                                                                    elevation={0}
-                                                                    sx={{
-                                                                        p: 2,
-                                                                        mb: 2,
-                                                                        borderRadius: 3,
-                                                                        border: '2px solid',
-                                                                        borderColor: 'divider',
-                                                                        bgcolor: 'background.paper',
-                                                                        cursor: 'pointer',
-                                                                        transition: 'all 0.2s',
-                                                                        '&:hover': {
-                                                                            borderColor: 'primary.light',
-                                                                            boxShadow: theme.shadows[2]
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                                                                        <Chip
-                                                                            label={task.priority}
-                                                                            size="small"
-                                                                            sx={{
-                                                                                height: 22,
-                                                                                fontSize: '0.7rem',
-                                                                                fontWeight: 600,
-                                                                                bgcolor: alpha(getPriorityColor(task.priority), 0.5),
-                                                                                color: getPriorityTextColor(task.priority),
-                                                                            }}
-                                                                        />
-                                                                        {isMobile && (
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={(e) => handleTaskMenuOpen(e, task)}
-                                                                                sx={{ p: 0.5, mt: -0.5, mr: -0.5 }}
-                                                                            >
-                                                                                <MoreHorizIcon fontSize="small" color="action" />
-                                                                            </IconButton>
-                                                                        )}
-                                                                    </Box>
-
-                                                                    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, lineHeight: 1.3, color: 'text.primary' }}>
-                                                                        {task.title}
-                                                                    </Typography>
-
-                                                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.8rem' }}>
-                                                                        {task.description || 'No description provided.'}
-                                                                    </Typography>
-
-                                                                    <Typography
-                                                                        variant="caption"
-                                                                        color="text.secondary"
-                                                                        sx={{ display: 'block', mb: 1, fontWeight: 500 }}
-                                                                    >
-                                                                        Assignees to {task.assignees && task.assignees.length > 0
-                                                                            ? task.assignees.map((a) => a.name).join(', ')
-                                                                            : (task.team?.name || 'Unassigned')} :
-                                                                    </Typography>
-
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                                        {(task.assignees && task.assignees.length > 0) || task.team ? (
-                                                                            <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
-                                                                                {task.assignees && task.assignees.length > 0 ? (
-                                                                                    task.assignees.map((user, index) => (
-                                                                                        <Avatar key={index} src={user.profilePicture} alt={user.name}>
-                                                                                            {user.name?.[0]?.toUpperCase()}
-                                                                                        </Avatar>
-                                                                                    ))
-                                                                                ) : (
-                                                                                    task.team && (
-                                                                                        <Avatar
-                                                                                            src={task.team.profilePicture || task.team?.profilePicture}
-                                                                                            alt={task.team.name}
-                                                                                        >
-                                                                                            {task.team.name?.[0]?.toUpperCase()}
-                                                                                        </Avatar>
-                                                                                    )
-                                                                                )}
-                                                                            </AvatarGroup>
-                                                                        ) : (
-                                                                            <Typography variant="body2" color="text.secondary">
-                                                                                -
-                                                                            </Typography>
-                                                                        )}
-                                                                    </Box>
-
-                                                                    <Divider sx={{ my: 1.5 }} />
-
-                                                                    <Box
+                                                    {tasks[columnId]?.length === 0 ? (
+                                                        <Box sx={{ mt: 4 }}>
+                                                            <EmptyState
+                                                                title="No Tasks"
+                                                                description={`No tasks in ${columnId}`}
+                                                                icon={ListIcon}
+                                                                height="auto"
+                                                            />
+                                                        </Box>
+                                                    ) : (
+                                                        tasks[columnId]?.map((task, index) => (
+                                                            <Draggable
+                                                                key={task._id}
+                                                                draggableId={task._id}
+                                                                index={index}
+                                                                isDragDisabled={user?.role === 'admin'}
+                                                            >
+                                                                {(provided) => (
+                                                                    <Paper
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        onClick={() => setSelectedTask(task)}
+                                                                        elevation={0}
                                                                         sx={{
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'space-between',
-                                                                            color: 'text.secondary',
-                                                                            width: '100%',
+                                                                            p: 2,
+                                                                            mb: 2,
+                                                                            borderRadius: 3,
+                                                                            border: '2px solid',
+                                                                            borderColor: 'divider',
+                                                                            bgcolor: 'background.paper',
+                                                                            cursor: 'pointer',
+                                                                            transition: 'all 0.2s',
+                                                                            '&:hover': {
+                                                                                borderColor: 'primary.light',
+                                                                                boxShadow: theme.shadows[2]
+                                                                            }
                                                                         }}
                                                                     >
-                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                                                                            <FlagIcon sx={{ fontSize: 16 }} />
-                                                                            <Typography variant="caption" fontWeight={500}>
-                                                                                {task.dueDate
-                                                                                    ? new Date(task.dueDate).toLocaleDateString('en-GB', {
-                                                                                        day: '2-digit',
-                                                                                        month: 'short',
-                                                                                        year: 'numeric',
-                                                                                    })
-                                                                                    : 'No Date'}
-                                                                            </Typography>
+                                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                                                            <Chip
+                                                                                label={task.priority}
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    height: 22,
+                                                                                    fontSize: '0.7rem',
+                                                                                    fontWeight: 600,
+                                                                                    bgcolor: alpha(getPriorityColor(task.priority), 0.5),
+                                                                                    color: getPriorityTextColor(task.priority),
+                                                                                }}
+                                                                            />
+                                                                            {isMobile && (
+                                                                                <IconButton
+                                                                                    size="small"
+                                                                                    onClick={(e) => handleTaskMenuOpen(e, task)}
+                                                                                    sx={{ p: 0.5, mt: -0.5, mr: -0.5 }}
+                                                                                >
+                                                                                    <MoreHorizIcon fontSize="small" color="action" />
+                                                                                </IconButton>
+                                                                            )}
                                                                         </Box>
 
-                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                                                <CommentIcon sx={{ fontSize: 14 }} />
-                                                                                <Typography variant="caption">
-                                                                                    {task.commentCount || 0}
+                                                                        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, lineHeight: 1.3, color: 'text.primary' }}>
+                                                                            {task.title}
+                                                                        </Typography>
+
+                                                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.8rem' }}>
+                                                                            {task.description || 'No description provided.'}
+                                                                        </Typography>
+
+                                                                        <Typography
+                                                                            variant="caption"
+                                                                            color="text.secondary"
+                                                                            sx={{ display: 'block', mb: 1, fontWeight: 500 }}
+                                                                        >
+                                                                            Assignees to {task.assignees && task.assignees.length > 0
+                                                                                ? task.assignees.map((a) => a.name).join(', ')
+                                                                                : (task.team?.name || 'Unassigned')} :
+                                                                        </Typography>
+
+                                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                            {(task.assignees && task.assignees.length > 0) || task.team ? (
+                                                                                <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 24, height: 24, fontSize: '0.7rem' } }}>
+                                                                                    {task.assignees && task.assignees.length > 0 ? (
+                                                                                        task.assignees.map((user, index) => (
+                                                                                            <Avatar key={index} src={user.profilePicture} alt={user.name}>
+                                                                                                {user.name?.[0]?.toUpperCase()}
+                                                                                            </Avatar>
+                                                                                        ))
+                                                                                    ) : (
+                                                                                        task.team && (
+                                                                                            <Avatar
+                                                                                                src={task.team.profilePicture || task.team?.profilePicture}
+                                                                                                alt={task.team.name}
+                                                                                            >
+                                                                                                {task.team.name?.[0]?.toUpperCase()}
+                                                                                            </Avatar>
+                                                                                        )
+                                                                                    )}
+                                                                                </AvatarGroup>
+                                                                            ) : (
+                                                                                <Typography variant="body2" color="text.secondary">
+                                                                                    -
+                                                                                </Typography>
+                                                                            )}
+                                                                        </Box>
+
+                                                                        <Divider sx={{ my: 1.5 }} />
+
+                                                                        <Box
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'space-between',
+                                                                                color: 'text.secondary',
+                                                                                width: '100%',
+                                                                            }}
+                                                                        >
+                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                                                                                <FlagIcon sx={{ fontSize: 16 }} />
+                                                                                <Typography variant="caption" fontWeight={500}>
+                                                                                    {task.dueDate
+                                                                                        ? new Date(task.dueDate).toLocaleDateString('en-GB', {
+                                                                                            day: '2-digit',
+                                                                                            month: 'short',
+                                                                                            year: 'numeric',
+                                                                                        })
+                                                                                        : 'No Date'}
                                                                                 </Typography>
                                                                             </Box>
 
-                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                                                <LinkIcon sx={{ fontSize: 14 }} />
-                                                                                <Typography variant="caption">
-                                                                                    {task.links?.length || 0}
-                                                                                </Typography>
+                                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                                                    <CommentIcon sx={{ fontSize: 14 }} />
+                                                                                    <Typography variant="caption">
+                                                                                        {task.commentCount || 0}
+                                                                                    </Typography>
+                                                                                </Box>
+
+                                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                                                    <LinkIcon sx={{ fontSize: 14 }} />
+                                                                                    <Typography variant="caption">
+                                                                                        {task.links?.length || 0}
+                                                                                    </Typography>
+                                                                                </Box>
                                                                             </Box>
                                                                         </Box>
-                                                                    </Box>
 
-                                                                </Paper>
-                                                            )}
-                                                        </Draggable>
-                                                    ))}
+                                                                    </Paper>
+                                                                )}
+                                                            </Draggable>
+                                                        ))
+                                                    )}
                                                     {provided.placeholder}
                                                 </Box>
                                             )}
@@ -881,9 +906,12 @@ const Board = () => {
 
                                 <Box ref={chatContainerRef} sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2, minHeight: '200px' }}>
                                     {comments.length === 0 ? (
-                                        <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ mt: 2 }}>
-                                            No comments yet.
-                                        </Typography>
+                                        <EmptyState
+                                            title="No comments"
+                                            description="No comments have been added to this task yet."
+                                            icon={CommentIcon}
+                                            height="100%"
+                                        />
                                     ) : (
                                         comments.map((comment, idx) => (
                                             <Box key={idx}
@@ -1026,34 +1054,64 @@ const Board = () => {
                                     )}
                                     {mentionQuery !== null && filteredUsers.length > 0 && (
                                         <ClickAwayListener onClickAway={() => setMentionQuery(null)}>
-                                            <Paper sx={{
-                                                position: 'absolute',
-                                                bottom: '100%',
-                                                left: 10,
-                                                width: 250,
-                                                maxHeight: 200,
-                                                overflowY: 'auto',
-                                                mb: 1,
-                                                zIndex: 10,
-                                                boxShadow: theme.shadows[4]
-                                            }}>
-                                                <List dense>
+                                            <Paper
+                                                sx={{
+                                                    position: 'absolute',
+                                                    bottom: '100%',
+                                                    left: 10,
+                                                    width: 280,
+                                                    maxHeight: 220,
+                                                    overflowY: 'auto',
+                                                    mb: 1,
+                                                    zIndex: 10,
+                                                    boxShadow: theme.shadows[4],
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        px: 2,
+                                                        py: 1,
+                                                        borderBottom: '1px solid',
+                                                        borderColor: 'divider',
+                                                        bgcolor: 'background.paper',
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        variant="caption"
+                                                        sx={{ fontWeight: 600, color: 'text.secondary', letterSpacing: 0.5 }}
+                                                    >
+                                                        Suggestions
+                                                    </Typography>
+                                                </Box>
+
+                                                <List dense disablePadding>
                                                     {filteredUsers.map(user => (
                                                         <ListItem key={user._id} disablePadding>
                                                             <ListItemButton
                                                                 onClick={() => insertMention(user)}
-                                                                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
+                                                                sx={{ px: 2, '&:hover': { bgcolor: 'action.hover' } }}
                                                             >
                                                                 <ListItemAvatar>
-                                                                    <Avatar src={user.profilePicture} alt={user.name} sx={{ width: 24, height: 24 }}>
-                                                                        {user.name?.[0]}
+                                                                    <Avatar
+                                                                        src={user.isSpecial ? undefined : user.profilePicture}
+                                                                        alt={user.name}
+                                                                        sx={{ width: 28, height: 28, bgcolor: user.isSpecial ? 'transparent' : 'grey.300' }}
+                                                                    >
+                                                                        {user.isSpecial ? <GroupsIcon sx={{ fontSize: 20, color: 'text.secondary' }} /> : user.name?.[0]}
                                                                     </Avatar>
                                                                 </ListItemAvatar>
+
                                                                 <ListItemText
                                                                     primary={user.name}
                                                                     secondary={user.type}
-                                                                    primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
-                                                                    secondaryTypographyProps={{ variant: 'caption' }}
+                                                                    primaryTypographyProps={{
+                                                                        variant: 'body2',
+                                                                        fontWeight: 500,
+                                                                    }}
+                                                                    secondaryTypographyProps={{
+                                                                        variant: 'caption',
+                                                                        color: 'text.secondary',
+                                                                    }}
                                                                 />
                                                             </ListItemButton>
                                                         </ListItem>
@@ -1105,9 +1163,12 @@ const Board = () => {
 
                                 <Box sx={{ p: 1, overflowY: 'auto', maxHeight: 200 }}>
                                     {selectedTask.links?.length === 0 ? (
-                                        <Typography variant="caption" color="text.secondary" textAlign="center" display="block">
-                                            No links added.
-                                        </Typography>
+                                        <EmptyState
+                                            title="No links"
+                                            description="No links have been added yet."
+                                            icon={LinkIcon}
+                                            height="100%"
+                                        />
                                     ) : (
                                         selectedTask.links?.map((link, idx) => (
                                             <Box
